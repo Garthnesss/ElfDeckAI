@@ -1,1 +1,61 @@
-IyBEcml2aW5nIG5vdGVzIOKAlCBhbiBMTE0gYXQgdGhlIGNvbnRyb2xzCgpQcmFjdGljYWwgbm90ZXMgZnJvbSBkcml2aW5nIFJldHJvQXJjaCAobUdCQSBjb3JlLCBQb2vDqW1vbiBGaXJlUmVkKSBvbiBhClN0ZWFtIERlY2sgdGhyb3VnaCBFbGZLZXksIHdpdGggdGhlIGdhbWUgdmlld2VkIG92ZXIgYSBTdW5zaGluZS9Nb29ubGlnaHQKc3RyZWFtLiBNb3N0IG9mIHRoaXMgdHJhbnNmZXJzIHRvIGFueSAic2NyZWVuc2hvdCDihpIgZGVjaWRlIOKGkiBwcmVzcyIgbG9vcC4KCiMjIFdoeSBpbnB1dCBpcyBpbmplY3RlZCBvbiB0aGUgZGV2aWNlCgotIE1vb25saWdodCBmb3J3YXJkcyBtb3VzZSBjbGlja3MgZnJvbSBkZXNrdG9wLWF1dG9tYXRpb24gdG9vbHMsIGJ1dAogIHN5bnRoZXRpYyBrZXlib2FyZCBldmVudHMgc2VudCBhdCB0aGUgTW9vbmxpZ2h0IHdpbmRvdyBuZXZlciBhcnJpdmUgYXQKICB0aGUgaG9zdCAodmVyaWZpZWQgd2l0aCBgZXZ0ZXN0YCBvbiB0aGUgaG9zdCdzIHZpcnR1YWwga2V5Ym9hcmQgZGV2aWNlOgogIGNsaWNrcyBhcHBlYXIsIGtleXMgZG9uJ3QpLgotIHhkb3Rvb2wgY2FuJ3QgcmVhY2ggbmF0aXZlIFdheWxhbmQgY2xpZW50cy4KLSBTbyB0aGUga2V5cyBhcmUgY3JlYXRlZCBvbiB0aGUgZGV2aWNlIGl0c2VsZiwgdmlhIGAvZGV2L3VpbnB1dGAsIHdoZXJlCiAgdGhlIGNvbXBvc2l0b3IgYW5kIGV2ZXJ5IGFwcCBzZWUgdGhlbSBhcyBhIHJlYWwga2V5Ym9hcmQuCgojIyBSdW5uaW5nIHRoZSBkYWVtb24KCi0gUnVuIGl0IGFzIGEgKip1c2VyIHNlcnZpY2UqKiwgbm90IGEgc2hlbGwgY2hpbGQg4oCUIGEgcGxhaW4gYmFja2dyb3VuZGVkCiAgY29weSBkaWVzIHdoZW4gaXRzIHN0YXJ0aW5nIFNTSCBzZXNzaW9uIGNsb3NlcywgYW5kIGEgbGF0ZXIgRklGTyB3cml0ZXIKICB0aGVuIGJsb2NrcyBmb3JldmVyOgoKICBgYGAKICBzeXN0ZW1kLXJ1biAtLXVzZXIgLS11bml0PWVsZmtleSAtLWNvbGxlY3QgcHl0aG9uMyBlbGZrZXkucHkKICBzeXN0ZW1jdGwgLS11c2VyIGlzLWFjdGl2ZSBlbGZrZXkuc2VydmljZQogIGdyZXAgRWxmS2V5IC9wcm9jL2J1cy9pbnB1dC9kZXZpY2VzCiAgYGBgCgotIFRoZSBkYWVtb24gb3BlbnMgaXRzIG93biBGSUZPIGBPX1JEV1JgLCBzbyB3cml0ZXJzIG5ldmVyIGJsb2NrIHdhaXRpbmcKICBmb3IgYSByZWFkZXIgYW5kIHRoZSByZWFkIGVuZCBuZXZlciBzZWVzIEVPRiBhcyB3cml0ZXJzIGNvbWUgYW5kIGdvLgotIEhhbmR5IGNsaWVudCBwYXR0ZXJuczoKICAtICoqTWVudXMvZGlhbG9ndWU6KiogdGFwcyBvZiB+MTEwIG1zIHdpdGggfjAuNzUgcyBzcGFjaW5nLgogIC0gKipXYWxraW5nOioqIGhvbGRzIG9mIH41MjAgbXMgd2l0aCB+MC42MiBzIHNwYWNpbmcgKOKJiDIgdGlsZXMgcGVyIGhvbGQpLgoKIyMgQ2FsaWJyYXRpb24gKFJldHJvQXJjaCArIFBva8OpbW9uKQoKLSBSZXRyb0FyY2ggZGVmYXVsdCBrZXlib2FyZCBiaW5kaW5nczogKipBID0gWCwgQiA9IFoqKiwgWCA9IFMsIFkgPSBBLAogIEwgPSBRLCBSID0gVywgKipTdGFydCA9IEVudGVyKiosIFNlbGVjdCA9IFJpZ2h0IFNoaWZ0LCBELXBhZCA9IGFycm93cy4KICAqKkhvbGQgU3BhY2UgPSBmYXN0LWZvcndhcmQqKiDigJQgdGhlIHNpbmdsZSBiaWdnZXN0IHNwZWVkIGxldmVyOyBob2xkIGl0CiAgdGhyb3VnaCBkaWFsb2d1ZSBhbmQgc2NyaXB0ZWQgc2VxdWVuY2VzLgotIFdhbGtpbmc6IG9uZSB0aWxlIOKJiCAyNjUgbXMgb2YgaG9sZCBhdCB3YWxrIHNwZWVkLiBBIHNob3J0IHRhcCBpbiBhIG5ldwogIGRpcmVjdGlvbiBvbmx5ICp0dXJucyogdGhlIGNoYXJhY3RlcjsgfjMwMCBtcyDiiYggMSB0aWxlLCB+NTIwIG1zIOKJiCAyLgotIE1lbnVzIHJlbWVtYmVyIHRoZWlyIGN1cnNvciAodGhlIFN0YXJ0IG1lbnUgcmVvcGVucyBvbiB0aGUgbGFzdC11c2VkCiAgZW50cnkpIOKAlCBsb29rIGJlZm9yZSBuYXZpZ2F0aW5nOyBkb24ndCBjb3VudCBwcmVzc2VzIGJsaW5kLgotIEJhdHRsZXMgYXJlIHNhZmUgdG8gYmF0Y2g6IHRoZSBjb21tYW5kIG1lbnUgZGVmYXVsdHMgdG8gRklHSFQgYW5kIHRoZQogIG1vdmUgbGlzdCByZW1lbWJlcnMgdGhlIGxhc3QgbW92ZSwgc28gYSByZXBlYXRlZCBwYXR0ZXJuIHVuZGVyCiAgZmFzdC1mb3J3YXJkIHBsYXlzIGEga25vd24gZmlnaHQuIFZlcmlmeSBIUCBhdCBjaGVja3BvaW50cy4KLSBTZXQgdGhlIGdhbWUncyBvd24gb3B0aW9ucyBmb3IgZHJpdmluZzogKipURVhUIFNQRUVEID0gRkFTVCwKICBCQVRUTEUgU0NFTkUgPSBPRkYqKi4KLSBHYW1lIHF1aXJrcyBzZWVuIChGaXJlUmVkL0xlYWZHcmVlbik6IGxvY2F0aW9uLW5hbWUgYmFubmVycyBibG9jawogIG1vdmVtZW50IHVudGlsIHlvdSBzdGVwIGF3YXkgb3IgZGlzbWlzcyB0aGVtOyBwcmVzc2luZyBBIHdoaWxlIGZhY2luZyBhbgogIE5QQyByZXN0YXJ0cyB0aGVpciBzcGVlY2g7IHRleHQtZW50cnkgc2NyZWVucyBlYXQgdGhlIGZpcnN0IGN1cnNvciBtb3ZlCiAgd2hpbGUgdGhleSBvcGVuLgoKIyMgVGhlIGxvb3AsIGhvbmVzdGx5CgpSb3VuZC10cmlwIGxhdGVuY3kgZG9taW5hdGVzIGV2ZXJ5dGhpbmc6IGNhcHR1cmUgKyBtb2RlbCArIGlucHV0IOKJiAo44oCTMTUgcyBwZXIgbG9vayDihpIgZGVjaWRlIOKGkiBhY3QgY3ljbGUuIEJhdGNoIGlucHV0cyBwZXIgY3ljbGUsIGxlYW4gb24KZmFzdC1mb3J3YXJkIGZvciBzY3JpcHRlZCBzdHJldGNoZXMsIGFuZCB2ZXJpZnkgYXQgc2NlbmUgYm91bmRhcmllcwpyYXRoZXIgdGhhbiBwZXIgc3RlcC4gVHVybi1iYXNlZCBhbmQgbWVudS1kcml2ZW4gZ2FtZXMgYXJlIGEgZ3JlYXQgZml0Owphbnl0aGluZyByZWFsLXRpbWUgaXMgbm90Lgo=
+# Driving notes — an LLM at the controls
+
+Practical notes from driving RetroArch (mGBA core, Pokémon FireRed) on a
+Steam Deck through ElfKey, with the game viewed over a Sunshine/Moonlight
+stream. Most of this transfers to any "screenshot → decide → press" loop.
+
+## Why input is injected on the device
+
+- Moonlight forwards mouse clicks from desktop-automation tools, but
+  synthetic keyboard events sent at the Moonlight window never arrive at
+  the host (verified with `evtest` on the host's virtual keyboard device:
+  clicks appear, keys don't).
+- xdotool can't reach native Wayland clients.
+- So the keys are created on the device itself, via `/dev/uinput`, where
+  the compositor and every app see them as a real keyboard.
+
+## Running the daemon
+
+- Run it as a **user service**, not a shell child — a plain backgrounded
+  copy dies when its starting SSH session closes, and a later FIFO writer
+  then blocks forever:
+
+  ```
+  systemd-run --user --unit=elfkey --collect python3 elfkey.py
+  systemctl --user is-active elfkey.service
+  grep ElfKey /proc/bus/input/devices
+  ```
+
+- The daemon opens its own FIFO `O_RDWR`, so writers never block waiting
+  for a reader and the read end never sees EOF as writers come and go.
+- Handy client patterns:
+  - **Menus/dialogue:** taps of ~110 ms with ~0.75 s spacing.
+  - **Walking:** holds of ~520 ms with ~0.62 s spacing (≈2 tiles per hold).
+
+## Calibration (RetroArch + Pokémon)
+
+- RetroArch default keyboard bindings: **A = X, B = Z**, X = S, Y = A,
+  L = Q, R = W, **Start = Enter**, Select = Right Shift, D-pad = arrows.
+  **Hold Space = fast-forward** — the single biggest speed lever; hold it
+  through dialogue and scripted sequences.
+- Walking: one tile ≈ 265 ms of hold at walk speed. A short tap in a new
+  direction only *turns* the character; ~300 ms ≈ 1 tile, ~520 ms ≈ 2.
+- Menus remember their cursor (the Start menu reopens on the last-used
+  entry) — look before navigating; don't count presses blind.
+- Battles are safe to batch: the command menu defaults to FIGHT and the
+  move list remembers the last move, so a repeated pattern under
+  fast-forward plays a known fight. Verify HP at checkpoints.
+- Set the game's own options for driving: **TEXT SPEED = FAST,
+  BATTLE SCENE = OFF**.
+- Game quirks seen (FireRed/LeafGreen): location-name banners block
+  movement until you step away or dismiss them; pressing A while facing an
+  NPC restarts their speech; text-entry screens eat the first cursor move
+  while they open.
+
+## The loop, honestly
+
+Round-trip latency dominates everything: capture + model + input ≈
+8–15 s per look → decide → act cycle. Batch inputs per cycle, lean on
+fast-forward for scripted stretches, and verify at scene boundaries
+rather than per step. Turn-based and menu-driven games are a great fit;
+anything real-time is not.
