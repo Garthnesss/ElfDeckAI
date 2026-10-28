@@ -3,7 +3,7 @@
   "name": "io.github.Garthnesss/elfdeckai",
   "title": "ElfdeckAI",
   "description": "Virtual keyboard, gamepad and mouse for AI agents on Linux / Steam Deck.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": {
     "url": "https://github.com/Garthnesss/ElfDeckAI",
     "source": "github"
