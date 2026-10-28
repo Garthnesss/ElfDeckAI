@@ -153,3 +153,9 @@ python3 -m pytest    # 91 tests: both input contracts, device behaviour
 
 MIT — see [LICENSE](LICENSE). Steal it, ship it, teach your agent to
 speedrun something.
+
+## Author
+
+Created and maintained by **Garth Elfstrom**
+([@Garthnesss](https://github.com/Garthnesss)). Issues and PRs welcome
+on the repo.
