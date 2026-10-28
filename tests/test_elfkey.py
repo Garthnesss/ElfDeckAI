@@ -1,1 +1,188 @@
-IiIiRWxmS2V5IChlbGZrZXkucHkpOiB0aGUgRklGTyBpbnB1dCBjb250cmFjdCBhbmQgdGhlIGhlbGQta2V5CmJvb2trZWVwaW5nLiBUaGUgdWlucHV0IGRldmljZSBpdHNlbGYgbmVlZHMgL2Rldi91aW5wdXQgb24gYSBEZWNrLCBzbyB0aGUKZGV2aWNlIGlzIGZha2VkIGhlcmUg4oCUIHBhcnNlX2NvbW1hbmQoKSBhbmQgRWxmS2V5LmVtaXQgYm9va2tlZXBpbmcgYXJlIHRoZQpwYXJ0cyBhIGJhZCBsaW5lIGNhbiBhY3R1YWxseSBicmVhaywgYW5kIHRoZXkgYXJlIGZ1bGx5IHRlc3RhYmxlLgoKUmVncmVzc2lvbiB0YXJnZXRzIGZyb20gdGhlIDIwMjYtMTAtMjcgYWR2ZXJzYXJpYWwgcmV2aWV3OgogICogYGtleSB4IGFiY2AgY3Jhc2hlZCB0aGUgb2xkIGRhZW1vbiAodW5jYXVnaHQgaW50KCkpLgogICogYGtleSB4IDk5OTk5OTk5OWAgYmxvY2tlZCB0aGUgc2VydmUgbG9vcCBob2xkaW5nIHRoZSBrZXkgZm9yIGRheXMuCiAgKiBhIGtpbGxlZCBkYWVtb24gY291bGQgbGVhdmUgYSBgZG93bmAga2V5IHN0dWNrIGZvcmV2ZXIuCiAgKiB1bmtub3duIGtleXMvY29tbWFuZHMgdmFuaXNoZWQgc2lsZW50bHkuCiIiIgppbXBvcnQgb3MsIHN0YXQsIHN0cnVjdAoKaW1wb3J0IHB5dGVzdAoKZnJvbSBjb25mdGVzdCBpbXBvcnQgZWxma2V5CgoKIyAtLS0gcGFyc2VfY29tbWFuZDogdGhlIHZhbGlkIHByb3RvY29sIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKQHB5dGVzdC5tYXJrLnBhcmFtZXRyaXplKCJsaW5lLHdhbnQiLCBbCiAgICAoImtleSB4IiwgKCJrZXkiLCAieCIsIGVsZmtleS5ERUZBVUxUX0hPTERfTVMpKSwKICAgICgia2V5IHggMTUwIiwgKCJrZXkiLCAieCIsIDE1MCkpLAogICAgKCJrZXkgZW50ZXIgMCIsICgia2V5IiwgImVudGVyIiwgMCkpLAogICAgKCJrZXkgc3BhY2UgNTAwMCIsICgia2V5IiwgInNwYWNlIiwgNTAwMCkpLAogICAgKCJrZXkgLCAxMDAiLCAoImtleSIsICIsIiwgMTAwKSksCiAgICAoImtleSBtaW51cyAxMDAiLCAoImtleSIsICJtaW51cyIsIDEwMCkpLAogICAgKCJrZXkgZjUgMTAwIiwgKCJrZXkiLCAiZjUiLCAxMDApKSwKICAgICgiZG93biB1cCIsICgiZG93biIsICJ1cCIsIE5vbmUpKSwKICAgICgidXAgc3BhY2UiLCAoInVwIiwgInNwYWNlIiwgTm9uZSkpLAogICAgKCJkb3duIGN0cmwiLCAoImRvd24iLCAiY3RybCIsIE5vbmUpKSwKICAgICgicXVpdCIsICgicXVpdCIsIE5vbmUsIE5vbmUpKSwKICAgICgiICBrZXkgICB6ICAgMjY1ICAiLCAoImtleSIsICJ6IiwgMjY1KSksCl0pCmRlZiB0ZXN0X3BhcnNlX29rKGxpbmUsIHdhbnQpOgogICAgYXNzZXJ0IGVsZmtleS5wYXJzZV9jb21tYW5kKGxpbmUpID09IHdhbnQKCgojIC0tLSBwYXJzZV9jb21tYW5kOiBldmVyeXRoaW5nIG1hbGZvcm1lZCBpcyBhIFZhbHVlRXJyb3IsIG5ldmVyIGEgY3Jhc2ggLS0tLS0tLQoKQHB5dGVzdC5tYXJrLnBhcmFtZXRyaXplKCJsaW5lIiwgWwogICAgIiIsICIgICAiLCAia2V5IiwgImtleSBub3N1Y2hrZXkiLCAia2V5IHggYWJjIiwgImtleSB4IDEuNSIsICJrZXkgeCAtMSIsCiAgICAia2V5IHggNTAwMSIsICJrZXkgeCA5OTk5OTk5OTkiLCAia2V5IHggMTAwIGV4dHJhIiwgImRvd24iLCAiZG93biB4IHkiLAogICAgInVwIG5vc3VjaGtleSIsICJxdWl0IG5vdyIsICJwcmVzcyB4IiwgIktFWSB4IiwgImtlIHkgeCIsCiAgICAia2V5IHggIiArICI5IiAqIDMwMCwgICAgICAgICAgICAgICAgICAgICAgICMgYWJzdXJkIGhvbGQsIGFsc28gb3ZlciB0aGUgbGluZSBjYXAgYmVsb3cKICAgICJrZXkgIiArICJ4IiAqIDMwMCwgICAgICAgICAgICAgICAgICAgICAgICAgIyBvdmVyIE1BWF9MSU5FCl0pCmRlZiB0ZXN0X3BhcnNlX3JlZnVzZXMobGluZSk6CiAgICB3aXRoIHB5dGVzdC5yYWlzZXMoVmFsdWVFcnJvcik6CiAgICAgICAgZWxma2V5LnBhcnNlX2NvbW1hbmQobGluZSkKCgpkZWYgdGVzdF9ldmVyeV9yZXRyb2FyY2hfa2V5X3N0aWxsX3RoZXJlKCk6CiAgICBmb3IgbmFtZSBpbiAoIngiLCAieiIsICJzIiwgImEiLCAicSIsICJ3IiwgImVudGVyIiwgInJzaGlmdCIsICJzcGFjZSIsCiAgICAgICAgICAgICAgICAgInVwIiwgImRvd24iLCAibGVmdCIsICJyaWdodCIsICJlc2MiKToKICAgICAgICBhc3NlcnQgbmFtZSBpbiBlbGZrZXkuS0VZUywgbmFtZQoKCmRlZiB0ZXN0X2tleV9jb2Rlc19hcmVfdmFsaWRfYW5kX3VuaXF1ZV9wZXJfY29kZV9tZWFuaW5nKCk6CiAgICBmb3IgbmFtZSwgY29kZSBpbiBlbGZrZXkuS0VZUy5pdGVtcygpOgogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKGNvZGUsIGludCkgYW5kIDAgPCBjb2RlIDwgNzY4LCAobmFtZSwgY29kZSkKCgpkZWYgdGVzdF9wdW5jdHVhdGlvbl9hbmRfbW9kaWZpZXJzX25vd19leGlzdCgpOgogICAgZm9yIG5hbWUgaW4gKCJtaW51cyIsICJlcXVhbHMiLCAiY29tbWEiLCAiZG90IiwgInNsYXNoIiwgInNlbWljb2xvbiIsCiAgICAgICAgICAgICAgICAgImFwb3N0cm9waGUiLCAiYmFja3NsYXNoIiwgImN0cmwiLCAiYWx0IiwgImNhcHNsb2NrIiwgImYxIiwgImYxMCIpOgogICAgICAgIGFzc2VydCBuYW1lIGluIGVsZmtleS5LRVlTLCBuYW1lCgoKIyAtLS0gRWxmS2V5IGJvb2trZWVwaW5nIHdpdGggYSBmYWtlIGRldmljZSBmZCAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIGZha2UodG1wX3BhdGgpOgogICAgIiIiQW4gRWxmS2V5IHdyaXRpbmcgdG8gYSByZWFsIHRlbXAgZmlsZSBpbnN0ZWFkIG9mIC9kZXYvdWlucHV0LgogICAgZXZlbnRzKCkgcmVhZHMgdGhlIGZpbGUgYmFjayBhcyAodHlwZSwgY29kZSwgdmFsdWUpIHRyaXBsZXMuIiIiCiAgICBmZHBhdGggPSB0bXBfcGF0aCAvICJmYWtlLXVpbnB1dCIKICAgIGZkcGF0aC53cml0ZV9ieXRlcyhiIiIpCiAgICBmZCA9IG9zLm9wZW4oZmRwYXRoLCBvcy5PX1JEV1IpCiAgICBkZXYgPSBlbGZrZXkuRWxmS2V5KGZkKQoKICAgIGRlZiBldmVudHMoKToKICAgICAgICBvcy5sc2VlayhmZCwgMCwgMCkKICAgICAgICBkYXRhID0gb3MucmVhZChmZCwgMSA8PCAyMCkKICAgICAgICByZXR1cm4gW3N0cnVjdC51bnBhY2soInFxSEhpIiwgZGF0YVtpOmkgKyAyNF0pWzI6XSBmb3IgaSBpbiByYW5nZSgwLCBsZW4oZGF0YSkgLSAyMywgMjQpXQoKICAgIHlpZWxkIGRldiwgZXZlbnRzCiAgICBvcy5jbG9zZShmZCkKCgpkZWYgX2V2ZW50cyhldmVudHMpOgogICAgcmV0dXJuIGV2ZW50cygpCgoKZGVmIHRlc3RfdGFwX3ByZXNzZXNfYW5kX3JlbGVhc2VzKGZha2UpOgogICAgZGV2LCB3cml0ZXMgPSBmYWtlCiAgICBkZXYudGFwKCJ4IiwgMCkKICAgIGV2ID0gW2UgZm9yIGUgaW4gX2V2ZW50cyh3cml0ZXMpIGlmIGVbMF0gPT0gZWxma2V5LkVWX0tFWV0KICAgIGFzc2VydCBldiA9PSBbKGVsZmtleS5FVl9LRVksIGVsZmtleS5LRVlTWyJ4Il0sIDEpLCAoZWxma2V5LkVWX0tFWSwgZWxma2V5LktFWVNbIngiXSwgMCldCiAgICBhc3NlcnQgZGV2LmhlbGQgPT0gc2V0KCkKCgpkZWYgdGVzdF90YXBfcmVsZWFzZXNfZXZlbl9pZl9zbGVlcF9ibG93c191cChmYWtlLCBtb25rZXlwYXRjaCk6CiAgICBkZXYsIHdyaXRlcyA9IGZha2UKICAgIGRlZiBib29tKF9zKToKICAgICAgICByYWlzZSBlbGZrZXkuX1N0b3BwZWQoKQogICAgbW9ua2V5cGF0Y2guc2V0YXR0cihlbGZrZXkudGltZSwgInNsZWVwIiwgYm9vbSkKICAgIHdpdGggcHl0ZXN0LnJhaXNlcyhlbGZrZXkuX1N0b3BwZWQpOgogICAgICAgIGRldi50YXAoInNwYWNlIiwgMTAwKQogICAgZXYgPSBbZSBmb3IgZSBpbiBfZXZlbnRzKHdyaXRlcykgaWYgZVswXSA9PSBlbGZrZXkuRVZfS0VZXQogICAgYXNzZXJ0IGV2Wy0xXSA9PSAoZWxma2V5LkVWX0tFWSwgZWxma2V5LktFWVNbInNwYWNlIl0sIDApCiAgICBhc3NlcnQgZGV2LmhlbGQgPT0gc2V0KCkKCgpkZWYgdGVzdF9yZWxlYXNlX2FsbF9jbGVhcnNfaGVsZF9rZXlzKGZha2UpOgogICAgZGV2LCB3cml0ZXMgPSBmYWtlCiAgICBkZXYuc2V0X2tleSgic3BhY2UiLCBUcnVlKQogICAgZGV2LnNldF9rZXkoInVwIiwgVHJ1ZSkKICAgIGFzc2VydCBkZXYuaGVsZCA9PSB7InNwYWNlIiwgInVwIn0KICAgIGRldi5yZWxlYXNlX2FsbCgpCiAgICBhc3NlcnQgZGV2LmhlbGQgPT0gc2V0KCkKICAgIGV2ID0gW2UgZm9yIGUgaW4gX2V2ZW50cyh3cml0ZXMpIGlmIGVbMF0gPT0gZWxma2V5LkVWX0tFWV0KICAgIGFzc2VydCAoZWxma2V5LkVWX0tFWSwgZWxma2V5LktFWVNbInNwYWNlIl0sIDApIGluIGV2CiAgICBhc3NlcnQgKGVsZmtleS5FVl9LRVksIGVsZmtleS5LRVlTWyJ1cCJdLCAwKSBpbiBldgoKCiMgLS0tIFRoZSBkYWVtb24gbG9vcCBpdHNlbGYsIHdpdGggYSBmYWtlIC9kZXYvdWlucHV0IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmRlZiB0ZXN0X2RhZW1vbl9zdXJ2aXZlc19iYWRfaW5wdXRfYW5kX3JlbGVhc2VzX29uX3F1aXQodG1wX3BhdGgsIG1vbmtleXBhdGNoKToKICAgIGltcG9ydCB0aHJlYWRpbmcsIHRpbWUgYXMgX3RpbWUKICAgIGZpZm9fcGF0aCA9IHRtcF9wYXRoIC8gImVsZmtleS5maWZvIgogICAgZGV2cGF0aCA9IHRtcF9wYXRoIC8gImZha2UtdWlucHV0IgogICAgZGV2cGF0aC53cml0ZV9ieXRlcyhiIiIpCiAgICBmZCA9IG9zLm9wZW4oZGV2cGF0aCwgb3MuT19SRFdSKQogICAgbW9ua2V5cGF0Y2guc2V0YXR0cihlbGZrZXksICJGSUZPIiwgc3RyKGZpZm9fcGF0aCkpCiAgICBtb25rZXlwYXRjaC5zZXRhdHRyKGVsZmtleSwgIl9vcGVuX2RldmljZSIsIGxhbWJkYTogZmQpCiAgICB0ID0gdGhyZWFkaW5nLlRocmVhZCh0YXJnZXQ9ZWxma2V5Lm1haW4sIGRhZW1vbj1UcnVlKQogICAgdC5zdGFydCgpCiAgICB0cnk6CiAgICAgICAgZm9yIF8gaW4gcmFuZ2UoMTAwKToKICAgICAgICAgICAgaWYgZmlmb19wYXRoLmV4aXN0cygpOgogICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICAgICAgX3RpbWUuc2xlZXAoMC4wNSkKICAgICAgICBhc3NlcnQgZmlmb19wYXRoLmV4aXN0cygpCgogICAgICAgIGRlZiBzZW5kKGxpbmUpOgogICAgICAgICAgICB3ID0gb3Mub3BlbihmaWZvX3BhdGgsIG9zLk9fV1JPTkxZKQogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBvcy53cml0ZSh3LCAobGluZSArICJcbiIpLmVuY29kZSgpKQogICAgICAgICAgICBmaW5hbGx5OgogICAgICAgICAgICAgICAgb3MuY2xvc2UodykKCiAgICAgICAgc2VuZCgia2V5IHggYWJjIikgICAgICAgICAgIyB0aGUgb2xkIGRhZW1vbiBkaWVkIGhlcmUKICAgICAgICBzZW5kKCJkb3duIHNwYWNlIikgICAgICAgICAjIGhvbGQgZmFzdC1mb3J3YXJkLi4uCiAgICAgICAgc2VuZCgia2V5IHggMTAiKSAgICAgICAgICAgIyAuLi5hIGdvb2QgdGFwIHN0aWxsIHdvcmtzIGFmdGVyIHRoZSBiYWQgbGluZS4uLgogICAgICAgIHNlbmQoInF1aXQiKSAgICAgICAgICAgICAgICMgLi4uYW5kIHF1aXQgcmVsZWFzZXMgdGhlIGhlbGQga2V5CiAgICAgICAgdC5qb2luKHRpbWVvdXQ9NSkKICAgICAgICBhc3NlcnQgbm90IHQuaXNfYWxpdmUoKQogICAgZmluYWxseToKICAgICAgICBpZiB0LmlzX2FsaXZlKCk6CiAgICAgICAgICAgIHcgPSBvcy5vcGVuKGZpZm9fcGF0aCwgb3MuT19XUk9OTFkpCiAgICAgICAgICAgIG9zLndyaXRlKHcsIGIicXVpdFxuIikKICAgICAgICAgICAgb3MuY2xvc2UodykKICAgICAgICAgICAgdC5qb2luKHRpbWVvdXQ9NSkKICAgIGRhdGEgPSBkZXZwYXRoLnJlYWRfYnl0ZXMoKQogICAgZXYgPSBbc3RydWN0LnVucGFjaygicXFISGkiLCBkYXRhW2k6aSArIDI0XSlbMjpdIGZvciBpIGluIHJhbmdlKDAsIGxlbihkYXRhKSAtIDIzLCAyNCldCiAgICBrZXlzX29ubHkgPSBbZSBmb3IgZSBpbiBldiBpZiBlWzBdID09IGVsZmtleS5FVl9LRVldCiAgICBhc3NlcnQgKGVsZmtleS5FVl9LRVksIGVsZmtleS5LRVlTWyJzcGFjZSJdLCAxKSBpbiBrZXlzX29ubHkKICAgIGFzc2VydCBrZXlzX29ubHlbLTFdID09IChlbGZrZXkuRVZfS0VZLCBlbGZrZXkuS0VZU1sic3BhY2UiXSwgMCkgICAjIHJlbGVhc2VkIGxhc3QsIGJ5IHF1aXQgY2xlYW51cAogICAgYXNzZXJ0IChlbGZrZXkuRVZfS0VZLCBlbGZrZXkuS0VZU1sieCJdLCAxKSBpbiBrZXlzX29ubHkKCgojIC0tLSBGSUZPIGNyZWF0aW9uIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpkZWYgdGVzdF9maWZvX2lzX293bmVyX29ubHkodG1wX3BhdGgpOgogICAgcCA9IHRtcF9wYXRoIC8gImVsZmtleS5maWZvIgogICAgZWxma2V5Ll9tYWtlX2ZpZm8oc3RyKHApKQogICAgbW9kZSA9IHN0YXQuU19JTU9ERShvcy5zdGF0KHApLnN0X21vZGUpCiAgICBhc3NlcnQgbW9kZSA9PSAwbzYwMCwgb2N0KG1vZGUpCiAgICBhc3NlcnQgc3RhdC5TX0lTRklGTyhvcy5zdGF0KHApLnN0X21vZGUpCgoKZGVmIHRlc3RfZmlmb19yZWNyZWF0ZWRfaWZfYV9wbGFpbl9maWxlX2lzX2luX3RoZV93YXkodG1wX3BhdGgpOgogICAgcCA9IHRtcF9wYXRoIC8gImVsZmtleS5maWZvIgogICAgcC53cml0ZV90ZXh0KCJqdW5rIikKICAgIG9zLmNobW9kKHAsIDBvNjQ0KQogICAgZWxma2V5Ll9tYWtlX2ZpZm8oc3RyKHApKQogICAgYXNzZXJ0IHN0YXQuU19JU0ZJRk8ob3Muc3RhdChwKS5zdF9tb2RlKQogICAgYXNzZXJ0IHN0YXQuU19JTU9ERShvcy5zdGF0KHApLnN0X21vZGUpID09IDBvNjAwCg==
+"""ElfKey (elfkey.py): the FIFO input contract and the held-key
+bookkeeping. The uinput device itself needs /dev/uinput on a Deck, so the
+device is faked here — parse_command() and ElfKey.emit bookkeeping are the
+parts a bad line can actually break, and they are fully testable.
+
+Regression targets from the 2026-10-27 adversarial review:
+  * `key x abc` crashed the old daemon (uncaught int()).
+  * `key x 999999999` blocked the serve loop holding the key for days.
+  * a killed daemon could leave a `down` key stuck forever.
+  * unknown keys/commands vanished silently.
+"""
+import os, stat, struct
+
+import pytest
+
+from conftest import elfkey
+
+
+# --- parse_command: the valid protocol ---------------------------------------
+
+@pytest.mark.parametrize("line,want", [
+    ("key x", ("key", "x", elfkey.DEFAULT_HOLD_MS)),
+    ("key x 150", ("key", "x", 150)),
+    ("key enter 0", ("key", "enter", 0)),
+    ("key space 5000", ("key", "space", 5000)),
+    ("key , 100", ("key", ",", 100)),
+    ("key minus 100", ("key", "minus", 100)),
+    ("key f5 100", ("key", "f5", 100)),
+    ("down up", ("down", "up", None)),
+    ("up space", ("up", "space", None)),
+    ("down ctrl", ("down", "ctrl", None)),
+    ("quit", ("quit", None, None)),
+    ("  key   z   265  ", ("key", "z", 265)),
+])
+def test_parse_ok(line, want):
+    assert elfkey.parse_command(line) == want
+
+
+# --- parse_command: everything malformed is a ValueError, never a crash -------
+
+@pytest.mark.parametrize("line", [
+    "", "   ", "key", "key nosuchkey", "key x abc", "key x 1.5", "key x -1",
+    "key x 5001", "key x 999999999", "key x 100 extra", "down", "down x y",
+    "up nosuchkey", "quit now", "press x", "KEY x", "ke y x",
+    "key x " + "9" * 300,                       # absurd hold, also over the line cap below
+    "key " + "x" * 300,                         # over MAX_LINE
+])
+def test_parse_refuses(line):
+    with pytest.raises(ValueError):
+        elfkey.parse_command(line)
+
+
+def test_every_retroarch_key_still_there():
+    for name in ("x", "z", "s", "a", "q", "w", "enter", "rshift", "space",
+                 "up", "down", "left", "right", "esc"):
+        assert name in elfkey.KEYS, name
+
+
+def test_key_codes_are_valid_and_unique_per_code_meaning():
+    for name, code in elfkey.KEYS.items():
+        assert isinstance(code, int) and 0 < code < 768, (name, code)
+
+
+def test_punctuation_and_modifiers_now_exist():
+    for name in ("minus", "equals", "comma", "dot", "slash", "semicolon",
+                 "apostrophe", "backslash", "ctrl", "alt", "capslock", "f1", "f10"):
+        assert name in elfkey.KEYS, name
+
+
+# --- ElfKey bookkeeping with a fake device fd ----------------------------------
+
+@pytest.fixture
+def fake(tmp_path):
+    """An ElfKey writing to a real temp file instead of /dev/uinput.
+    events() reads the file back as (type, code, value) triples."""
+    fdpath = tmp_path / "fake-uinput"
+    fdpath.write_bytes(b"")
+    fd = os.open(fdpath, os.O_RDWR)
+    dev = elfkey.ElfKey(fd)
+
+    def events():
+        os.lseek(fd, 0, 0)
+        data = os.read(fd, 1 << 20)
+        return [struct.unpack("qqHHi", data[i:i + 24])[2:] for i in range(0, len(data) - 23, 24)]
+
+    yield dev, events
+    os.close(fd)
+
+
+def _events(events):
+    return events()
+
+
+def test_tap_presses_and_releases(fake):
+    dev, writes = fake
+    dev.tap("x", 0)
+    ev = [e for e in _events(writes) if e[0] == elfkey.EV_KEY]
+    assert ev == [(elfkey.EV_KEY, elfkey.KEYS["x"], 1), (elfkey.EV_KEY, elfkey.KEYS["x"], 0)]
+    assert dev.held == set()
+
+
+def test_tap_releases_even_if_sleep_blows_up(fake, monkeypatch):
+    dev, writes = fake
+    def boom(_s):
+        raise elfkey._Stopped()
+    monkeypatch.setattr(elfkey.time, "sleep", boom)
+    with pytest.raises(elfkey._Stopped):
+        dev.tap("space", 100)
+    ev = [e for e in _events(writes) if e[0] == elfkey.EV_KEY]
+    assert ev[-1] == (elfkey.EV_KEY, elfkey.KEYS["space"], 0)
+    assert dev.held == set()
+
+
+def test_release_all_clears_held_keys(fake):
+    dev, writes = fake
+    dev.set_key("space", True)
+    dev.set_key("up", True)
+    assert dev.held == {"space", "up"}
+    dev.release_all()
+    assert dev.held == set()
+    ev = [e for e in _events(writes) if e[0] == elfkey.EV_KEY]
+    assert (elfkey.EV_KEY, elfkey.KEYS["space"], 0) in ev
+    assert (elfkey.EV_KEY, elfkey.KEYS["up"], 0) in ev
+
+
+# --- The daemon loop itself, with a fake /dev/uinput ----------------------------
+
+def test_daemon_survives_bad_input_and_releases_on_quit(tmp_path, monkeypatch):
+    import threading, time as _time
+    fifo_path = tmp_path / "elfkey.fifo"
+    devpath = tmp_path / "fake-uinput"
+    devpath.write_bytes(b"")
+    fd = os.open(devpath, os.O_RDWR)
+    monkeypatch.setattr(elfkey, "FIFO", str(fifo_path))
+    monkeypatch.setattr(elfkey, "_open_device", lambda: fd)
+    t = threading.Thread(target=elfkey.main, daemon=True)
+    t.start()
+    try:
+        for _ in range(100):
+            if fifo_path.exists():
+                break
+            _time.sleep(0.05)
+        assert fifo_path.exists()
+
+        def send(line):
+            w = os.open(fifo_path, os.O_WRONLY)
+            try:
+                os.write(w, (line + "\n").encode())
+            finally:
+                os.close(w)
+
+        send("key x abc")          # the old daemon died here
+        send("down space")         # hold fast-forward...
+        send("key x 10")           # ...a good tap still works after the bad line...
+        send("quit")               # ...and quit releases the held key
+        t.join(timeout=5)
+        assert not t.is_alive()
+    finally:
+        if t.is_alive():
+            w = os.open(fifo_path, os.O_WRONLY)
+            os.write(w, b"quit\n")
+            os.close(w)
+            t.join(timeout=5)
+    data = devpath.read_bytes()
+    ev = [struct.unpack("qqHHi", data[i:i + 24])[2:] for i in range(0, len(data) - 23, 24)]
+    keys_only = [e for e in ev if e[0] == elfkey.EV_KEY]
+    assert (elfkey.EV_KEY, elfkey.KEYS["space"], 1) in keys_only
+    assert keys_only[-1] == (elfkey.EV_KEY, elfkey.KEYS["space"], 0)   # released last, by quit cleanup
+    assert (elfkey.EV_KEY, elfkey.KEYS["x"], 1) in keys_only
+
+
+# --- FIFO creation --------------------------------------------------------------
+
+def test_fifo_is_owner_only(tmp_path):
+    p = tmp_path / "elfkey.fifo"
+    elfkey._make_fifo(str(p))
+    mode = stat.S_IMODE(os.stat(p).st_mode)
+    assert mode == 0o600, oct(mode)
+    assert stat.S_ISFIFO(os.stat(p).st_mode)
+
+
+def test_fifo_recreated_if_a_plain_file_is_in_the_way(tmp_path):
+    p = tmp_path / "elfkey.fifo"
+    p.write_text("junk")
+    os.chmod(p, 0o644)
+    elfkey._make_fifo(str(p))
+    assert stat.S_ISFIFO(os.stat(p).st_mode)
+    assert stat.S_IMODE(os.stat(p).st_mode) == 0o600
