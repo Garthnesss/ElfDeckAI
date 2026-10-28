@@ -4,5 +4,5 @@
 # fail cleanly with "daemon not running", by design.
 FROM python:3.12-slim
 WORKDIR /app
-COPY elfkey.py elfpad.py elfdeckai_mcp.py ./
+COPY elfkey.py elfpad.py elfmouse.py elfdeckai_mcp.py ./
 CMD ["python3", "elfdeckai_mcp.py"]
