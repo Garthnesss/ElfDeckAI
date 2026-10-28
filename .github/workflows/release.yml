@@ -1,6 +1,9 @@
-# Publishes a release when a version tag is pushed:
+# Publishes the version in elfdeckai_mcp.__version__ to PyPI and the MCP
+# Registry, then creates the matching GitHub Release. Start it either way:
 #
-#   git tag v1.0.7 && git push origin v1.0.7
+#   * Actions -> release -> Run workflow (on main); the workflow creates
+#     the vX.Y.Z tag itself once PyPI has the package, or
+#   * git tag vX.Y.Z && git push origin vX.Y.Z
 #
 # PyPI uses Trusted Publishing and the MCP Registry uses GitHub OIDC, so
 # no tokens or secrets are stored in the repository.
@@ -9,6 +12,7 @@ name: release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,18 +24,29 @@ jobs:
   build:
     needs: tests
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
-      - name: Check the tag matches the package and server.json versions
+      - name: Check the version
+        id: version
         run: |
-          tag="${GITHUB_REF_NAME#v}"
           pkg="$(python -c 'import elfdeckai_mcp; print(elfdeckai_mcp.__version__)')"
           srv="$(python -c 'import json; print(json.load(open("server.json"))["version"])')"
-          echo "tag=$tag package=$pkg server.json=$srv"
-          [ "$tag" = "$pkg" ] && [ "$tag" = "$srv" ]
+          echo "package=$pkg server.json=$srv ref=$GITHUB_REF"
+          [ "$pkg" = "$srv" ] || { echo "server.json does not match the package version" >&2; exit 1; }
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            [ "${GITHUB_REF_NAME#v}" = "$pkg" ] || { echo "tag does not match the package version" >&2; exit 1; }
+          else
+            [ "$GITHUB_REF" = "refs/heads/main" ] || { echo "run the release from main" >&2; exit 1; }
+            if git ls-remote --exit-code --tags origin "refs/tags/v$pkg" >/dev/null; then
+              echo "v$pkg is already tagged; bump the version first" >&2; exit 1
+            fi
+          fi
+          echo "version=$pkg" >> "$GITHUB_OUTPUT"
       - run: python -m pip install build
       - run: python -m build
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -55,7 +70,7 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
 
   mcp-registry:
-    needs: pypi
+    needs: [build, pypi]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -79,12 +94,33 @@ jobs:
             "$archive"
           tar xzf "$archive" mcp-publisher
       - name: Wait for the new version to appear on PyPI
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
           for _ in $(seq 1 30); do
-            curl -fsS "https://pypi.org/pypi/elfdeckai/${GITHUB_REF_NAME#v}/json" >/dev/null && exit 0
+            curl -fsS "https://pypi.org/pypi/elfdeckai/$VERSION/json" >/dev/null && exit 0
             sleep 10
           done
-          echo "elfdeckai ${GITHUB_REF_NAME#v} not visible on PyPI after 5 minutes" >&2
+          echo "elfdeckai $VERSION not visible on PyPI after 5 minutes" >&2
           exit 1
       - run: ./mcp-publisher login github-oidc
       - run: ./mcp-publisher publish
+
+  github-release:
+    needs: [build, pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create the tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          # This version's section of CHANGELOG.md becomes the release notes.
+          awk -v v="$VERSION" '
+            /^## \[/ { if (on) exit; on = index($0, "[" v "]") > 0; next }
+            on' CHANGELOG.md > notes.md
+          gh release create "v$VERSION" --target "$GITHUB_SHA" \
+            --title "ElfDeckAI $VERSION" --notes-file notes.md
