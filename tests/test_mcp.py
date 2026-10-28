@@ -75,7 +75,7 @@ def test_handshake_and_tool_list(tmp_path):
                          "mouse_click", "mouse_down", "mouse_up",
                          "mouse_scroll", "mouse_hscroll", "key_release",
                          "mouse_release", "screenshot", "mouse_move_to",
-                         "mouse_click_at", "pad_make_player_one"}
+                         "mouse_click_at"}
         for t in r["result"]["tools"]:
             assert t["inputSchema"]["type"] == "object"
         by_name = {t["name"]: t for t in r["result"]["tools"]}
@@ -328,7 +328,7 @@ def test_screenshot_tool_returns_an_image(tmp_path):
         names = [t["name"] for t in rpc(
             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
         )["result"]["tools"]]
-        assert "screenshot" in names and len(names) == 22
+        assert "screenshot" in names and len(names) == 21
         r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                  "params": {"name": "screenshot", "arguments": {}}})
         item = r["result"]["content"][0]
@@ -647,143 +647,3 @@ def test_gamescope_failure_falls_back_to_desktop_tools(tmp_path, monkeypatch):
         assert _mcp._capture_screen() == _PNG_1PX
     finally:
         sock.close()
-
-
-
-# --- Steam controller order through CEF remote debugging -----------------------
-
-import hashlib
-import socketserver
-
-
-class FakeSteam:
-    """Just enough of Steam's CEF debugger: GET /json lists SharedJSContext,
-    and a WebSocket answers Runtime.evaluate for the controller list and
-    SwapControllerOrder (which, like Steam, swaps list positions)."""
-
-    def __init__(self, controllers, swap_by="position"):
-        self.controllers = controllers
-        self.swap_by = swap_by
-        self.swaps = []
-        steam = self
-
-        class Handler(socketserver.BaseRequestHandler):
-            def handle(self):
-                sock = self.request
-                head = b""
-                while b"\r\n\r\n" not in head:
-                    head += sock.recv(4096)
-                line = head.split(b"\r\n", 1)[0].decode()
-                if line.startswith("GET /json"):
-                    body = json.dumps([
-                        {"title": "Steam Big Picture Mode",
-                         "webSocketDebuggerUrl": "ws://127.0.0.1:%d/devtools/page/BPM" % port},
-                        {"title": "SharedJSContext",
-                         "webSocketDebuggerUrl": "ws://127.0.0.1:%d/devtools/page/SJC" % port},
-                    ]).encode()
-                    sock.sendall(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
-                                 b"Content-Length: %d\r\n\r\n%s" % (len(body), body))
-                    return
-                assert "/devtools/page/SJC" in line
-                key = [l.split(b":", 1)[1].strip() for l in head.split(b"\r\n")
-                       if l.lower().startswith(b"sec-websocket-key")][0]
-                accept = _b64.b64encode(hashlib.sha1(
-                    key + b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11").digest())
-                sock.sendall(b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
-                             b"Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + b"\r\n\r\n")
-                request = json.loads(_mcp._ws_recv_message(sock))
-                expr = request["params"]["expression"]
-                if "SwapControllerOrder" in expr:
-                    a, b = map(int, expr[expr.index("(") + 1:expr.index(")")].split(","))
-                    steam.swaps.append((a, b))
-                    # Like Steam: the list keeps its order, the player slots
-                    # (nXInputIndex) are exchanged; unknown arguments do nothing.
-                    key = "slot" if steam.swap_by == "position" else "index"
-                    hit = [x for x in steam.controllers if x[key] in (a, b)]
-                    if len(hit) == 2:
-                        hit[0]["slot"], hit[1]["slot"] = hit[1]["slot"], hit[0]["slot"]
-                    value = None
-                else:
-                    value = list(steam.controllers)
-                # an unrelated event first, then the answer, as Steam does
-                event = json.dumps({"method": "Runtime.consoleAPICalled"}).encode()
-                answer = json.dumps({"id": request["id"],
-                                     "result": {"result": {"value": value}}}).encode()
-                for payload in (event, answer):
-                    n = len(payload)
-                    head = bytes([0x81, n]) if n < 126 else bytes([0x81, 126]) + struct.pack(">H", n)
-                    sock.sendall(head + payload)
-
-        self.server = socketserver.ThreadingTCPServer(("127.0.0.1", 0), Handler)
-        port = self.server.server_address[1]
-        self.url = "http://127.0.0.1:%d" % port
-        threading.Thread(target=self.server.serve_forever, daemon=True).start()
-
-    def close(self):
-        self.server.shutdown()
-        self.server.server_close()
-
-
-import struct
-
-# As on a real Deck: list order is fixed, nXInputIndex ("slot") is the player.
-DECK = {"name": "Steam Deck Controller", "index": 15, "slot": 0, "vendor": 0x28DE, "product": 0x1205}
-ELF = {"name": "Xbox 360 controller", "index": 0, "slot": 1, "vendor": 0x045E, "product": 0x028E}
-
-
-def test_make_player_one_moves_elfpad_to_the_top(monkeypatch):
-    steam = FakeSteam([dict(DECK), dict(ELF)])
-    monkeypatch.setattr(_mcp, "CEF_URL", steam.url)
-    try:
-        content, is_error = _mcp.call_tool("pad_make_player_one", {})
-        assert not is_error, content
-        assert "now Player 1" in content[0]["text"]
-        assert {c["name"]: c["slot"] for c in steam.controllers} == {
-            "Xbox 360 controller": 0, "Steam Deck Controller": 1}
-        assert steam.swaps == [(0, 1)]
-        content, is_error = _mcp.call_tool("pad_make_player_one", {})
-        assert not is_error and "already Player 1" in content[0]["text"]
-        assert steam.swaps == [(0, 1)]                 # nothing more to do
-    finally:
-        steam.close()
-
-
-def test_make_player_one_falls_back_to_controller_indices(monkeypatch):
-    other = dict(ELF, name="Other pad", vendor=1, product=2, index=5, slot=1)
-    steam = FakeSteam([dict(DECK), other, dict(ELF, slot=2)], swap_by="index")
-    monkeypatch.setattr(_mcp, "CEF_URL", steam.url)
-    try:
-        content, is_error = _mcp.call_tool("pad_make_player_one", {})
-        assert not is_error, content
-        assert steam.controllers[2]["slot"] == 0               # ElfPad is Player 1
-        assert steam.swaps == [(0, 2), (15, 0)]
-    finally:
-        steam.close()
-
-
-def test_make_player_one_without_elfpad_explains(monkeypatch):
-    steam = FakeSteam([dict(DECK)])
-    monkeypatch.setattr(_mcp, "CEF_URL", steam.url)
-    try:
-        content, is_error = _mcp.call_tool("pad_make_player_one", {})
-        assert is_error and "does not list ElfPad" in content[0]["text"]
-        assert "Steam Deck Controller" in content[0]["text"]
-    finally:
-        steam.close()
-
-
-def test_make_player_one_without_cef_explains(monkeypatch):
-    monkeypatch.setattr(_mcp, "CEF_URL", "http://127.0.0.1:9")   # nothing listens
-    content, is_error = _mcp.call_tool("pad_make_player_one", {})
-    assert is_error and "Reorder Controllers" in content[0]["text"]
-
-
-def test_websocket_frames_round_trip_large_payloads():
-    a, b = _socket.socketpair()
-    try:
-        payload = b"x" * 70000                       # needs the 64-bit length form
-        a.sendall(_mcp._ws_frame(payload))
-        assert _mcp._ws_recv_message(b) == payload.decode()
-    finally:
-        a.close()
-        b.close()
