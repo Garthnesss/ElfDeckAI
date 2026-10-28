@@ -41,6 +41,7 @@ user-accessible (udev uaccess rule included in this repo).
 """
 import fcntl, os, signal, struct, sys, time
 
+NAME = "elfpad"
 FIFO = "/tmp/elfpad.fifo"
 DEFAULT_HOLD_MS = 120
 MAX_HOLD_MS = 5000          # a tap is a tap; use down/up for longer holds
@@ -152,7 +153,12 @@ class ElfPad:
         self.axes = {code: 0 for code in AXES}
 
     def emit(self, ev_type, code, value):
+        # One event, NO frame boundary: callers batch a whole command's
+        # events and close the frame with syn(), so a stick move or a hat
+        # change is never visible half-applied.
         os.write(self.fd, struct.pack("qqHHi", 0, 0, ev_type, code, value))
+
+    def syn(self):
         os.write(self.fd, struct.pack("qqHHi", 0, 0, EV_SYN, SYN_REPORT, 0))
 
     def _set_axis(self, code, value):
@@ -171,9 +177,11 @@ class ElfPad:
         if name in DPAD:
             (self.dpad.add if down else self.dpad.discard)(name)
             self._apply_hat()
+            self.syn()
             return
+        (self.held.add if down else self.held.discard)(name)  # state first
         self.emit(EV_KEY, BUTTONS[name], 1 if down else 0)
-        (self.held.add if down else self.held.discard)(name)
+        self.syn()
 
     def press(self, name, hold_ms):
         self.set_button(name, True)
@@ -192,6 +200,7 @@ class ElfPad:
         ax, ay = STICK_AXES[side]
         self._set_axis(ax, self._scale(x_pct, *AXES[ax]))
         self._set_axis(ay, self._scale(y_pct, *AXES[ay]))
+        self.syn()
 
     def stick_for(self, side, x_pct, y_pct, hold_ms):
         self.set_stick(side, x_pct, y_pct)
@@ -204,6 +213,7 @@ class ElfPad:
     def set_trigger(self, side, pct):
         axis = TRIGGER_AXIS[side]
         self._set_axis(axis, self._scale(pct, *AXES[axis]))
+        self.syn()
 
     def trigger_for(self, side, pct, hold_ms):
         self.set_trigger(side, pct)
@@ -222,6 +232,7 @@ class ElfPad:
         for side in TRIGGER_AXIS:
             self.set_trigger(side, 0)
         self._apply_hat()
+        self.syn()
 
     def release_all(self):
         for name in list(self.held):
@@ -231,6 +242,28 @@ class ElfPad:
                 pass
             self.held.discard(name)
         self.center()
+
+
+_LOCK_FD = None
+
+
+def _acquire_instance_lock():
+    """Single-instance guard: a second daemon would unlink the first one's
+    FIFO and orphan it, so refuse to start. flock is per open-file, and the
+    fd is held for the process lifetime; a same-process second call (the
+    test suite runs main() in threads) is a no-op."""
+    global _LOCK_FD
+    if _LOCK_FD is not None:
+        return
+    path = "/tmp/%s.lock" % NAME
+    fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        os.close(fd)
+        raise SystemExit("%s: already running (another instance holds %s)"
+                         % (NAME, path))
+    _LOCK_FD = fd
 
 
 def _open_device():
@@ -266,7 +299,12 @@ def _make_fifo(path=FIFO):
 
 
 def main():
-    fd = _open_device()
+    _acquire_instance_lock()
+    try:
+        fd = _open_device()
+    except OSError as e:
+        raise SystemExit("elfpad: cannot open /dev/uinput: %s "
+                         "(module loaded? permission? see the udev rule)" % e)
     pad = ElfPad(fd)
     print("ElfPad device created", flush=True)
 
@@ -294,6 +332,8 @@ def main():
                 except ValueError as e:
                     print("elfpad: refused: %s (%s)" % (line.strip()[:80], e), file=sys.stderr, flush=True)
                     continue
+                # audit log: every accepted command (see elfkey.py).
+                print("elfpad: %s" % line.strip()[:80], file=sys.stderr, flush=True)
                 try:
                     cmd = parsed[0]
                     if cmd == "quit":
