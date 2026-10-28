@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
 """ElfKey: a virtual keyboard on /dev/uinput for driving games and apps
 (RetroArch etc.) from a shell. Creates the device once and serves key
 commands from a FIFO so each press is a one-line shell command:
