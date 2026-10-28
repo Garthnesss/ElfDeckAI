@@ -580,19 +580,27 @@ def _screenshot():
 CEF_URL = os.environ.get("ELFDECKAI_CEF_URL", "http://127.0.0.1:8080")
 ELFPAD_IDS = (0x045E, 0x028E)   # ElfPad presents as an Xbox 360 pad
 
-_CONTROLLER_LIST_JS = """new Promise((resolve, reject) => {
-  let handle = null, done = false;
-  const finish = (fn, value) => {
-    if (done) return; done = true; clearTimeout(timer);
-    if (handle) handle.unregister();
-    fn(value);
-  };
-  const timer = setTimeout(() => finish(reject, new Error("Steam sent no controller list")), 3000);
-  handle = SteamClient.Input.RegisterForControllerListChanges(list => finish(resolve,
-    list.map(c => ({name: c.strName, index: c.nControllerIndex,
-                    vendor: c.unVendorID, product: c.unProductID}))));
-  if (done) handle.unregister();
-})"""
+# Current Steam keeps the list in its UI's ControllerStore; older builds only
+# offered SteamClient.Input.RegisterForControllerListChanges. nXInputIndex is
+# the player slot (0 = Player 1). Fields are copied out one by one because
+# some (unCapabilities) are BigInts, which cannot be returned as JSON.
+_CONTROLLER_LIST_JS = """(() => {
+  const brief = c => ({name: c.strName, index: c.nControllerIndex, slot: c.nXInputIndex,
+                       vendor: c.unVendorID, product: c.unProductID});
+  const store = window.ControllerStore;
+  if (store && store.m_controllerList) return Array.from(store.m_controllerList, brief);
+  return new Promise((resolve, reject) => {
+    let handle = null, done = false;
+    const finish = (fn, value) => {
+      if (done) return; done = true; clearTimeout(timer);
+      if (handle) handle.unregister();
+      fn(value);
+    };
+    const timer = setTimeout(() => finish(reject, new Error("Steam sent no controller list")), 3000);
+    handle = SteamClient.Input.RegisterForControllerListChanges(list => finish(resolve, list.map(brief)));
+    if (done) handle.unregister();
+  });
+})()"""
 
 
 def _ws_frame(payload, opcode=0x1):
@@ -696,7 +704,11 @@ def _cef_evaluate(expression, timeout=8.0):
 
 
 def _steam_controllers():
-    return _cef_evaluate(_CONTROLLER_LIST_JS) or []
+    """Steam's controllers in player order (Player 1 first)."""
+    controllers = _cef_evaluate(_CONTROLLER_LIST_JS) or []
+    if all(isinstance(c.get("slot"), int) for c in controllers):
+        controllers.sort(key=lambda c: c["slot"])
+    return controllers
 
 
 def _describe_order(controllers):
@@ -722,8 +734,8 @@ def make_elfpad_player_one():
                            % _describe_order(before))
     if pos == 0:
         return "ElfPad is already Player 1. Order: %s" % _describe_order(before)
-    # The swap's arguments are positions in Steam's list on current clients;
-    # if that did not move ElfPad, try the controllers' own indices.
+    # SwapControllerOrder's arguments have been player positions; if that
+    # does not move ElfPad, try the controllers' own indices.
     attempts = [(0, pos)]
     a, b = before[0].get("index"), before[pos].get("index")
     if isinstance(a, int) and isinstance(b, int) and (a, b) != (0, pos):
@@ -731,11 +743,14 @@ def make_elfpad_player_one():
     after = before
     for first, second in attempts:
         _cef_evaluate("SteamClient.Input.SwapControllerOrder(%d, %d)" % (first, second))
-        time.sleep(0.3)
-        after = _steam_controllers()
-        if _elfpad_position(after) == 0:
-            return ("ElfPad is now Player 1. Order: %s (was: %s)"
-                    % (_describe_order(after), _describe_order(before)))
+        for _ in range(8):                 # Steam updates its list asynchronously
+            time.sleep(0.25)
+            after = _steam_controllers()
+            if _elfpad_position(after) == 0:
+                return ("ElfPad is now Player 1. Order: %s (was: %s)"
+                        % (_describe_order(after), _describe_order(before)))
+            if after != before:
+                break                      # something changed, but not that
     raise RuntimeError("Steam did not move ElfPad to the top. Order now: %s. "
                        "Use Steam > Controller Settings > Reorder Controllers."
                        % _describe_order(after))
