@@ -227,6 +227,31 @@ def tools_list():
         for name, desc, props, required in TOOLS]}
 
 
+def _ensure_graphical_env():
+    """Fill in the graphical-session variables an SSH-launched server lacks.
+
+    A server started from an MCP client over SSH inherits no WAYLAND_DISPLAY
+    or DISPLAY, and capture tools abort without them. The systemd user
+    manager knows the real values (it started the session), so import the
+    missing ones from `systemctl --user show-environment`. No-op when a
+    display variable is already set or systemd is unavailable.
+    """
+    if os.environ.get("WAYLAND_DISPLAY") or os.environ.get("DISPLAY"):
+        return
+    try:
+        out = subprocess.run(["systemctl", "--user", "show-environment"],
+                             capture_output=True, text=True, timeout=5)
+    except Exception:
+        return
+    for line in (out.stdout or "").splitlines():
+        key, sep, value = line.partition("=")
+        if sep and value and key in ("WAYLAND_DISPLAY", "DISPLAY",
+                                     "DBUS_SESSION_BUS_ADDRESS",
+                                     "XDG_RUNTIME_DIR") \
+                and key not in os.environ:
+            os.environ[key] = value
+
+
 def _screenshot_png():
     """PNG bytes of the screen of the machine this server runs on.
 
@@ -237,6 +262,7 @@ def _screenshot_png():
     RuntimeError listing every failure when no method works, so the
     caller learns WHY instead of getting a black box.
     """
+    _ensure_graphical_env()
     errors = []
     fd, tmp = tempfile.mkstemp(suffix=".png")
     os.close(fd)
@@ -346,7 +372,7 @@ def handle(msg):
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.5"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.6"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
