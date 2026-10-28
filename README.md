@@ -5,53 +5,88 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 
-**Virtual keyboard, gamepad and mouse for AI agents on Linux and the Steam Deck.**
+**Let an AI play games on your Steam Deck.**
 
 <!-- mcp-name: io.github.Garthnesss/elfdeckai -->
 
-ElfDeckAI lets an AI agent operate a real Linux machine through its input
-devices. Three small daemons create virtual devices on `/dev/uinput`, and
-an MCP server exposes them, together with a screenshot tool, as tools any
-MCP client can call:
+ElfDeckAI gives an AI assistant such as Claude a virtual controller,
+keyboard and mouse on your Steam Deck, plus the ability to see the screen.
+The AI looks at the game, decides what to do, and presses the buttons
+itself. It works in both Gaming Mode and Desktop Mode, and on other Linux
+machines too.
 
-- **ElfKey**: a virtual keyboard
-- **ElfPad**: a virtual Xbox 360-class gamepad (buttons, analog triggers,
-  two sticks, D-pad)
-- **ElfMouse**: a virtual mouse (relative pointer, buttons, wheel)
+## Start here: Steam Deck (about 5 minutes)
 
-Applications, games, Steam Input and the compositor see these as ordinary
-hardware. Unlike emulator-scripting approaches, nothing depends on a
-particular emulator or game: ElfDeckAI has been used to play Pokémon
-FireRed in RetroArch on a physical Steam Deck from the intro through the
-first rival battle, with the agent seeing only screenshots and acting only
-through ElfKey. See [notes/driving.md](notes/driving.md) for what was learned.
+You need a Steam Deck, and a PC on the same Wi-Fi with an AI app that
+supports MCP, such as [Claude Desktop](https://claude.ai/download).
 
-The daemons and server are single-file Python programs that use only the
-standard library.
-
-## Quick start: Steam Deck
-
-On the Deck, switch to Desktop Mode, open Konsole and run:
+**1. Install on the Deck.** Switch the Deck to Desktop Mode (Steam button →
+Power → Switch to Desktop), open **Konsole**, and paste:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/install-on-deck.sh | sh
 ```
 
-The installer works entirely inside your home directory (no sudo):
+At the end it prints the Deck's IP address. Keep it for step 3.
 
-1. installs the `elfdeckai` package for your user,
-2. installs and starts `elfkey`, `elfpad` and `elfmouse` as systemd user
-   services,
-3. checks that all three virtual devices are present, and
-4. prints the MCP configuration for your PC and the commands to enable SSH.
+**2. Turn on SSH on the Deck** (once), so your PC can reach it. In the same
+Konsole window:
 
-It is safe to re-run; it upgrades in place.
+```sh
+passwd                            # choose a password for the Deck, if you haven't
+sudo systemctl enable --now sshd
+```
 
-For a guided setup, give [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md) to your AI
-assistant. It is written for an assistant to follow and walks through the
-Deck side, the PC side and troubleshooting.
+**3. Connect your PC.** On the PC, paste one line. It asks for the Deck's IP
+address and its password (once), then sets everything up, including
+Claude Desktop.
 
-## Quick start: any Linux machine
+- **Windows** (in PowerShell):
+  ```powershell
+  irm https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.ps1 | iex
+  ```
+- **Mac or Linux** (in Terminal):
+  ```sh
+  curl -fsSL https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.sh | sh
+  ```
+
+**4. Try it.** Restart Claude Desktop and ask: *"Take a screenshot of my
+Steam Deck."* When you see your Deck's screen, start a game and ask the AI
+to play.
+
+**Tips**
+
+- Turn-based games, RPGs, puzzles and menus work best. The AI needs a
+  second or more per move, so fast action games are out of reach.
+- In Gaming Mode, if a game ignores the AI's controller, ask the AI to make
+  its controller **Player 1**. It knows how, using Steam's Reorder
+  Controllers menu.
+- Something not working? Give [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md) to
+  your AI and ask it to help. It covers setup and troubleshooting step by
+  step.
+
+## How it works
+
+Three small programs on the Deck create virtual input devices through the
+Linux kernel's `/dev/uinput`, so games and Steam see them as real hardware:
+
+- **ElfKey**: a virtual keyboard
+- **ElfPad**: a virtual Xbox 360-class gamepad (buttons, analog triggers,
+  two sticks, D-pad)
+- **ElfMouse**: a virtual mouse, which can also click an exact point on
+  the screen
+
+A fourth program, an MCP server, exposes them, together with a screenshot
+tool, as tools any MCP client can call. Your PC's AI app starts that server
+on the Deck over SSH. Nothing depends on a particular game or emulator:
+ElfDeckAI has played Pokémon FireRed in RetroArch on a physical Steam Deck,
+from the intro through the first rival battle, with the agent seeing only
+screenshots. See [notes/driving.md](notes/driving.md) for what was learned.
+
+Everything is single-file Python using only the standard library, and the
+Deck install needs no sudo.
+
+## Other Linux machines
 
 ```sh
 pip install elfdeckai
@@ -106,17 +141,19 @@ Running on the same machine as the daemons:
 {"mcpServers": {"elfdeckai": {"command": "elfdeckai-mcp"}}}
 ```
 
-Running on a Steam Deck from an AI client on your PC, over SSH:
+Running on a Steam Deck from an AI client on your PC, over SSH (the
+`setup-pc` scripts in [Start here](#start-here-steam-deck-about-5-minutes)
+write this for you):
 
 ```json
 {"mcpServers": {"elfdeckai": {
     "command": "ssh",
-    "args": ["deck@DECK-IP-ADDRESS", "/home/deck/.local/bin/elfdeckai-mcp"]}}}
+    "args": ["-i", "~/.ssh/elfdeckai_ed25519", "-o", "IdentitiesOnly=yes",
+             "-o", "BatchMode=yes", "deck@DECK-IP-ADDRESS", ".local/bin/elfdeckai-mcp"]}}}
 ```
 
-This needs key-based SSH login from the PC to the Deck, because the MCP
-client cannot answer a password prompt; [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md)
-covers the setup. Without pip, use
+It logs in with an SSH key, because the MCP client cannot answer a password
+prompt. Without pip, use
 `"command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]`.
 
 Every tool call is validated against the tool's schema and the daemon's
