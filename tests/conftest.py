@@ -18,3 +18,4 @@ def _load(name):
 
 elfkey = _load("elfkey")
 elfpad = _load("elfpad")
+elfmouse = _load("elfmouse")
