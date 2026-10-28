@@ -1,1 +1,103 @@
-IiIiVGhlIE1DUCBzZXJ2ZXI6IHByb3RvY29sIGhhbmRzaGFrZSwgdG9vbCBsaXN0aW5nLCBhbmQgdG9vbCBjYWxscyB0aGF0CmxhbmQgb24gKGZha2UpIGRhZW1vbiBGSUZPcy4gUnVucyB0aGUgcmVhbCBzZXJ2ZXIgYXMgYSBzdWJwcm9jZXNzIGFuZApzcGVha3MgcmF3IEpTT04tUlBDIGF0IGl0LCBleGFjdGx5IGxpa2UgYW4gTUNQIGNsaWVudCB3b3VsZC4iIiIKaW1wb3J0IGpzb24KaW1wb3J0IG9zCmltcG9ydCBzdWJwcm9jZXNzCmltcG9ydCBzeXMKaW1wb3J0IHRocmVhZGluZwoKZnJvbSBjb25mdGVzdCBpbXBvcnQgUk9PVAoKCmRlZiBfc2VydmVyKHRtcF9wYXRoKToKICAgIGtleV9maWZvID0gc3RyKHRtcF9wYXRoIC8gImtleS5maWZvIikKICAgIHBhZF9maWZvID0gc3RyKHRtcF9wYXRoIC8gInBhZC5maWZvIikKICAgIG9zLm1rZmlmbyhrZXlfZmlmbykKICAgIG9zLm1rZmlmbyhwYWRfZmlmbykKICAgIHJlY2VpdmVkID0gW10KCiAgICBkZWYgZHJhaW4ocGF0aCk6CiAgICAgICAgIyBPX1JEV1IgKGxpa2UgdGhlIGRhZW1vbnMgdGhlbXNlbHZlcyk6IHRoZSBvcGVuIG5ldmVyIGJsb2NrcyBhbmQKICAgICAgICAjIHRoZSBGSUZPIGNvdW50cyBhcyBoYXZpbmcgYSByZWFkZXIgZnJvbSB0aGUgc3RhcnQsIHNvIHRoZSBzZXJ2ZXIncwogICAgICAgICMgbm9uYmxvY2tpbmcgd3JpdGVyLW9wZW4gY2FuJ3QgcmFjZSB1cy4KICAgICAgICB3aXRoIG9zLmZkb3Blbihvcy5vcGVuKHBhdGgsIG9zLk9fUkRXUiksICJyIikgYXMgZjoKICAgICAgICAgICAgZm9yIGxpbmUgaW4gZjoKICAgICAgICAgICAgICAgIHJlY2VpdmVkLmFwcGVuZCgocGF0aCwgbGluZS5zdHJpcCgpKSkKCiAgICB0aHJlYWRzID0gW3RocmVhZGluZy5UaHJlYWQodGFyZ2V0PWRyYWluLCBhcmdzPShwLCksIGRhZW1vbj1UcnVlKQogICAgICAgICAgICAgICBmb3IgcCBpbiAoa2V5X2ZpZm8sIHBhZF9maWZvKV0KICAgIGZvciB0IGluIHRocmVhZHM6CiAgICAgICAgdC5zdGFydCgpCiAgICBlbnYgPSB7Kipvcy5lbnZpcm9uLCAiRUxGS0VZX0ZJRk8iOiBrZXlfZmlmbywgIkVMRlBBRF9GSUZPIjogcGFkX2ZpZm99CiAgICBwcm9jID0gc3VicHJvY2Vzcy5Qb3BlbigKICAgICAgICBbc3lzLmV4ZWN1dGFibGUsIHN0cihST09UIC8gImVsZmRlY2thaV9tY3AucHkiKV0sCiAgICAgICAgc3RkaW49c3VicHJvY2Vzcy5QSVBFLCBzdGRvdXQ9c3VicHJvY2Vzcy5QSVBFLCB0ZXh0PVRydWUsIGVudj1lbnYpCgogICAgZGVmIHJwYyhtc2cpOgogICAgICAgIHByb2Muc3RkaW4ud3JpdGUoanNvbi5kdW1wcyhtc2cpICsgIlxuIikKICAgICAgICBwcm9jLnN0ZGluLmZsdXNoKCkKICAgICAgICByZXR1cm4ganNvbi5sb2Fkcyhwcm9jLnN0ZG91dC5yZWFkbGluZSgpKQoKICAgIHJldHVybiBwcm9jLCBycGMsIHJlY2VpdmVkLCBrZXlfZmlmbywgcGFkX2ZpZm8KCgpkZWYgdGVzdF9oYW5kc2hha2VfYW5kX3Rvb2xfbGlzdCh0bXBfcGF0aCk6CiAgICBwcm9jLCBycGMsICpfID0gX3NlcnZlcih0bXBfcGF0aCkKICAgIHRyeToKICAgICAgICByID0gcnBjKHsianNvbnJwYyI6ICIyLjAiLCAiaWQiOiAxLCAibWV0aG9kIjogImluaXRpYWxpemUiLCAicGFyYW1zIjoge319KQogICAgICAgIGFzc2VydCByWyJyZXN1bHQiXVsic2VydmVySW5mbyJdWyJuYW1lIl0gPT0gImVsZmRlY2thaSIKICAgICAgICBhc3NlcnQgclsicmVzdWx0Il1bInByb3RvY29sVmVyc2lvbiJdCiAgICAgICAgcHJvYy5zdGRpbi53cml0ZShqc29uLmR1bXBzKAogICAgICAgICAgICB7Impzb25ycGMiOiAiMi4wIiwgIm1ldGhvZCI6ICJub3RpZmljYXRpb25zL2luaXRpYWxpemVkIn0pICsgIlxuIikKICAgICAgICBwcm9jLnN0ZGluLmZsdXNoKCkKICAgICAgICByID0gcnBjKHsianNvbnJwYyI6ICIyLjAiLCAiaWQiOiAyLCAibWV0aG9kIjogInRvb2xzL2xpc3QifSkKICAgICAgICBuYW1lcyA9IHt0WyJuYW1lIl0gZm9yIHQgaW4gclsicmVzdWx0Il1bInRvb2xzIl19CiAgICAgICAgYXNzZXJ0IG5hbWVzID09IHsia2V5X3RhcCIsICJrZXlfZG93biIsICJrZXlfdXAiLCAicGFkX3ByZXNzIiwKICAgICAgICAgICAgICAgICAgICAgICAgICJwYWRfZG93biIsICJwYWRfdXAiLCAicGFkX3N0aWNrIiwgInBhZF90cmlnZ2VyIiwKICAgICAgICAgICAgICAgICAgICAgICAgICJwYWRfY2VudGVyIiwgInBhZF9yZXNldCJ9CiAgICAgICAgZm9yIHQgaW4gclsicmVzdWx0Il1bInRvb2xzIl06CiAgICAgICAgICAgIGFzc2VydCB0WyJpbnB1dFNjaGVtYSJdWyJ0eXBlIl0gPT0gIm9iamVjdCIKICAgIGZpbmFsbHk6CiAgICAgICAgcHJvYy5raWxsKCkKCgpkZWYgdGVzdF90b29sX2NhbGxzX3JlYWNoX3RoZV9maWZvcyh0bXBfcGF0aCk6CiAgICBwcm9jLCBycGMsIHJlY2VpdmVkLCBrZXlfZmlmbywgcGFkX2ZpZm8gPSBfc2VydmVyKHRtcF9wYXRoKQogICAgdHJ5OgogICAgICAgIHJwYyh7Impzb25ycGMiOiAiMi4wIiwgImlkIjogMSwgIm1ldGhvZCI6ICJpbml0aWFsaXplIiwgInBhcmFtcyI6IHt9fSkKICAgICAgICByID0gcnBjKHsianNvbnJwYyI6ICIyLjAiLCAiaWQiOiAyLCAibWV0aG9kIjogInRvb2xzL2NhbGwiLAogICAgICAgICAgICAgICAgICJwYXJhbXMiOiB7Im5hbWUiOiAia2V5X3RhcCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJndW1lbnRzIjogeyJrZXkiOiAieCIsICJob2xkX21zIjogMTUwfX19KQogICAgICAgIGFzc2VydCByWyJyZXN1bHQiXVsiaXNFcnJvciJdIGlzIEZhbHNlCiAgICAgICAgciA9IHJwYyh7Impzb25ycGMiOiAiMi4wIiwgImlkIjogMywgIm1ldGhvZCI6ICJ0b29scy9jYWxsIiwKICAgICAgICAgICAgICAgICAicGFyYW1zIjogeyJuYW1lIjogInBhZF9zdGljayIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJndW1lbnRzIjogeyJzaWRlIjogImxlZnQiLCAieCI6IDYwLCAieSI6IC0yMH19fSkKICAgICAgICBhc3NlcnQgclsicmVzdWx0Il1bImlzRXJyb3IiXSBpcyBGYWxzZQogICAgICAgIHIgPSBycGMoeyJqc29ucnBjIjogIjIuMCIsICJpZCI6IDQsICJtZXRob2QiOiAidG9vbHMvY2FsbCIsCiAgICAgICAgICAgICAgICAgInBhcmFtcyI6IHsibmFtZSI6ICJwYWRfY2VudGVyIiwgImFyZ3VtZW50cyI6IHt9fX0pCiAgICAgICAgYXNzZXJ0IHJbInJlc3VsdCJdWyJpc0Vycm9yIl0gaXMgRmFsc2UKICAgIGZpbmFsbHk6CiAgICAgICAgcHJvYy5raWxsKCkKICAgIGdvdCA9IHsob3MucGF0aC5iYXNlbmFtZShwKSwgbGluZSkgZm9yIHAsIGxpbmUgaW4gcmVjZWl2ZWR9CiAgICBhc3NlcnQgKG9zLnBhdGguYmFzZW5hbWUoa2V5X2ZpZm8pLCAia2V5IHggMTUwIikgaW4gZ290CiAgICBhc3NlcnQgKG9zLnBhdGguYmFzZW5hbWUocGFkX2ZpZm8pLCAic3RpY2sgbGVmdCA2MCAtMjAiKSBpbiBnb3QKICAgIGFzc2VydCAob3MucGF0aC5iYXNlbmFtZShwYWRfZmlmbyksICJjZW50ZXIiKSBpbiBnb3QKCgpkZWYgdGVzdF9iYWRfY2FsbHNfYXJlX3Rvb2xfZXJyb3JzX25vdF9jcmFzaGVzKHRtcF9wYXRoKToKICAgIHByb2MsIHJwYywgKl8gPSBfc2VydmVyKHRtcF9wYXRoKQogICAgdHJ5OgogICAgICAgIHJwYyh7Impzb25ycGMiOiAiMi4wIiwgImlkIjogMSwgIm1ldGhvZCI6ICJpbml0aWFsaXplIiwgInBhcmFtcyI6IHt9fSkKICAgICAgICByID0gcnBjKHsianNvbnJwYyI6ICIyLjAiLCAiaWQiOiAyLCAibWV0aG9kIjogInRvb2xzL2NhbGwiLAogICAgICAgICAgICAgICAgICJwYXJhbXMiOiB7Im5hbWUiOiAia2V5X3RhcCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJndW1lbnRzIjogeyJrZXkiOiAieCIsICJob2xkX21zIjogOTk5OTk5OTk5fX19KQogICAgICAgIGFzc2VydCByWyJyZXN1bHQiXVsiaXNFcnJvciJdIGlzIFRydWUKICAgICAgICBhc3NlcnQgInJlZnVzZWQiIGluIHJbInJlc3VsdCJdWyJjb250ZW50Il1bMF1bInRleHQiXQogICAgICAgIHIgPSBycGMoeyJqc29ucnBjIjogIjIuMCIsICJpZCI6IDMsICJtZXRob2QiOiAidG9vbHMvY2FsbCIsCiAgICAgICAgICAgICAgICAgInBhcmFtcyI6IHsibmFtZSI6ICJub3BlIiwgImFyZ3VtZW50cyI6IHt9fX0pCiAgICAgICAgYXNzZXJ0IHJbInJlc3VsdCJdWyJpc0Vycm9yIl0gaXMgVHJ1ZQogICAgICAgIHIgPSBycGMoeyJqc29ucnBjIjogIjIuMCIsICJpZCI6IDQsICJtZXRob2QiOiAidG9vbHMvbGlzdCJ9KQogICAgICAgIGFzc2VydCAidG9vbHMiIGluIHJbInJlc3VsdCJdICAgICAgICAgICMgc2VydmVyIHN0aWxsIGFsaXZlCiAgICBmaW5hbGx5OgogICAgICAgIHByb2Mua2lsbCgpCg==
+"""The MCP server: protocol handshake, tool listing, and tool calls that
+land on (fake) daemon FIFOs. Runs the real server as a subprocess and
+speaks raw JSON-RPC at it, exactly like an MCP client would."""
+import json
+import os
+import subprocess
+import sys
+import threading
+
+from conftest import ROOT
+
+
+def _server(tmp_path):
+    key_fifo = str(tmp_path / "key.fifo")
+    pad_fifo = str(tmp_path / "pad.fifo")
+    os.mkfifo(key_fifo)
+    os.mkfifo(pad_fifo)
+    received = []
+
+    def drain(path):
+        # O_RDWR (like the daemons themselves): the open never blocks and
+        # the FIFO counts as having a reader from the start, so the server's
+        # nonblocking writer-open can't race us.
+        with os.fdopen(os.open(path, os.O_RDWR), "r") as f:
+            for line in f:
+                received.append((path, line.strip()))
+
+    threads = [threading.Thread(target=drain, args=(p,), daemon=True)
+               for p in (key_fifo, pad_fifo)]
+    for t in threads:
+        t.start()
+    env = {**os.environ, "ELFKEY_FIFO": key_fifo, "ELFPAD_FIFO": pad_fifo}
+    proc = subprocess.Popen(
+        [sys.executable, str(ROOT / "elfdeckai_mcp.py")],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+
+    def rpc(msg):
+        proc.stdin.write(json.dumps(msg) + "\n")
+        proc.stdin.flush()
+        return json.loads(proc.stdout.readline())
+
+    return proc, rpc, received, key_fifo, pad_fifo
+
+
+def test_handshake_and_tool_list(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        r = rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        assert r["result"]["serverInfo"]["name"] == "elfdeckai"
+        assert r["result"]["protocolVersion"]
+        proc.stdin.write(json.dumps(
+            {"jsonrpc": "2.0", "method": "notifications/initialized"}) + "\n")
+        proc.stdin.flush()
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
+        names = {t["name"] for t in r["result"]["tools"]}
+        assert names == {"key_tap", "key_down", "key_up", "pad_press",
+                         "pad_down", "pad_up", "pad_stick", "pad_trigger",
+                         "pad_center", "pad_reset"}
+        for t in r["result"]["tools"]:
+            assert t["inputSchema"]["type"] == "object"
+    finally:
+        proc.kill()
+
+
+def test_tool_calls_reach_the_fifos(tmp_path):
+    proc, rpc, received, key_fifo, pad_fifo = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                 "params": {"name": "key_tap",
+                            "arguments": {"key": "x", "hold_ms": 150}}})
+        assert r["result"]["isError"] is False
+        r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                 "params": {"name": "pad_stick",
+                            "arguments": {"side": "left", "x": 60, "y": -20}}})
+        assert r["result"]["isError"] is False
+        r = rpc({"jsonrpc": "2.0", "id": 4, "method": "tools/call",
+                 "params": {"name": "pad_center", "arguments": {}}})
+        assert r["result"]["isError"] is False
+    finally:
+        proc.kill()
+    got = {(os.path.basename(p), line) for p, line in received}
+    assert (os.path.basename(key_fifo), "key x 150") in got
+    assert (os.path.basename(pad_fifo), "stick left 60 -20") in got
+    assert (os.path.basename(pad_fifo), "center") in got
+
+
+def test_bad_calls_are_tool_errors_not_crashes(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                 "params": {"name": "key_tap",
+                            "arguments": {"key": "x", "hold_ms": 999999999}}})
+        assert r["result"]["isError"] is True
+        assert "refused" in r["result"]["content"][0]["text"]
+        r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                 "params": {"name": "nope", "arguments": {}}})
+        assert r["result"]["isError"] is True
+        r = rpc({"jsonrpc": "2.0", "id": 4, "method": "tools/list"})
+        assert "tools" in r["result"]          # server still alive
+    finally:
+        proc.kill()
