@@ -13,6 +13,12 @@ Claude, Hermes, your own agent — as native tool calls:
     mouse_up    {button}                pad_reset   {}
     mouse_scroll  {clicks}              key_release {}   (unstick everything)
     mouse_hscroll {clicks}              mouse_release {} (unstick everything)
+    screenshot  {}                      (a PNG of the screen — the eyes)
+
+The screenshot tool captures the screen of the machine this server runs
+on (KDE/KWin on a Steam Deck in Desktop Mode, Spectacle, grim, or X11
+tools — whichever exists) and returns it as an MCP image, so an agent
+needs no video stream to play: look, press, look again.
 
 The server holds no state and injects nothing itself: every call is
 validated by the daemons' own parse_command() (the exact contract the
@@ -31,10 +37,15 @@ FIFO paths default to the daemons' own constants and can be overridden
 with ELFKEY_FIFO / ELFPAD_FIFO environment variables (used by the tests).
 Standard library only, like everything else in this repo.
 """
+import base64
 import errno
 import json
 import os
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import elfkey
@@ -165,6 +176,12 @@ TOOLS = [
     ("mouse_release", "Release every held mouse button at once — the unstick "
                       "button, for when a caller died mid-drag.",
      {}, []),
+    ("screenshot", "Capture the screen of the machine this server runs on "
+                   "(e.g. a Steam Deck in Desktop Mode) and return it as a "
+                   "PNG image — the eyes to match the hands. Look, press, "
+                   "look again; no video stream needed. Requires a "
+                   "graphical session on the server's machine.",
+     {}, []),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
 TOOL_SCHEMAS = {name: (props, required) for name, _d, props, required in TOOLS}
@@ -210,36 +227,109 @@ def tools_list():
         for name, desc, props, required in TOOLS]}
 
 
+def _screenshot_png():
+    """PNG bytes of the screen of the machine this server runs on.
+
+    Tries, in order: Spectacle (KDE — a Steam Deck in Desktop Mode), grim
+    (wlroots), the X11 tools scrot and ImageMagick import, then KWin's
+    D-Bus screenshot as a fallback (bounded to ~8 s: on some Plasma
+    versions it waits on an interactive authorization prompt). Raises
+    RuntimeError listing every failure when no method works, so the
+    caller learns WHY instead of getting a black box.
+    """
+    errors = []
+    fd, tmp = tempfile.mkstemp(suffix=".png")
+    os.close(fd)
+    try:
+        for label, cmd in (("spectacle", ["spectacle", "-b", "-n", "-o", tmp]),
+                           ("grim", ["grim", tmp]),
+                           ("scrot", ["scrot", "-o", tmp]),
+                           ("import", ["import", "-window", "root", tmp])):
+            if not shutil.which(cmd[0]):
+                continue
+            try:
+                r = subprocess.run(cmd, capture_output=True, text=True,
+                                   timeout=20)
+                if r.returncode == 0 and os.path.getsize(tmp) > 0:
+                    with open(tmp, "rb") as f:
+                        return f.read()
+                errors.append("%s: %s" % (
+                    label, (r.stderr or "").strip() or
+                    "exit %d" % r.returncode))
+            except Exception as e:
+                errors.append("%s: %s" % (label, e))
+    finally:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+    if shutil.which("dbus-send"):
+        try:
+            out = subprocess.run(
+                ["dbus-send", "--session", "--print-reply",
+                 "--reply-timeout=8000",
+                 "--dest=org.kde.KWin", "/Screenshot",
+                 "org.kde.KWin.Screenshot.screenshotFullscreen"],
+                capture_output=True, text=True, timeout=12)
+            m = re.search(r'string "([^"]+\.png)"', out.stdout or "")
+            if m and os.path.getsize(m.group(1)) > 0:
+                with open(m.group(1), "rb") as f:
+                    return f.read()
+            errors.append("KWin D-Bus: %s" % (
+                (out.stderr or "").strip() or "no screenshot path returned"))
+        except Exception as e:
+            errors.append("KWin D-Bus: %s" % e)
+    raise RuntimeError(
+        "screenshot failed — no working capture method here (the server "
+        "needs a graphical session on its own machine). Tried: %s"
+        % ("; ".join(errors) or "no capture tools installed"))
+
+
+def _text(s):
+    return [{"type": "text", "text": s}]
+
+
 def call_tool(name, args):
-    """Returns (text, is_error)."""
+    """Returns (content_items, is_error)."""
     if name not in TOOL_NAMES:
-        return "unknown tool: %s" % name, True
+        return _text("unknown tool: %s" % name), True
     try:
         _validate_args(name, args)
     except ValueError as e:
-        return "invalid arguments: %s" % e, True
+        return _text("invalid arguments: %s" % e), True
+    if name == "screenshot":
+        try:
+            data = _screenshot_png()
+        except RuntimeError as e:
+            return _text(str(e)), True
+        return [{"type": "image",
+                 "data": base64.b64encode(data).decode(),
+                 "mimeType": "image/png"}], False
     try:
         if name.startswith("key_"):
-            return _send(KEY_FIFO, _key_line(name, args), elfkey.parse_command), False
+            return _text(_send(KEY_FIFO, _key_line(name, args),
+                               elfkey.parse_command)), False
         if name.startswith("mouse_"):
-            return _send(MOUSE_FIFO, _mouse_line(name, args),
-                         elfmouse.parse_command), False
-        return _send(PAD_FIFO, _pad_line(name, args), elfpad.parse_command), False
+            return _text(_send(MOUSE_FIFO, _mouse_line(name, args),
+                               elfmouse.parse_command)), False
+        return _text(_send(PAD_FIFO, _pad_line(name, args),
+                           elfpad.parse_command)), False
     except ValueError as e:
-        return "refused: %s" % e, True
+        return _text("refused: %s" % e), True
     except KeyError as e:
-        return "missing argument: %s" % e, True
+        return _text("missing argument: %s" % e), True
     except OSError as e:
         if e.errno in (errno.ENXIO, errno.ENOENT):
-            return "daemon not running (no reader on the FIFO)", True
+            return _text("daemon not running (no reader on the FIFO)"), True
         if e.errno == errno.EAGAIN:
-            return "daemon busy (FIFO full) — retry shortly", True
+            return _text("daemon busy (FIFO full) — retry shortly"), True
         if e.errno in (errno.EACCES, errno.EPERM):
-            return ("permission denied on the FIFO — the daemons create it "
-                    "owner-only (0600); run this server as the same user"), True
+            return _text("permission denied on the FIFO — the daemons "
+                         "create it owner-only (0600); run this server as "
+                         "the same user"), True
         if e.errno == errno.EPIPE:
-            return "daemon disconnected (broken pipe)", True
-        return "FIFO I/O error: %s" % (e.strerror or e), True
+            return _text("daemon disconnected (broken pipe)"), True
+        return _text("FIFO I/O error: %s" % (e.strerror or e)), True
 
 
 def handle(msg):
@@ -256,7 +346,7 @@ def handle(msg):
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.4"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.5"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
@@ -268,11 +358,12 @@ def handle(msg):
             return {"jsonrpc": "2.0", "id": msg_id, "error": {
                 "code": -32602, "message": "invalid params: tools/call needs a "
                 "string name and an object arguments"}}
-        text, is_error = call_tool(params.get("name"), params.get("arguments") or {})
+        content, is_error = call_tool(params.get("name"),
+                                      params.get("arguments") or {})
         if notification:
             return None  # the call executed; a notification is never answered
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
-            "content": [{"type": "text", "text": text}], "isError": is_error}}
+            "content": content, "isError": is_error}}
     if msg_id is None:
         return None  # notification (e.g. notifications/initialized)
     return {"jsonrpc": "2.0", "id": msg_id,
