@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
 """ElfPad: a virtual gamepad on /dev/uinput, driven by one-line shell
 commands over a FIFO — the gamepad sibling of ElfKey.
 
