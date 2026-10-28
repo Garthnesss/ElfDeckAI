@@ -1,1 +1,179 @@
-IiIiRWxmUGFkIHRlc3RzOiB0aGUgcGFyc2VfY29tbWFuZCBjb250cmFjdCBhbmQgdGhlIHBhZCdzIGV2ZW50IG91dHB1dCwKZXhlcmNpc2VkIGFnYWluc3QgYSBjYXB0dXJlZCBmYWtlIHVpbnB1dCBmZCAobm8gL2Rldi91aW5wdXQgbmVlZGVkKS4iIiIKaW1wb3J0IG9zCmltcG9ydCBzdHJ1Y3QKaW1wb3J0IHRpbWUKCmltcG9ydCBweXRlc3QKCmZyb20gY29uZnRlc3QgaW1wb3J0IFJPT1QsIGVsZnBhZAoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIHBhcnNlX2NvbW1hbmQ6IHRoZSBpbnB1dCBjb250cmFjdAoKQHB5dGVzdC5tYXJrLnBhcmFtZXRyaXplKCJsaW5lLHdhbnQiLCBbCiAgICAoInByZXNzIGEiLCAoInByZXNzIiwgImEiLCAxMjApKSwKICAgICgicHJlc3MgYSAyNTAiLCAoInByZXNzIiwgImEiLCAyNTApKSwKICAgICgicHJlc3MgdXAiLCAoInByZXNzIiwgInVwIiwgMTIwKSksICAgICAgICAgICAgIyBkcGFkIGlzIGEgdmFsaWQgImJ1dHRvbiIKICAgICgicHJlc3MgZ3VpZGUgMCIsICgicHJlc3MiLCAiZ3VpZGUiLCAwKSksCiAgICAoImRvd24gbGIiLCAoImRvd24iLCAibGIiLCBOb25lKSksCiAgICAoInVwIHN0YXJ0IiwgKCJ1cCIsICJzdGFydCIsIE5vbmUpKSwKICAgICgic3RpY2sgbGVmdCA2MCAtMjAiLCAoInN0aWNrIiwgImxlZnQiLCA2MCwgLTIwLCBOb25lKSksCiAgICAoInN0aWNrIHJpZ2h0IDAgMCA4MDAiLCAoInN0aWNrIiwgInJpZ2h0IiwgMCwgMCwgODAwKSksCiAgICAoInRyaWdnZXIgbGVmdCAwIiwgKCJ0cmlnZ2VyIiwgImxlZnQiLCAwLCBOb25lKSksCiAgICAoInRyaWdnZXIgcmlnaHQgMTAwIDMwMCIsICgidHJpZ2dlciIsICJyaWdodCIsIDEwMCwgMzAwKSksCiAgICAoImNlbnRlciIsICgiY2VudGVyIiwpKSwKICAgICgicmVzZXQiLCAoInJlc2V0IiwpKSwKICAgICgicXVpdCIsICgicXVpdCIsKSksCl0pCmRlZiB0ZXN0X3BhcnNlX29rKGxpbmUsIHdhbnQpOgogICAgYXNzZXJ0IGVsZnBhZC5wYXJzZV9jb21tYW5kKGxpbmUpID09IHdhbnQKCgpAcHl0ZXN0Lm1hcmsucGFyYW1ldHJpemUoImxpbmUiLCBbCiAgICAiIiwgImJvZ3VzIiwgInByZXNzIiwgInByZXNzIG5vcGUiLCAicHJlc3MgYSBhYmMiLCAicHJlc3MgYSAtMSIsCiAgICAicHJlc3MgYSA1MDAxIiwgInByZXNzIGEgMSAyIiwgImRvd24iLCAiZG93biBhIGV4dHJhIiwgInVwIG5vcGUiLAogICAgInN0aWNrIiwgInN0aWNrIG1pZGRsZSAwIDAiLCAic3RpY2sgbGVmdCAxMDEgMCIsICJzdGljayBsZWZ0IDAgLTEwMSIsCiAgICAic3RpY2sgbGVmdCB4IDAiLCAic3RpY2sgbGVmdCAwIDAgOTk5OTk5OTk5IiwgInRyaWdnZXIiLCAidHJpZ2dlciB1cCA1IiwKICAgICJ0cmlnZ2VyIGxlZnQgLTEiLCAidHJpZ2dlciBsZWZ0IDEwMSIsICJ0cmlnZ2VyIGxlZnQgYWJjIiwKICAgICJjZW50ZXIgbm93IiwgInJlc2V0IGFsbCIsICJxdWl0IG5vdyIsICJ4IiAqIDIwMSwKXSkKZGVmIHRlc3RfcGFyc2VfcmVmdXNlZChsaW5lKToKICAgIHdpdGggcHl0ZXN0LnJhaXNlcyhWYWx1ZUVycm9yKToKICAgICAgICBlbGZwYWQucGFyc2VfY29tbWFuZChsaW5lKQoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIERldmljZSBiZWhhdmlvdXIgYWdhaW5zdCBhIGNhcHR1cmVkIGZkCgpkZWYgX2V2ZW50cyhtb25rZXlwYXRjaCk6CiAgICAiIiJQYXRjaCBvcy53cml0ZSBpbnNpZGUgZWxmcGFkOyByZXR1cm4gYSBsaXN0IG9mICh0eXBlLCBjb2RlLCB2YWx1ZSkKICAgIHdpdGggU1lOIGV2ZW50cyBmaWx0ZXJlZCBvdXQuIiIiCiAgICBzZWVuID0gW10KCiAgICBkZWYgZmFrZV93cml0ZShmZCwgZGF0YSk6CiAgICAgICAgZm9yIF9zZWMsIF91c2VjLCB0eXAsIGNvZGUsIHZhbHVlIGluIHN0cnVjdC5pdGVyX3VucGFjaygicXFISGkiLCBkYXRhKToKICAgICAgICAgICAgaWYgdHlwICE9IGVsZnBhZC5FVl9TWU46CiAgICAgICAgICAgICAgICBzZWVuLmFwcGVuZCgodHlwLCBjb2RlLCB2YWx1ZSkpCiAgICAgICAgcmV0dXJuIGxlbihkYXRhKQoKICAgIG1vbmtleXBhdGNoLnNldGF0dHIoZWxmcGFkLm9zLCAid3JpdGUiLCBmYWtlX3dyaXRlKQogICAgcmV0dXJuIHNlZW4KCgpkZWYgdGVzdF9wcmVzc19idXR0b25fZXZlbnRzKG1vbmtleXBhdGNoKToKICAgIHNlZW4gPSBfZXZlbnRzKG1vbmtleXBhdGNoKQogICAgcGFkID0gZWxmcGFkLkVsZlBhZChmZD1vYmplY3QoKSkKICAgIHBhZC5wcmVzcygiYSIsIDApCiAgICBhc3NlcnQgc2VlbiA9PSBbKGVsZnBhZC5FVl9LRVksIGVsZnBhZC5CVVRUT05TWyJhIl0sIDEpLAogICAgICAgICAgICAgICAgICAgIChlbGZwYWQuRVZfS0VZLCBlbGZwYWQuQlVUVE9OU1siYSJdLCAwKV0KICAgIGFzc2VydCBwYWQuaGVsZCA9PSBzZXQoKQoKCmRlZiB0ZXN0X3ByZXNzX2RwYWRfdXNlc19oYXRfYXhpcyhtb25rZXlwYXRjaCk6CiAgICBzZWVuID0gX2V2ZW50cyhtb25rZXlwYXRjaCkKICAgIHBhZCA9IGVsZnBhZC5FbGZQYWQoZmQ9b2JqZWN0KCkpCiAgICBwYWQucHJlc3MoInVwIiwgMCkKICAgIHBhZC5wcmVzcygicmlnaHQiLCAwKQogICAgYXNzZXJ0IHNlZW4gPT0gWyhlbGZwYWQuRVZfQUJTLCAweDExLCAtMSksIChlbGZwYWQuRVZfQUJTLCAweDExLCAwKSwKICAgICAgICAgICAgICAgICAgICAoZWxmcGFkLkVWX0FCUywgMHgxMCwgMSksIChlbGZwYWQuRVZfQUJTLCAweDEwLCAwKV0KCgpkZWYgdGVzdF9kcGFkX29wcG9zaW5nX2RpcmVjdGlvbnNfY2FuY2VsKG1vbmtleXBhdGNoKToKICAgIHNlZW4gPSBfZXZlbnRzKG1vbmtleXBhdGNoKQogICAgcGFkID0gZWxmcGFkLkVsZlBhZChmZD1vYmplY3QoKSkKICAgIHBhZC5zZXRfYnV0dG9uKCJsZWZ0IiwgVHJ1ZSkKICAgIHBhZC5zZXRfYnV0dG9uKCJyaWdodCIsIFRydWUpICAgICAgICAgICMgbGVmdCtyaWdodCBoZWxkIC0+IGhhdCBYIGJhY2sgdG8gMAogICAgYXNzZXJ0IHNlZW5bLTFdID09IChlbGZwYWQuRVZfQUJTLCAweDEwLCAwKQogICAgcGFkLnJlbGVhc2VfYWxsKCkKICAgIGFzc2VydCBwYWQuZHBhZCA9PSBzZXQoKSBhbmQgcGFkLmF4ZXNbMHgxMF0gPT0gMAoKCmRlZiB0ZXN0X3N0aWNrX3NjYWxpbmdfYW5kX2NlbnRlcihtb25rZXlwYXRjaCk6CiAgICBzZWVuID0gX2V2ZW50cyhtb25rZXlwYXRjaCkKICAgIHBhZCA9IGVsZnBhZC5FbGZQYWQoZmQ9b2JqZWN0KCkpCiAgICBwYWQuc2V0X3N0aWNrKCJsZWZ0IiwgMTAwLCAtMTAwKQogICAgYXNzZXJ0IChlbGZwYWQuRVZfQUJTLCAweDAwLCAzMjc2NykgaW4gc2VlbgogICAgYXNzZXJ0IChlbGZwYWQuRVZfQUJTLCAweDAxLCAtMzI3NjgpIGluIHNlZW4gICAjIGZ1bGwgbmVnYXRpdmUgZGVmbGVjdGlvbiA9IGF4aXMgbWluCiAgICBwYWQuc2V0X3N0aWNrKCJsZWZ0IiwgNTAsIDApCiAgICBhc3NlcnQgcGFkLmF4ZXNbMHgwMF0gPT0gMTYzODQgICAgICAgICAjIHJvdW5kKDUwJSBvZiAzMjc2NykKICAgIHNlZW4uY2xlYXIoKQogICAgcGFkLmNlbnRlcigpCiAgICBhc3NlcnQgcGFkLmF4ZXNbMHgwMF0gPT0gMCBhbmQgcGFkLmF4ZXNbMHgwMV0gPT0gMAogICAgYXNzZXJ0IChlbGZwYWQuRVZfQUJTLCAweDAwLCAwKSBpbiBzZWVuCgoKZGVmIHRlc3RfdHJpZ2dlcl9zY2FsaW5nKG1vbmtleXBhdGNoKToKICAgIHNlZW4gPSBfZXZlbnRzKG1vbmtleXBhdGNoKQogICAgcGFkID0gZWxmcGFkLkVsZlBhZChmZD1vYmplY3QoKSkKICAgIHBhZC5zZXRfdHJpZ2dlcigicmlnaHQiLCAxMDApCiAgICBwYWQuc2V0X3RyaWdnZXIoImxlZnQiLCA1MCkKICAgIGFzc2VydCBwYWQuYXhlc1sweDA1XSA9PSAyNTUgYW5kIHBhZC5heGVzWzB4MDJdID09IDEyOAogICAgYXNzZXJ0IChlbGZwYWQuRVZfQUJTLCAweDA1LCAyNTUpIGluIHNlZW4KCgpkZWYgdGVzdF9yZWxlYXNlX2FsbF9yZWxlYXNlc19idXR0b25zX2FuZF9heGVzKG1vbmtleXBhdGNoKToKICAgIHNlZW4gPSBfZXZlbnRzKG1vbmtleXBhdGNoKQogICAgcGFkID0gZWxmcGFkLkVsZlBhZChmZD1vYmplY3QoKSkKICAgIHBhZC5zZXRfYnV0dG9uKCJ4IiwgVHJ1ZSkKICAgIHBhZC5zZXRfc3RpY2soInJpZ2h0IiwgLTQwLCA5MCkKICAgIHBhZC5zZXRfdHJpZ2dlcigibGVmdCIsIDcwKQogICAgc2Vlbi5jbGVhcigpCiAgICBwYWQucmVsZWFzZV9hbGwoKQogICAgYXNzZXJ0IChlbGZwYWQuRVZfS0VZLCBlbGZwYWQuQlVUVE9OU1sieCJdLCAwKSBpbiBzZWVuCiAgICBhc3NlcnQgcGFkLmhlbGQgPT0gc2V0KCkKICAgIGFzc2VydCBhbGwodiA9PSAwIGZvciB2IGluIHBhZC5heGVzLnZhbHVlcygpKQoKCmRlZiB0ZXN0X3RpbWVkX3N0aWNrX3JlY2VudGVyc19ldmVuX3doZW5faW50ZXJydXB0ZWQobW9ua2V5cGF0Y2gpOgogICAgX2V2ZW50cyhtb25rZXlwYXRjaCkKICAgIHBhZCA9IGVsZnBhZC5FbGZQYWQoZmQ9b2JqZWN0KCkpCiAgICBtb25rZXlwYXRjaC5zZXRhdHRyKGVsZnBhZC50aW1lLCAic2xlZXAiLCBsYW1iZGEgczogKF8gZm9yIF8gaW4gKCkpLnRocm93KEtleWJvYXJkSW50ZXJydXB0KCkpKQogICAgd2l0aCBweXRlc3QucmFpc2VzKEtleWJvYXJkSW50ZXJydXB0KToKICAgICAgICBwYWQuc3RpY2tfZm9yKCJsZWZ0IiwgODAsIDgwLCAxMDApCiAgICBhc3NlcnQgcGFkLmF4ZXNbMHgwMF0gPT0gMCBhbmQgcGFkLmF4ZXNbMHgwMV0gPT0gMAoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFdob2xlLWRhZW1vbiBiZWhhdmlvdXIgdGhyb3VnaCBtYWluKCkKCmRlZiB0ZXN0X2RhZW1vbl9sb29wX3N1cnZpdmVzX2JhZF9pbnB1dF9hbmRfcXVpdF9yZWxlYXNlcyh0bXBfcGF0aCwgbW9ua2V5cGF0Y2gpOgogICAgIiIiSW4tcHJvY2VzcyBtYWluKCkgKHRocmVhZCk6IGEgbWFsZm9ybWVkIGxpbmUgbXVzdCBub3Qga2lsbCB0aGUgbG9vcCwKICAgIGFuZCBxdWl0IG11c3QgcmVsZWFzZSBhIGhlbGQgYnV0dG9uIGFuZCByZWNlbnRlciBhIGRlZmxlY3RlZCBzdGljay4iIiIKICAgIGltcG9ydCB0aHJlYWRpbmcKCiAgICBmaWZvX3BhdGggPSBzdHIodG1wX3BhdGggLyAiZWxmcGFkLmZpZm8iKQogICAgbW9ua2V5cGF0Y2guc2V0YXR0cihlbGZwYWQsICJGSUZPIiwgZmlmb19wYXRoKQogICAgbW9ua2V5cGF0Y2guc2V0YXR0cihlbGZwYWQsICJfb3Blbl9kZXZpY2UiLCBsYW1iZGE6IG9zLm9wZW4oIi9kZXYvbnVsbCIsIG9zLk9fV1JPTkxZKSkKICAgIG1vbmtleXBhdGNoLnNldGF0dHIoZWxmcGFkLmZjbnRsLCAiaW9jdGwiLCBsYW1iZGEgKmEsICoqazogMCkKICAgIHNlZW4gPSBfZXZlbnRzKG1vbmtleXBhdGNoKQoKICAgIHQgPSB0aHJlYWRpbmcuVGhyZWFkKHRhcmdldD1lbGZwYWQubWFpbiwgZGFlbW9uPVRydWUpCiAgICB0LnN0YXJ0KCkKICAgIGZvciBfIGluIHJhbmdlKDEwMCk6CiAgICAgICAgaWYgb3MucGF0aC5leGlzdHMoZmlmb19wYXRoKToKICAgICAgICAgICAgYnJlYWsKICAgICAgICB0aW1lLnNsZWVwKDAuMDUpCiAgICB3aXRoIG9wZW4oZmlmb19wYXRoLCAidyIpIGFzIGY6CiAgICAgICAgZi53cml0ZSgicHJlc3MgYSBub3BlXG4iKSAgICAgICAgICAgICAgIyByZWZ1c2VkOiBiYWQgaG9sZCB2YWx1ZQogICAgICAgIGYud3JpdGUoImRvd24gYlxuIikgICAgICAgICAgICAgICAgICAgICMgaGVsZC4uLgogICAgICAgIGYud3JpdGUoInN0aWNrIGxlZnQgMTAwIDBcbiIpICAgICAgICAgICMgZGVmbGVjdGVkLi4uCiAgICAgICAgZi53cml0ZSgicXVpdFxuIikgICAgICAgICAgICAgICAgICAgICAgIyAuLi5ib3RoIHVuZG9uZSBvbiB0aGUgd2F5IG91dAogICAgdC5qb2luKHRpbWVvdXQ9MTApCiAgICBhc3NlcnQgbm90IHQuaXNfYWxpdmUoKQogICAgYXNzZXJ0IChlbGZwYWQuRVZfS0VZLCBlbGZwYWQuQlVUVE9OU1siYiJdLCAxKSBpbiBzZWVuCiAgICAjIHJlbGVhc2VfYWxsKCkgb24gc2h1dGRvd246IGJ1dHRvbiB1cCBmaXJzdCwgdGhlbiB0aGUgc3RpY2sgcmVjZW50ZXJzLgogICAgYXNzZXJ0IHNlZW5bLTI6XSA9PSBbKGVsZnBhZC5FVl9LRVksIGVsZnBhZC5CVVRUT05TWyJiIl0sIDApLAogICAgICAgICAgICAgICAgICAgICAgICAgKGVsZnBhZC5FVl9BQlMsIDB4MDAsIDApXQoKCmRlZiB0ZXN0X2RhZW1vbl9yZWxlYXNlc19oZWxkX2J1dHRvbl9vbl9xdWl0KCk6CiAgICAiIiJTYW1lIGd1YXJhbnRlZSBhcyBhYm92ZSwgYXNzZXJ0ZWQgb24gRWxmUGFkJ3MgcmVhbCBhdGV4aXQgcGF0aCBpbgogICAgbWFpbigpIGJ5IGRyaXZpbmcgdGhlIG1vZHVsZSBpbi1wcm9jZXNzIGlzIHJhY3k7IGluc3RlYWQgdGhlIHVuaXQtbGV2ZWwKICAgIHByb29mIGlzIHJlbGVhc2VfYWxsKCkgYWJvdmUsIGFuZCBtYWluKCkncyBmaW5hbGx5IGNhbGxzIGl0IOKAlCBjaGVja2VkCiAgICBoZXJlIGJ5IHNvdXJjZSBpbnNwZWN0aW9uIHNvIGEgcmVmYWN0b3IgY2FuJ3Qgc2lsZW50bHkgZHJvcCBpdC4iIiIKICAgIHNyYyA9IChST09UIC8gImVsZnBhZC5weSIpLnJlYWRfdGV4dCgpCiAgICBmaW5hbGx5X2Jsb2NrID0gc3JjLnJzcGxpdCgiZmluYWxseToiLCAxKVsxXQogICAgYXNzZXJ0ICJyZWxlYXNlX2FsbCgpIiBpbiBmaW5hbGx5X2Jsb2NrCiAgICBhc3NlcnQgIlVJX0RFVl9ERVNUUk9ZIiBpbiBmaW5hbGx5X2Jsb2NrCg==
+"""ElfPad tests: the parse_command contract and the pad's event output,
+exercised against a captured fake uinput fd (no /dev/uinput needed)."""
+import os
+import struct
+import time
+
+import pytest
+
+from conftest import ROOT, elfpad
+
+
+# ----------------------------------------------------------------------
+# parse_command: the input contract
+
+@pytest.mark.parametrize("line,want", [
+    ("press a", ("press", "a", 120)),
+    ("press a 250", ("press", "a", 250)),
+    ("press up", ("press", "up", 120)),            # dpad is a valid "button"
+    ("press guide 0", ("press", "guide", 0)),
+    ("down lb", ("down", "lb", None)),
+    ("up start", ("up", "start", None)),
+    ("stick left 60 -20", ("stick", "left", 60, -20, None)),
+    ("stick right 0 0 800", ("stick", "right", 0, 0, 800)),
+    ("trigger left 0", ("trigger", "left", 0, None)),
+    ("trigger right 100 300", ("trigger", "right", 100, 300)),
+    ("center", ("center",)),
+    ("reset", ("reset",)),
+    ("quit", ("quit",)),
+])
+def test_parse_ok(line, want):
+    assert elfpad.parse_command(line) == want
+
+
+@pytest.mark.parametrize("line", [
+    "", "bogus", "press", "press nope", "press a abc", "press a -1",
+    "press a 5001", "press a 1 2", "down", "down a extra", "up nope",
+    "stick", "stick middle 0 0", "stick left 101 0", "stick left 0 -101",
+    "stick left x 0", "stick left 0 0 999999999", "trigger", "trigger up 5",
+    "trigger left -1", "trigger left 101", "trigger left abc",
+    "center now", "reset all", "quit now", "x" * 201,
+])
+def test_parse_refused(line):
+    with pytest.raises(ValueError):
+        elfpad.parse_command(line)
+
+
+# ----------------------------------------------------------------------
+# Device behaviour against a captured fd
+
+def _events(monkeypatch):
+    """Patch os.write inside elfpad; return a list of (type, code, value)
+    with SYN events filtered out."""
+    seen = []
+
+    def fake_write(fd, data):
+        for _sec, _usec, typ, code, value in struct.iter_unpack("qqHHi", data):
+            if typ != elfpad.EV_SYN:
+                seen.append((typ, code, value))
+        return len(data)
+
+    monkeypatch.setattr(elfpad.os, "write", fake_write)
+    return seen
+
+
+def test_press_button_events(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.press("a", 0)
+    assert seen == [(elfpad.EV_KEY, elfpad.BUTTONS["a"], 1),
+                    (elfpad.EV_KEY, elfpad.BUTTONS["a"], 0)]
+    assert pad.held == set()
+
+
+def test_press_dpad_uses_hat_axis(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.press("up", 0)
+    pad.press("right", 0)
+    assert seen == [(elfpad.EV_ABS, 0x11, -1), (elfpad.EV_ABS, 0x11, 0),
+                    (elfpad.EV_ABS, 0x10, 1), (elfpad.EV_ABS, 0x10, 0)]
+
+
+def test_dpad_opposing_directions_cancel(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.set_button("left", True)
+    pad.set_button("right", True)          # left+right held -> hat X back to 0
+    assert seen[-1] == (elfpad.EV_ABS, 0x10, 0)
+    pad.release_all()
+    assert pad.dpad == set() and pad.axes[0x10] == 0
+
+
+def test_stick_scaling_and_center(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.set_stick("left", 100, -100)
+    assert (elfpad.EV_ABS, 0x00, 32767) in seen
+    assert (elfpad.EV_ABS, 0x01, -32768) in seen   # full negative deflection = axis min
+    pad.set_stick("left", 50, 0)
+    assert pad.axes[0x00] == 16384         # round(50% of 32767)
+    seen.clear()
+    pad.center()
+    assert pad.axes[0x00] == 0 and pad.axes[0x01] == 0
+    assert (elfpad.EV_ABS, 0x00, 0) in seen
+
+
+def test_trigger_scaling(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.set_trigger("right", 100)
+    pad.set_trigger("left", 50)
+    assert pad.axes[0x05] == 255 and pad.axes[0x02] == 128
+    assert (elfpad.EV_ABS, 0x05, 255) in seen
+
+
+def test_release_all_releases_buttons_and_axes(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.set_button("x", True)
+    pad.set_stick("right", -40, 90)
+    pad.set_trigger("left", 70)
+    seen.clear()
+    pad.release_all()
+    assert (elfpad.EV_KEY, elfpad.BUTTONS["x"], 0) in seen
+    assert pad.held == set()
+    assert all(v == 0 for v in pad.axes.values())
+
+
+def test_timed_stick_recenters_even_when_interrupted(monkeypatch):
+    _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    monkeypatch.setattr(elfpad.time, "sleep", lambda s: (_ for _ in ()).throw(KeyboardInterrupt()))
+    with pytest.raises(KeyboardInterrupt):
+        pad.stick_for("left", 80, 80, 100)
+    assert pad.axes[0x00] == 0 and pad.axes[0x01] == 0
+
+
+# ----------------------------------------------------------------------
+# Whole-daemon behaviour through main()
+
+def test_daemon_loop_survives_bad_input_and_quit_releases(tmp_path, monkeypatch):
+    """In-process main() (thread): a malformed line must not kill the loop,
+    and quit must release a held button and recenter a deflected stick."""
+    import threading
+
+    fifo_path = str(tmp_path / "elfpad.fifo")
+    monkeypatch.setattr(elfpad, "FIFO", fifo_path)
+    monkeypatch.setattr(elfpad, "_open_device", lambda: os.open("/dev/null", os.O_WRONLY))
+    monkeypatch.setattr(elfpad.fcntl, "ioctl", lambda *a, **k: 0)
+    seen = _events(monkeypatch)
+
+    t = threading.Thread(target=elfpad.main, daemon=True)
+    t.start()
+    for _ in range(100):
+        if os.path.exists(fifo_path):
+            break
+        time.sleep(0.05)
+    with open(fifo_path, "w") as f:
+        f.write("press a nope\n")              # refused: bad hold value
+        f.write("down b\n")                    # held...
+        f.write("stick left 100 0\n")          # deflected...
+        f.write("quit\n")                      # ...both undone on the way out
+    t.join(timeout=10)
+    assert not t.is_alive()
+    assert (elfpad.EV_KEY, elfpad.BUTTONS["b"], 1) in seen
+    # release_all() on shutdown: button up first, then the stick recenters.
+    assert seen[-2:] == [(elfpad.EV_KEY, elfpad.BUTTONS["b"], 0),
+                         (elfpad.EV_ABS, 0x00, 0)]
+
+
+def test_daemon_releases_held_button_on_quit():
+    """Same guarantee as above, asserted on ElfPad's real atexit path in
+    main() by driving the module in-process is racy; instead the unit-level
+    proof is release_all() above, and main()'s finally calls it — checked
+    here by source inspection so a refactor can't silently drop it."""
+    src = (ROOT / "elfpad.py").read_text()
+    finally_block = src.rsplit("finally:", 1)[1]
+    assert "release_all()" in finally_block
+    assert "UI_DEV_DESTROY" in finally_block
