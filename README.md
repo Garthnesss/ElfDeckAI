@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
-![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-138%20passing-brightgreen.svg)
 
 **ElfdeckAI gives an LLM agent hands on real hardware.** Three tiny
 daemons turn one-line commands — from a shell, a script, or native
@@ -57,9 +57,9 @@ command: `"command": "elfdeckai-mcp"` (details below).
 
 `elfdeckai_mcp.py` is a zero-dependency [Model Context
 Protocol](https://modelcontextprotocol.io) server that exposes all
-three devices as 16 native tools — `key_tap`, `pad_press`, `pad_stick`,
-`mouse_move`, `mouse_click`, `pad_reset`, … — for Claude, Hermes, or
-any MCP client:
+three devices as 18 native tools — `key_tap`, `pad_press`, `pad_stick`,
+`mouse_move`, `mouse_click`, `pad_reset`, `key_release`, … — for Claude,
+Hermes, or any MCP client:
 
 ```json
 {"mcpServers": {"elfdeckai": {"command": "elfdeckai-mcp"}}}
@@ -81,6 +81,7 @@ and a stopped daemon fails the call cleanly instead of hanging your agent.
 |---|---|
 | `key <name> [ms]` | tap a key (default 120 ms) |
 | `down <name>` / `up <name>` | hold / release |
+| `release` | let go of every held key at once (the unstick command) |
 | `quit` | release everything and exit |
 
 Keys: `a`–`z`, `0`–`9`, arrows, `enter`, `esc`, `space`, `tab`, `shift`,
@@ -111,6 +112,7 @@ standard way with zero configuration.
 | `click <btn> [ms]` | click `left` / `right` / `middle` |
 | `down <btn>` / `up <btn>` | hold / release a button — drags are `down`, `move`, `up` |
 | `scroll <ticks>` / `hscroll <ticks>` | wheel / horizontal wheel (positive = up / right) |
+| `release` | let go of every held button at once (the unstick command) |
 | `quit` | release any held button and exit |
 
 Movement is relative, like a real mouse — pair it with screenshots and
@@ -133,6 +135,17 @@ itself can't be talked into a bad state. So:
   inputs are tracked; on `quit`, SIGTERM or SIGINT, everything is
   released and recentered before the device is destroyed.
 - **The FIFO is owner-only (0600).** Only your user can inject input.
+- **The server survives garbage.** Malformed JSON and non-object
+  requests get proper JSON-RPC protocol errors; one bad line — or a
+  caller dying mid-hold — can't wedge the session. `key_release`,
+  `mouse_release` and `pad_reset` are the always-available unstick
+  buttons.
+- **Scope honesty:** these are real OS-level input devices. They type
+  and click in whatever window has focus — a game, but equally a
+  terminal or a browser. ElfdeckAI makes that input *un-mess-up-able*
+  (bounded, validated, releasable); deciding *where* an agent may act
+  is the operator's call. Run agents you trust, on sessions you'd
+  watch.
 
 ## 🤔 Why not…?
 
@@ -164,7 +177,7 @@ systemctl --user enable --now elfkey.service elfpad.service elfmouse.service
 ## Tests
 
 ```sh
-python3 -m pytest    # 133 tests: all three input contracts, device behaviour
+python3 -m pytest    # 138 tests: all three input contracts, device behaviour
                      # against a fake uinput, and the MCP server spoken
                      # to over real JSON-RPC
 ```
