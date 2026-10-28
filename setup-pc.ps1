@@ -61,21 +61,37 @@
         $remote = "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && " +
                   "chmod 600 ~/.ssh/authorized_keys && " +
                   "(grep -qxF '$pub' ~/.ssh/authorized_keys || echo '$pub' >> ~/.ssh/authorized_keys)"
-        # Not IdentitiesOnly here: on a Deck that only accepts keys, a key this
-        # PC already uses (or its ssh-agent) gets the new key in; otherwise
-        # ssh falls back to the Deck's password.
-        $copy = @('-i', $Key, '-o', 'StrictHostKeyChecking=accept-new', '-o', 'ConnectTimeout=8')
-        $output = & ssh @copy $Target $remote 2>&1 | ForEach-Object { "$_" }
-        if ($LASTEXITCODE -ne 0) {
+        $remote += " && echo ELFDECKAI-KEY-ADDED"
+        # Each attempt only counts when the marker comes back, i.e. the command
+        # really ran on the Deck. An agent key can log in yet be limited to one
+        # command there (a forced command), which stops ssh before it tries any
+        # other key, so this PC's own key files are then tried one by one.
+        $attempts = @(, @())                                  # usual keys, agent, password
+        Get-ChildItem (Split-Path $Key) -Filter 'id_*' -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Extension -ne '.pub' } |
+            ForEach-Object { $attempts += , @('-i', $_.FullName, '-o', 'IdentitiesOnly=yes', '-o', 'IdentityAgent=none') }
+        $attempts += , @('-o', 'PubkeyAuthentication=no')     # password only
+        $log = @()
+        $refused = $false
+        $added = $false
+        foreach ($extra in $attempts) {
+            $output = & ssh @extra -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 $Target $remote 2>&1 |
+                ForEach-Object { "$_" }
+            if ("$output" -match 'ELFDECKAI-KEY-ADDED') { $added = $true; break }
+            $log += $output
+            if ($LASTEXITCODE -ne 255 -and "$output".Trim()) { $refused = $true }
+        }
+        if (-not $added) {
             Write-Host ''
-            if ("$output" -match 'Permission denied \(publickey') {
-                Write-Host 'The Deck only accepts SSH keys, and none on this PC is accepted yet.'
-                Write-Host 'Add this line to ~/.ssh/authorized_keys on the Deck (in Konsole on the'
-                Write-Host 'Deck, or from a computer that can already log in), then run this again:'
+            if ($refused -or ("$log" -match 'Permission denied')) {
+                Write-Host 'No key on this PC can add the new one to the Deck, and the Deck does not'
+                Write-Host 'accept a password. Add this line to ~/.ssh/authorized_keys on the Deck (in'
+                Write-Host 'Konsole on the Deck, or from a computer that can already log in), then run'
+                Write-Host 'this again:'
                 Write-Host ''
                 Write-Host "  $pub"
             } else {
-                $output | ForEach-Object { Write-Host "    $_" }
+                $log | ForEach-Object { Write-Host "    $_" }
                 Write-Host "Could not reach $Target. Check that:"
                 Write-Host '  - the Deck is on and on the same network, and the IP is right'
                 Write-Host "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"

@@ -14,23 +14,39 @@ pytestmark = pytest.mark.skipif(not shutil.which("ssh-keygen"),
                                 reason="needs ssh-keygen")
 
 FAKE_SSH = r'''#!/bin/sh
+# Fake Deck. Logs in with, in order: the elfdeckai key once authorized; the
+# agent (unless disabled), which may be a restricted forced-command key; a
+# key file named id_full when FULL_KEY_OK; or the password unless KEY_ONLY.
+ids="" ; agent=1 ; pubkey=1 ; batch=""
 while [ $# -gt 0 ]; do
-    case "$1" in -i|-o) shift 2;; -*) shift;; *) break;; esac
+    case "$1" in
+        -i) ids="$ids $2"; shift 2 ;;
+        -o) case "$2" in
+                IdentitiesOnly=yes|IdentityAgent=none) agent="" ;;
+                PubkeyAuthentication=no) pubkey="" ; agent="" ;;
+                BatchMode=yes) batch=1 ;;
+            esac; shift 2 ;;
+        -*) shift ;;
+        *) break ;;
+    esac
 done
 shift                                   # user@host
 cmd="${*:-true}"
 key="$(cat "$PC_HOME/.ssh/elfdeckai_ed25519.pub" 2>/dev/null)"
-if ! grep -qxF "$key" "$DECK_HOME/.ssh/authorized_keys" 2>/dev/null; then
-    case "$cmd" in
-        *authorized_keys*)                  # the copy step: password, or another key
-            if [ -n "$KEY_ONLY" ] && [ -z "$AGENT_KEY_OK" ]; then
-                echo "deck@deck: Permission denied (publickey)." >&2
-                exit 255
-            fi ;;
-        *) exit 255 ;;
+shell() { cd "$DECK_HOME" && HOME="$DECK_HOME" sh -c "$cmd"; exit $?; }
+if [ -n "$pubkey" ]; then
+    case "$ids" in *elfdeckai_ed25519*)
+        grep -qxF "$key" "$DECK_HOME/.ssh/authorized_keys" 2>/dev/null && shell ;;
     esac
+    if [ -n "$agent" ]; then
+        [ -n "$RESTRICTED_AGENT" ] && { echo '{"ok": false, "error": "bad characters"}'; exit 1; }
+        [ -n "$AGENT_KEY_OK" ] && shell
+    fi
+    case "$ids" in *id_full*) [ -n "$FULL_KEY_OK" ] && shell ;; esac
 fi
-cd "$DECK_HOME" && HOME="$DECK_HOME" sh -c "$cmd"
+[ -z "$KEY_ONLY" ] && [ -z "$batch" ] && shell   # typed the password
+echo "deck@deck: Permission denied (publickey)." >&2
+exit 255
 '''
 
 
@@ -102,6 +118,24 @@ def test_key_only_deck_without_an_accepted_key_explains(world):
     run, pc, _deck, config = world
     r = run(KEY_ONLY="1")
     assert r.returncode != 0
-    assert "only accepts SSH keys" in r.stdout
+    assert "No key on this PC can add the new one" in r.stdout
     assert (pc / ".ssh/elfdeckai_ed25519.pub").read_text().strip() in r.stdout
     assert "elfdeckai" not in json.loads(config.read_text())["mcpServers"]
+
+
+def test_restricted_agent_key_falls_back_to_the_pcs_own_key_file(world):
+    run, pc, deck, config = world
+    (pc / ".ssh").mkdir(exist_ok=True)
+    (pc / ".ssh/id_full").write_text("private key\n")
+    r = run(KEY_ONLY="1", RESTRICTED_AGENT="1", FULL_KEY_OK="1")
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "passwordless connection works" in r.stdout
+    assert "elfdeckai" in json.loads(config.read_text())["mcpServers"]
+
+
+def test_restricted_agent_key_and_nothing_else_explains(world):
+    run, pc, _deck, config = world
+    r = run(KEY_ONLY="1", RESTRICTED_AGENT="1")
+    assert r.returncode != 0
+    assert "No key on this PC can add the new one" in r.stdout
+    assert (pc / ".ssh/elfdeckai_ed25519.pub").read_text().strip() in r.stdout
