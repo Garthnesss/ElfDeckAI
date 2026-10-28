@@ -1,1 +1,328 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJFbGZQYWQ6IGEgdmlydHVhbCBnYW1lcGFkIG9uIC9kZXYvdWlucHV0LCBkcml2ZW4gYnkgb25lLWxpbmUgc2hlbGwKY29tbWFuZHMgb3ZlciBhIEZJRk8g4oCUIHRoZSBnYW1lcGFkIHNpYmxpbmcgb2YgRWxmS2V5LgoKICAgIGVjaG8gInByZXNzIGEgMTUwIiAgICAgICAgPiAvdG1wL2VsZnBhZC5maWZvICAgIyB0YXAgQSBmb3IgMTUwIG1zCiAgICBlY2hvICJkb3duIHgiICAgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgaG9sZCBYCiAgICBlY2hvICJ1cCB4IiAgICAgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgcmVsZWFzZSBYCiAgICBlY2hvICJwcmVzcyB1cCIgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgdGFwIEQtcGFkIHVwIChoYXQgYXhpcykKICAgIGVjaG8gInN0aWNrIGxlZnQgNjAgLTIwIiAgPiAvdG1wL2VsZnBhZC5maWZvICAgIyBsZWZ0IHN0aWNrIHg9NjAlIHk9LTIwJQogICAgZWNobyAic3RpY2sgcmlnaHQgMCAwIiAgICA+IC90bXAvZWxmcGFkLmZpZm8gICAjIHJlY2VudGVyIHJpZ2h0IHN0aWNrCiAgICBlY2hvICJ0cmlnZ2VyIHJpZ2h0IDgwIiAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgUlQgdG8gODAlCiAgICBlY2hvICJjZW50ZXIiICAgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgc3RpY2tzL3RyaWdnZXJzL2hhdCBuZXV0cmFsCiAgICBlY2hvICJyZXNldCIgICAgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICMgcmVsZWFzZSBldmVyeXRoaW5nCiAgICBlY2hvICJxdWl0IiAgICAgICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbwoKV2h5OiBhIGtleWJvYXJkIChFbGZLZXkpIGNvdmVycyBSZXRyb0FyY2gtc3R5bGUgZ2FtZXMsIGJ1dCBwbGVudHkgb2YgZ2FtZXMKb25seSBsaXN0ZW4gdG8gYSBnYW1lcGFkLiBFbGZQYWQgcHJlc2VudHMgYXMgYSBzdGFuZGFyZCBYYm94LTM2MC1jbGFzcyBwYWQKKFZJRCAweDA0NWUgLyBQSUQgMHgwMjhlLCBkZXZpY2UgbmFtZSAiRWxmUGFkIikgc28gU0RMLCBTdGVhbSBJbnB1dCBhbmQKUmV0cm9BcmNoIG1hcCBpdHMgYnV0dG9ucyBhbmQgYXhlcyB0aGUgc3RhbmRhcmQgd2F5IHdpdGggbm8gY29uZmlndXJhdGlvbjoKQS9CL1gvWSwgYnVtcGVycywgYW5hbG9nIHRyaWdnZXJzLCBzdGFydC9iYWNrL2d1aWRlLCBzdGljayBjbGlja3MsIHR3bwphbmFsb2cgc3RpY2tzIGFuZCBhIGhhdCBELXBhZC4KCkJ1aWx0IGZvciB0aGUgc2FtZSBqb2IgYXMgRWxmS2V5IOKAlCBnaXZpbmcgYSBwcm9ncmFtIChhbiBMTE0gYWdlbnQsIGEgdGVzdApzY3JpcHQsIGFuIGF1dG9tYXRpb24pIGhhbmRzIG9uIGEgTGludXggbWFjaGluZSDigJQgd2l0aCB0aGUgc2FtZSBzYWZldHkKcnVsZXMsIGJlY2F1c2UgdGhlIGNhbGxlciBtaWdodCBiZSBhIGxhbmd1YWdlIG1vZGVsOgoKICAqIEJhZCBpbnB1dCBuZXZlciBraWxscyB0aGUgZGFlbW9uOiBwYXJzZV9jb21tYW5kKCkgcmFpc2VzIFZhbHVlRXJyb3Igb24KICAgIGFueXRoaW5nIG1hbGZvcm1lZDsgdGhlIHNlcnZlIGxvb3AgbG9ncyB0aGUgcmVmdXNhbCBhbmQga2VlcHMgc2VydmluZy4KICAqIFRpbWVkIGhvbGRzIGFyZSBib3VuZGVkICgwLi5NQVhfSE9MRF9NUyk7IGxvbmdlciBob2xkcyB1c2UgZG93bi91cCwKICAgIHdoaWNoIHRoZSBjYWxsZXIgY29udHJvbHMuCiAgKiBOb3RoaW5nIGlzIGV2ZXIgbGVmdCBzdHVjazogdGFwcyBhbmQgdGltZWQgc3RpY2svdHJpZ2dlciBtb3ZlcyByZXN0b3JlCiAgICBpbiBhIGZpbmFsbHkgYmxvY2ssIGhlbGQgYnV0dG9ucyBhcmUgdHJhY2tlZCwgYW5kIG9uIHF1aXQgLyBTSUdURVJNIC8KICAgIFNJR0lOVCAvIGFueSBmYXRhbCBlcnJvciBldmVyeSBidXR0b24gaXMgcmVsZWFzZWQgYW5kIGV2ZXJ5IGF4aXMgaXMKICAgIHJlY2VudGVyZWQgYmVmb3JlIHRoZSBkZXZpY2UgaXMgZGVzdHJveWVkLgogICogVGhlIEZJRk8gaXMgY3JlYXRlZCAwNjAwOiBvbmx5IHRoZSBvd25pbmcgdXNlciBjYW4gaW5qZWN0IGlucHV0LgoKU3RhbmRhcmQgbGlicmFyeSBvbmx5LiBXb3JrcyBvbiBhbnkgTGludXggd2l0aCAvZGV2L3VpbnB1dCAoU3RlYW0gRGVjaywKZGVza3RvcCwgUmFzcGJlcnJ5IFBpLCBWTSk7IG5vIHJvb3QgbmVlZGVkIHdoZXJlIHRoZSB1aW5wdXQgZGV2aWNlIGlzCnVzZXItYWNjZXNzaWJsZSAodWRldiB1YWNjZXNzIHJ1bGUgaW5jbHVkZWQgaW4gdGhpcyByZXBvKS4KIiIiCmltcG9ydCBmY250bCwgb3MsIHNpZ25hbCwgc3RydWN0LCBzeXMsIHRpbWUKCkZJRk8gPSAiL3RtcC9lbGZwYWQuZmlmbyIKREVGQVVMVF9IT0xEX01TID0gMTIwCk1BWF9IT0xEX01TID0gNTAwMCAgICAgICAgICAjIGEgdGFwIGlzIGEgdGFwOyB1c2UgZG93bi91cCBmb3IgbG9uZ2VyIGhvbGRzCk1BWF9MSU5FID0gMjAwICAgICAgICAgICAgICAjIGxvbmdlciBGSUZPIGxpbmVzIGFyZSByZWZ1c2VkLCBuZXZlciBwYXJzZWQKCiMgTGludXggaW5wdXQtZXZlbnQgY29kZXMgKGluY2x1ZGUvdWFwaS9saW51eC9pbnB1dC1ldmVudC1jb2Rlcy5oKS4KRVZfU1lOLCBFVl9LRVksIEVWX0FCUywgU1lOX1JFUE9SVCA9IDAsIDEsIDMsIDAKQlVUVE9OUyA9IHsKICAgICJhIjogMHgxMzAsICJiIjogMHgxMzEsICJ4IjogMHgxMzMsICJ5IjogMHgxMzQsICAgICAgICAgICMgU09VVEgvRUFTVC9OT1JUSC9XRVNUCiAgICAibGIiOiAweDEzNiwgInJiIjogMHgxMzcsICJsMiI6IDB4MTM4LCAicjIiOiAweDEzOSwgICAgICAjIFRML1RSICsgZGlnaXRhbCBUTDIvVFIyCiAgICAic2VsZWN0IjogMHgxM0EsICJiYWNrIjogMHgxM0EsICJzdGFydCI6IDB4MTNCLAogICAgImd1aWRlIjogMHgxM0MsICJob21lIjogMHgxM0MsCiAgICAibDMiOiAweDEzRCwgInIzIjogMHgxM0UsCn0KRFBBRCA9ICgidXAiLCAiZG93biIsICJsZWZ0IiwgInJpZ2h0IikgICAgICAgICAgICAgICAgICAgICAgICMgaGF0IGF4ZXMsIG5vdCBidXR0b25zCiMgYXhpcyBjb2RlIC0+IChtaW4sIG1heCkKQVhFUyA9IHsKICAgIDB4MDA6ICgtMzI3NjgsIDMyNzY3KSwgICAjIEFCU19YICAgbGVmdCBzdGljayBYCiAgICAweDAxOiAoLTMyNzY4LCAzMjc2NyksICAgIyBBQlNfWSAgIGxlZnQgc3RpY2sgWQogICAgMHgwMjogKDAsIDI1NSksICAgICAgICAgICMgQUJTX1ogICBsZWZ0IHRyaWdnZXIKICAgIDB4MDM6ICgtMzI3NjgsIDMyNzY3KSwgICAjIEFCU19SWCAgcmlnaHQgc3RpY2sgWAogICAgMHgwNDogKC0zMjc2OCwgMzI3NjcpLCAgICMgQUJTX1JZICByaWdodCBzdGljayBZCiAgICAweDA1OiAoMCwgMjU1KSwgICAgICAgICAgIyBBQlNfUlogIHJpZ2h0IHRyaWdnZXIKICAgIDB4MTA6ICgtMSwgMSksICAgICAgICAgICAjIEFCU19IQVQwWAogICAgMHgxMTogKC0xLCAxKSwgICAgICAgICAgICMgQUJTX0hBVDBZCn0KU1RJQ0tfQVhFUyA9IHsibGVmdCI6ICgweDAwLCAweDAxKSwgInJpZ2h0IjogKDB4MDMsIDB4MDQpfQpUUklHR0VSX0FYSVMgPSB7ImxlZnQiOiAweDAyLCAicmlnaHQiOiAweDA1fQpVSV9TRVRfRVZCSVQsIFVJX1NFVF9LRVlCSVQsIFVJX1NFVF9BQlNCSVQgPSAxMDc0MDI1ODI4LCAxMDc0MDI1ODI5LCAxMDc0MDI1ODMxClVJX0RFVl9DUkVBVEUsIFVJX0RFVl9ERVNUUk9ZID0gMjE3NjEsIDIxNzYyCgoKY2xhc3MgX1N0b3BwZWQoRXhjZXB0aW9uKToKICAgICIiIlJhaXNlZCBieSB0aGUgc2lnbmFsIGhhbmRsZXIgc28gYSBibG9ja2VkIHJlYWQvc2xlZXAgdW53aW5kcyBhdCBvbmNlCiAgICAoYSBoYW5kbGVyIHRoYXQgbWVyZWx5IHNldHMgYSBmbGFnIHdvdWxkIGJlIHN3YWxsb3dlZCBieSBQRVAgNDc1IHJldHJpZXMpLiIiIgoKCmRlZiBfYm91bmRlZF9pbnQodGV4dCwgbG8sIGhpLCB3aGF0KToKICAgIHRyeToKICAgICAgICB2YWx1ZSA9IGludCh0ZXh0KQogICAgZXhjZXB0IFZhbHVlRXJyb3I6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiJXMgbXVzdCBiZSBhIHdob2xlIG51bWJlcjogJXIiICUgKHdoYXQsIHRleHQpKQogICAgaWYgbm90IGxvIDw9IHZhbHVlIDw9IGhpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIiVzIG11c3QgYmUgJWQuLiVkOiAlZCIgJSAod2hhdCwgbG8sIGhpLCB2YWx1ZSkpCiAgICByZXR1cm4gdmFsdWUKCgpkZWYgX2hvbGRfYXJnKGFyZ3MsIGkpOgogICAgIiIiT3B0aW9uYWwgaG9sZC1tcyBhcmd1bWVudCBhdCBwb3NpdGlvbiBpIChib3VuZGVkLCBsaWtlIEVsZktleSkuIiIiCiAgICBpZiBsZW4oYXJncykgPD0gaToKICAgICAgICByZXR1cm4gTm9uZQogICAgcmV0dXJuIF9ib3VuZGVkX2ludChhcmdzW2ldLCAwLCBNQVhfSE9MRF9NUywgImhvbGQiKQoKCmRlZiBwYXJzZV9jb21tYW5kKGxpbmUpOgogICAgIiIiT25lIEZJRk8gbGluZSAtPiBhIGNvbW1hbmQgdHVwbGUuIFJhaXNlcyBWYWx1ZUVycm9yIG9uIGFueXRoaW5nCiAgICBtYWxmb3JtZWQuIFRoaXMgaXMgdGhlIHdob2xlIGlucHV0IGNvbnRyYWN0LCBrZXB0IHNlcGFyYXRlIGZyb20gdGhlCiAgICBkZXZpY2UgY29kZSBzbyBpdCBjYW4gYmUgdW5pdC10ZXN0ZWQgd2l0aG91dCAvZGV2L3VpbnB1dC4KCiAgICBSZXR1cm5zIG9uZSBvZjoKICAgICAgKCJwcmVzcyIsIG5hbWUsIGhvbGRfbXMpICAgICAgICBuYW1lOiBidXR0b24gb3IgZHBhZCBkaXJlY3Rpb24KICAgICAgKCJkb3duIiwgbmFtZSwgTm9uZSkgLyAoInVwIiwgbmFtZSwgTm9uZSkKICAgICAgKCJzdGljayIsIHNpZGUsIHhfcGN0LCB5X3BjdCwgaG9sZF9tc19vcl9Ob25lKQogICAgICAoInRyaWdnZXIiLCBzaWRlLCBwY3QsIGhvbGRfbXNfb3JfTm9uZSkKICAgICAgKCJjZW50ZXIiLCkgLyAoInJlc2V0IiwpIC8gKCJxdWl0IiwpCiAgICAiIiIKICAgIGlmIG5vdCBpc2luc3RhbmNlKGxpbmUsIHN0cikgb3IgbGVuKGxpbmUpID4gTUFYX0xJTkU6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigibGluZSB0b28gbG9uZyIpCiAgICBwYXJ0cyA9IGxpbmUuc3BsaXQoKQogICAgaWYgbm90IHBhcnRzOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImVtcHR5IGxpbmUiKQogICAgY21kLCBhcmdzID0gcGFydHNbMF0sIHBhcnRzWzE6XQogICAgaWYgY21kIGluICgicXVpdCIsICJjZW50ZXIiLCAicmVzZXQiKToKICAgICAgICBpZiBhcmdzOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCIlcyB0YWtlcyBubyBhcmd1bWVudHMiICUgY21kKQogICAgICAgIHJldHVybiAoY21kLCkKICAgIGlmIGNtZCBpbiAoInByZXNzIiwgImRvd24iLCAidXAiKToKICAgICAgICBpZiBub3QgYXJncyBvciAoYXJnc1swXSBub3QgaW4gQlVUVE9OUyBhbmQgYXJnc1swXSBub3QgaW4gRFBBRCk6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInVua25vd24gYnV0dG9uOiAlcyIgJSAoYXJnc1swXSBpZiBhcmdzIGVsc2UgIiIpKQogICAgICAgIGlmIGNtZCA9PSAicHJlc3MiOgogICAgICAgICAgICBpZiBsZW4oYXJncykgPiAyOgogICAgICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigicHJlc3MgdGFrZXMgYSBidXR0b24gYW5kIGFuIG9wdGlvbmFsIGhvbGQgaW4gbXMiKQogICAgICAgICAgICBob2xkID0gX2hvbGRfYXJnKGFyZ3MsIDEpCiAgICAgICAgICAgIHJldHVybiAoInByZXNzIiwgYXJnc1swXSwgREVGQVVMVF9IT0xEX01TIGlmIGhvbGQgaXMgTm9uZSBlbHNlIGhvbGQpCiAgICAgICAgaWYgbGVuKGFyZ3MpICE9IDE6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoIiVzIHRha2VzIGV4YWN0bHkgb25lIGJ1dHRvbiIgJSBjbWQpCiAgICAgICAgcmV0dXJuIChjbWQsIGFyZ3NbMF0sIE5vbmUpCiAgICBpZiBjbWQgPT0gInN0aWNrIjoKICAgICAgICBpZiBsZW4oYXJncykgbm90IGluICgzLCA0KSBvciBhcmdzWzBdIG5vdCBpbiBTVElDS19BWEVTOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJ1c2FnZTogc3RpY2sgbGVmdHxyaWdodCA8eCAtMTAwLi4xMDA+IDx5IC0xMDAuLjEwMD4gW21zXSIpCiAgICAgICAgeCA9IF9ib3VuZGVkX2ludChhcmdzWzFdLCAtMTAwLCAxMDAsICJzdGljayB4IikKICAgICAgICB5ID0gX2JvdW5kZWRfaW50KGFyZ3NbMl0sIC0xMDAsIDEwMCwgInN0aWNrIHkiKQogICAgICAgIHJldHVybiAoInN0aWNrIiwgYXJnc1swXSwgeCwgeSwgX2hvbGRfYXJnKGFyZ3MsIDMpKQogICAgaWYgY21kID09ICJ0cmlnZ2VyIjoKICAgICAgICBpZiBsZW4oYXJncykgbm90IGluICgyLCAzKSBvciBhcmdzWzBdIG5vdCBpbiBUUklHR0VSX0FYSVM6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInVzYWdlOiB0cmlnZ2VyIGxlZnR8cmlnaHQgPDAuLjEwMD4gW21zXSIpCiAgICAgICAgcGN0ID0gX2JvdW5kZWRfaW50KGFyZ3NbMV0sIDAsIDEwMCwgInRyaWdnZXIiKQogICAgICAgIHJldHVybiAoInRyaWdnZXIiLCBhcmdzWzBdLCBwY3QsIF9ob2xkX2FyZyhhcmdzLCAyKSkKICAgIHJhaXNlIFZhbHVlRXJyb3IoInVua25vd24gY29tbWFuZDogJXMiICUgY21kKQoKCmNsYXNzIEVsZlBhZDoKICAgICIiIlRoZSB1aW5wdXQgZGV2aWNlIHBsdXMgZXZlcnl0aGluZyBjdXJyZW50bHkgaGVsZCBvciBkZWZsZWN0ZWQuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGZkKToKICAgICAgICBzZWxmLmZkID0gZmQKICAgICAgICBzZWxmLmhlbGQgPSBzZXQoKSAgICAgICAgIyBidXR0b24gbmFtZXMgY3VycmVudGx5IGRvd24KICAgICAgICBzZWxmLmRwYWQgPSBzZXQoKSAgICAgICAgIyBkcGFkIGRpcmVjdGlvbnMgY3VycmVudGx5IGhlbGQKICAgICAgICBzZWxmLmF4ZXMgPSB7Y29kZTogMCBmb3IgY29kZSBpbiBBWEVTfQoKICAgIGRlZiBlbWl0KHNlbGYsIGV2X3R5cGUsIGNvZGUsIHZhbHVlKToKICAgICAgICBvcy53cml0ZShzZWxmLmZkLCBzdHJ1Y3QucGFjaygicXFISGkiLCAwLCAwLCBldl90eXBlLCBjb2RlLCB2YWx1ZSkpCiAgICAgICAgb3Mud3JpdGUoc2VsZi5mZCwgc3RydWN0LnBhY2soInFxSEhpIiwgMCwgMCwgRVZfU1lOLCBTWU5fUkVQT1JULCAwKSkKCiAgICBkZWYgX3NldF9heGlzKHNlbGYsIGNvZGUsIHZhbHVlKToKICAgICAgICBpZiBzZWxmLmF4ZXMuZ2V0KGNvZGUpICE9IHZhbHVlOgogICAgICAgICAgICBzZWxmLmF4ZXNbY29kZV0gPSB2YWx1ZQogICAgICAgICAgICBzZWxmLmVtaXQoRVZfQUJTLCBjb2RlLCB2YWx1ZSkKCiAgICBkZWYgX2FwcGx5X2hhdChzZWxmKToKICAgICAgICB4ID0gKDEgaWYgInJpZ2h0IiBpbiBzZWxmLmRwYWQgZWxzZSAwKSAtICgxIGlmICJsZWZ0IiBpbiBzZWxmLmRwYWQgZWxzZSAwKQogICAgICAgIHkgPSAoMSBpZiAiZG93biIgaW4gc2VsZi5kcGFkIGVsc2UgMCkgLSAoMSBpZiAidXAiIGluIHNlbGYuZHBhZCBlbHNlIDApCiAgICAgICAgc2VsZi5fc2V0X2F4aXMoMHgxMCwgeCkKICAgICAgICBzZWxmLl9zZXRfYXhpcygweDExLCB5KQoKICAgICMgLS0gYnV0dG9ucyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAgIGRlZiBzZXRfYnV0dG9uKHNlbGYsIG5hbWUsIGRvd24pOgogICAgICAgIGlmIG5hbWUgaW4gRFBBRDoKICAgICAgICAgICAgKHNlbGYuZHBhZC5hZGQgaWYgZG93biBlbHNlIHNlbGYuZHBhZC5kaXNjYXJkKShuYW1lKQogICAgICAgICAgICBzZWxmLl9hcHBseV9oYXQoKQogICAgICAgICAgICByZXR1cm4KICAgICAgICBzZWxmLmVtaXQoRVZfS0VZLCBCVVRUT05TW25hbWVdLCAxIGlmIGRvd24gZWxzZSAwKQogICAgICAgIChzZWxmLmhlbGQuYWRkIGlmIGRvd24gZWxzZSBzZWxmLmhlbGQuZGlzY2FyZCkobmFtZSkKCiAgICBkZWYgcHJlc3Moc2VsZiwgbmFtZSwgaG9sZF9tcyk6CiAgICAgICAgc2VsZi5zZXRfYnV0dG9uKG5hbWUsIFRydWUpCiAgICAgICAgdHJ5OgogICAgICAgICAgICBpZiBob2xkX21zOgogICAgICAgICAgICAgICAgdGltZS5zbGVlcChob2xkX21zIC8gMTAwMC4wKQogICAgICAgIGZpbmFsbHk6CiAgICAgICAgICAgIHNlbGYuc2V0X2J1dHRvbihuYW1lLCBGYWxzZSkKCiAgICAjIC0tIHN0aWNrcyBhbmQgdHJpZ2dlcnMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICBAc3RhdGljbWV0aG9kCiAgICBkZWYgX3NjYWxlKHBjdCwgbG8sIGhpKToKICAgICAgICByZXR1cm4gbWF4KGxvLCBtaW4oaGksIGludChyb3VuZChwY3QgLyAxMDAuMCAqIChoaSBpZiBwY3QgPj0gMCBlbHNlIC1sbykpKSkpCgogICAgZGVmIHNldF9zdGljayhzZWxmLCBzaWRlLCB4X3BjdCwgeV9wY3QpOgogICAgICAgIGF4LCBheSA9IFNUSUNLX0FYRVNbc2lkZV0KICAgICAgICBzZWxmLl9zZXRfYXhpcyhheCwgc2VsZi5fc2NhbGUoeF9wY3QsICpBWEVTW2F4XSkpCiAgICAgICAgc2VsZi5fc2V0X2F4aXMoYXksIHNlbGYuX3NjYWxlKHlfcGN0LCAqQVhFU1theV0pKQoKICAgIGRlZiBzdGlja19mb3Ioc2VsZiwgc2lkZSwgeF9wY3QsIHlfcGN0LCBob2xkX21zKToKICAgICAgICBzZWxmLnNldF9zdGljayhzaWRlLCB4X3BjdCwgeV9wY3QpCiAgICAgICAgdHJ5OgogICAgICAgICAgICBpZiBob2xkX21zOgogICAgICAgICAgICAgICAgdGltZS5zbGVlcChob2xkX21zIC8gMTAwMC4wKQogICAgICAgIGZpbmFsbHk6CiAgICAgICAgICAgIHNlbGYuc2V0X3N0aWNrKHNpZGUsIDAsIDApCgogICAgZGVmIHNldF90cmlnZ2VyKHNlbGYsIHNpZGUsIHBjdCk6CiAgICAgICAgYXhpcyA9IFRSSUdHRVJfQVhJU1tzaWRlXQogICAgICAgIHNlbGYuX3NldF9heGlzKGF4aXMsIHNlbGYuX3NjYWxlKHBjdCwgKkFYRVNbYXhpc10pKQoKICAgIGRlZiB0cmlnZ2VyX2ZvcihzZWxmLCBzaWRlLCBwY3QsIGhvbGRfbXMpOgogICAgICAgIHNlbGYuc2V0X3RyaWdnZXIoc2lkZSwgcGN0KQogICAgICAgIHRyeToKICAgICAgICAgICAgaWYgaG9sZF9tczoKICAgICAgICAgICAgICAgIHRpbWUuc2xlZXAoaG9sZF9tcyAvIDEwMDAuMCkKICAgICAgICBmaW5hbGx5OgogICAgICAgICAgICBzZWxmLnNldF90cmlnZ2VyKHNpZGUsIDApCgogICAgIyAtLSBnbG9iYWwgc3RhdGUgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICBkZWYgY2VudGVyKHNlbGYpOgogICAgICAgICIiIlN0aWNrcywgdHJpZ2dlcnMgYW5kIGhhdCBiYWNrIHRvIG5ldXRyYWw7IGJ1dHRvbnMgdW50b3VjaGVkLiIiIgogICAgICAgIHNlbGYuZHBhZC5jbGVhcigpCiAgICAgICAgZm9yIHNpZGUgaW4gU1RJQ0tfQVhFUzoKICAgICAgICAgICAgc2VsZi5zZXRfc3RpY2soc2lkZSwgMCwgMCkKICAgICAgICBmb3Igc2lkZSBpbiBUUklHR0VSX0FYSVM6CiAgICAgICAgICAgIHNlbGYuc2V0X3RyaWdnZXIoc2lkZSwgMCkKICAgICAgICBzZWxmLl9hcHBseV9oYXQoKQoKICAgIGRlZiByZWxlYXNlX2FsbChzZWxmKToKICAgICAgICBmb3IgbmFtZSBpbiBsaXN0KHNlbGYuaGVsZCk6CiAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgIHNlbGYuZW1pdChFVl9LRVksIEJVVFRPTlNbbmFtZV0sIDApCiAgICAgICAgICAgIGV4Y2VwdCBPU0Vycm9yOgogICAgICAgICAgICAgICAgcGFzcwogICAgICAgICAgICBzZWxmLmhlbGQuZGlzY2FyZChuYW1lKQogICAgICAgIHNlbGYuY2VudGVyKCkKCgpkZWYgX29wZW5fZGV2aWNlKCk6CiAgICBmZCA9IG9zLm9wZW4oIi9kZXYvdWlucHV0Iiwgb3MuT19XUk9OTFkgfCBvcy5PX05PTkJMT0NLKQogICAgZmNudGwuaW9jdGwoZmQsIFVJX1NFVF9FVkJJVCwgRVZfS0VZKQogICAgZmNudGwuaW9jdGwoZmQsIFVJX1NFVF9FVkJJVCwgRVZfQUJTKQogICAgZm9yIGNvZGUgaW4gc29ydGVkKHNldChCVVRUT05TLnZhbHVlcygpKSk6CiAgICAgICAgZmNudGwuaW9jdGwoZmQsIFVJX1NFVF9LRVlCSVQsIGNvZGUpCiAgICBhYnNtYXgsIGFic21pbiA9IFswXSAqIDY0LCBbMF0gKiA2NAogICAgZm9yIGNvZGUsIChsbywgaGkpIGluIEFYRVMuaXRlbXMoKToKICAgICAgICBmY250bC5pb2N0bChmZCwgVUlfU0VUX0FCU0JJVCwgY29kZSkKICAgICAgICBhYnNtYXhbY29kZV0sIGFic21pbltjb2RlXSA9IGhpLCBsbwogICAgIyBzdHJ1Y3QgdWlucHV0X3VzZXJfZGV2OiBuYW1lWzgwXSwgaWR7IGJ1c3R5cGUsIHZlbmRvciwgcHJvZHVjdCwgdmVyc2lvbiB9LAogICAgIyBmZl9lZmZlY3RzX21heCwgYWJzbWF4WzY0XSwgYWJzbWluWzY0XSwgYWJzZnV6els2NF0sIGFic2ZsYXRbNjRdCiAgICBkZXYgPSBzdHJ1Y3QucGFjaygiODBzSEhISEkiLCBiIkVsZlBhZCIsIDB4MDMsIDB4MDQ1RSwgMHgwMjhFLCAxLCAwKQogICAgZGV2ICs9IHN0cnVjdC5wYWNrKCI8NjRpIiwgKmFic21heCkgKyBzdHJ1Y3QucGFjaygiPDY0aSIsICphYnNtaW4pCiAgICBkZXYgKz0gYiJceDAwIiAqICg2NCAqIDQgKiAyKSAgICMgYWJzZnV6eiwgYWJzZmxhdDogZXhhY3QgdmFsdWVzLCBubyBtYW5nbGluZwogICAgb3Mud3JpdGUoZmQsIGRldikKICAgIGZjbnRsLmlvY3RsKGZkLCBVSV9ERVZfQ1JFQVRFKQogICAgcmV0dXJuIGZkCgoKZGVmIF9tYWtlX2ZpZm8ocGF0aD1GSUZPKToKICAgICIiIihSZSljcmVhdGUgdGhlIEZJRk8gb3duZXItb25seTogbWtmaWZvJ3MgbW9kZSBpcyB1bWFzay1maWx0ZXJlZCwgc28KICAgIGNobW9kIGFmdGVyIGNyZWF0aW5nIHRvIGVuZm9yY2UgZXhhY3RseSAwNjAwLiIiIgogICAgdHJ5OgogICAgICAgIG9zLnVubGluayhwYXRoKQogICAgZXhjZXB0IEZpbGVOb3RGb3VuZEVycm9yOgogICAgICAgIHBhc3MKICAgIG9zLm1rZmlmbyhwYXRoLCAwbzYwMCkKICAgIG9zLmNobW9kKHBhdGgsIDBvNjAwKQogICAgcmV0dXJuIHBhdGgKCgpkZWYgbWFpbigpOgogICAgZmQgPSBfb3Blbl9kZXZpY2UoKQogICAgcGFkID0gRWxmUGFkKGZkKQogICAgcHJpbnQoIkVsZlBhZCBkZXZpY2UgY3JlYXRlZCIsIGZsdXNoPVRydWUpCgogICAgZGVmIF9zdG9wKHNpZ251bSwgZnJhbWUpOgogICAgICAgIHJhaXNlIF9TdG9wcGVkKCkKCiAgICBmb3Igc2lnIGluIChzaWduYWwuU0lHVEVSTSwgc2lnbmFsLlNJR0lOVCk6CiAgICAgICAgdHJ5OgogICAgICAgICAgICBzaWduYWwuc2lnbmFsKHNpZywgX3N0b3ApCiAgICAgICAgZXhjZXB0IChWYWx1ZUVycm9yLCBPU0Vycm9yKToKICAgICAgICAgICAgcGFzcwoKICAgIF9tYWtlX2ZpZm8oRklGTykKICAgIHRyeToKICAgICAgICAjIE9fUkRXUiBvbiBvdXIgb3duIEZJRk86IHRoZSByZWFkIGVuZCBuZXZlciBzZWVzIEVPRiBhbmQgb3BlbiBuZXZlcgogICAgICAgICMgYmxvY2tzLCBzbyB0aGUgZGFlbW9uIHN1cnZpdmVzIHdyaXRlcnMgY29taW5nIGFuZCBnb2luZy4KICAgICAgICB3aXRoIG9zLmZkb3Blbihvcy5vcGVuKEZJRk8sIG9zLk9fUkRXUiksICJyIikgYXMgZmlmbzoKICAgICAgICAgICAgd2hpbGUgVHJ1ZToKICAgICAgICAgICAgICAgIGxpbmUgPSBmaWZvLnJlYWRsaW5lKCkKICAgICAgICAgICAgICAgIGlmIG5vdCBsaW5lOgogICAgICAgICAgICAgICAgICAgIHRpbWUuc2xlZXAoMC4wNSkKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgIHBhcnNlZCA9IHBhcnNlX2NvbW1hbmQobGluZSkKICAgICAgICAgICAgICAgIGV4Y2VwdCBWYWx1ZUVycm9yIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoImVsZnBhZDogcmVmdXNlZDogJXMgKCVzKSIgJSAobGluZS5zdHJpcCgpWzo4MF0sIGUpLCBmaWxlPXN5cy5zdGRlcnIsIGZsdXNoPVRydWUpCiAgICAgICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBjbWQgPSBwYXJzZWRbMF0KICAgICAgICAgICAgICAgICAgICBpZiBjbWQgPT0gInF1aXQiOgogICAgICAgICAgICAgICAgICAgICAgICBicmVhawogICAgICAgICAgICAgICAgICAgIGlmIGNtZCA9PSAicHJlc3MiOgogICAgICAgICAgICAgICAgICAgICAgICBwYWQucHJlc3MocGFyc2VkWzFdLCBwYXJzZWRbMl0pCiAgICAgICAgICAgICAgICAgICAgZWxpZiBjbWQgaW4gKCJkb3duIiwgInVwIik6CiAgICAgICAgICAgICAgICAgICAgICAgIHBhZC5zZXRfYnV0dG9uKHBhcnNlZFsxXSwgY21kID09ICJkb3duIikKICAgICAgICAgICAgICAgICAgICBlbGlmIGNtZCA9PSAic3RpY2siOgogICAgICAgICAgICAgICAgICAgICAgICBfLCBzaWRlLCB4LCB5LCBob2xkID0gcGFyc2VkCiAgICAgICAgICAgICAgICAgICAgICAgIHBhZC5zdGlja19mb3Ioc2lkZSwgeCwgeSwgaG9sZCkgaWYgaG9sZCBpcyBub3QgTm9uZSBlbHNlIHBhZC5zZXRfc3RpY2soc2lkZSwgeCwgeSkKICAgICAgICAgICAgICAgICAgICBlbGlmIGNtZCA9PSAidHJpZ2dlciI6CiAgICAgICAgICAgICAgICAgICAgICAgIF8sIHNpZGUsIHBjdCwgaG9sZCA9IHBhcnNlZAogICAgICAgICAgICAgICAgICAgICAgICBwYWQudHJpZ2dlcl9mb3Ioc2lkZSwgcGN0LCBob2xkKSBpZiBob2xkIGlzIG5vdCBOb25lIGVsc2UgcGFkLnNldF90cmlnZ2VyKHNpZGUsIHBjdCkKICAgICAgICAgICAgICAgICAgICBlbGlmIGNtZCA9PSAiY2VudGVyIjoKICAgICAgICAgICAgICAgICAgICAgICAgcGFkLmNlbnRlcigpCiAgICAgICAgICAgICAgICAgICAgZWxpZiBjbWQgPT0gInJlc2V0IjoKICAgICAgICAgICAgICAgICAgICAgICAgcGFkLnJlbGVhc2VfYWxsKCkKICAgICAgICAgICAgICAgIGV4Y2VwdCBPU0Vycm9yIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoImVsZnBhZDogZW1pdCBmYWlsZWQ6ICVzIiAlIGUsIGZpbGU9c3lzLnN0ZGVyciwgZmx1c2g9VHJ1ZSkKICAgIGV4Y2VwdCBfU3RvcHBlZDoKICAgICAgICBwYXNzCiAgICBmaW5hbGx5OgogICAgICAgIHBhZC5yZWxlYXNlX2FsbCgpCiAgICAgICAgdHJ5OgogICAgICAgICAgICBmY250bC5pb2N0bChmZCwgVUlfREVWX0RFU1RST1kpCiAgICAgICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgICAgIHBhc3MKICAgICAgICBvcy5jbG9zZShmZCkKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgbWFpbigpCg==
+#!/usr/bin/env python3
+"""ElfPad: a virtual gamepad on /dev/uinput, driven by one-line shell
+commands over a FIFO — the gamepad sibling of ElfKey.
+
+    echo "press a 150"        > /tmp/elfpad.fifo   # tap A for 150 ms
+    echo "down x"             > /tmp/elfpad.fifo   # hold X
+    echo "up x"               > /tmp/elfpad.fifo   # release X
+    echo "press up"           > /tmp/elfpad.fifo   # tap D-pad up (hat axis)
+    echo "stick left 60 -20"  > /tmp/elfpad.fifo   # left stick x=60% y=-20%
+    echo "stick right 0 0"    > /tmp/elfpad.fifo   # recenter right stick
+    echo "trigger right 80"   > /tmp/elfpad.fifo   # RT to 80%
+    echo "center"             > /tmp/elfpad.fifo   # sticks/triggers/hat neutral
+    echo "reset"              > /tmp/elfpad.fifo   # release everything
+    echo "quit"               > /tmp/elfpad.fifo
+
+Why: a keyboard (ElfKey) covers RetroArch-style games, but plenty of games
+only listen to a gamepad. ElfPad presents as a standard Xbox-360-class pad
+(VID 0x045e / PID 0x028e, device name "ElfPad") so SDL, Steam Input and
+RetroArch map its buttons and axes the standard way with no configuration:
+A/B/X/Y, bumpers, analog triggers, start/back/guide, stick clicks, two
+analog sticks and a hat D-pad.
+
+Built for the same job as ElfKey — giving a program (an LLM agent, a test
+script, an automation) hands on a Linux machine — with the same safety
+rules, because the caller might be a language model:
+
+  * Bad input never kills the daemon: parse_command() raises ValueError on
+    anything malformed; the serve loop logs the refusal and keeps serving.
+  * Timed holds are bounded (0..MAX_HOLD_MS); longer holds use down/up,
+    which the caller controls.
+  * Nothing is ever left stuck: taps and timed stick/trigger moves restore
+    in a finally block, held buttons are tracked, and on quit / SIGTERM /
+    SIGINT / any fatal error every button is released and every axis is
+    recentered before the device is destroyed.
+  * The FIFO is created 0600: only the owning user can inject input.
+
+Standard library only. Works on any Linux with /dev/uinput (Steam Deck,
+desktop, Raspberry Pi, VM); no root needed where the uinput device is
+user-accessible (udev uaccess rule included in this repo).
+"""
+import fcntl, os, signal, struct, sys, time
+
+FIFO = "/tmp/elfpad.fifo"
+DEFAULT_HOLD_MS = 120
+MAX_HOLD_MS = 5000          # a tap is a tap; use down/up for longer holds
+MAX_LINE = 200              # longer FIFO lines are refused, never parsed
+
+# Linux input-event codes (include/uapi/linux/input-event-codes.h).
+EV_SYN, EV_KEY, EV_ABS, SYN_REPORT = 0, 1, 3, 0
+BUTTONS = {
+    "a": 0x130, "b": 0x131, "x": 0x133, "y": 0x134,          # SOUTH/EAST/NORTH/WEST
+    "lb": 0x136, "rb": 0x137, "l2": 0x138, "r2": 0x139,      # TL/TR + digital TL2/TR2
+    "select": 0x13A, "back": 0x13A, "start": 0x13B,
+    "guide": 0x13C, "home": 0x13C,
+    "l3": 0x13D, "r3": 0x13E,
+}
+DPAD = ("up", "down", "left", "right")                       # hat axes, not buttons
+# axis code -> (min, max)
+AXES = {
+    0x00: (-32768, 32767),   # ABS_X   left stick X
+    0x01: (-32768, 32767),   # ABS_Y   left stick Y
+    0x02: (0, 255),          # ABS_Z   left trigger
+    0x03: (-32768, 32767),   # ABS_RX  right stick X
+    0x04: (-32768, 32767),   # ABS_RY  right stick Y
+    0x05: (0, 255),          # ABS_RZ  right trigger
+    0x10: (-1, 1),           # ABS_HAT0X
+    0x11: (-1, 1),           # ABS_HAT0Y
+}
+STICK_AXES = {"left": (0x00, 0x01), "right": (0x03, 0x04)}
+TRIGGER_AXIS = {"left": 0x02, "right": 0x05}
+UI_SET_EVBIT, UI_SET_KEYBIT, UI_SET_ABSBIT = 1074025828, 1074025829, 1074025831
+UI_DEV_CREATE, UI_DEV_DESTROY = 21761, 21762
+
+
+class _Stopped(Exception):
+    """Raised by the signal handler so a blocked read/sleep unwinds at once
+    (a handler that merely sets a flag would be swallowed by PEP 475 retries)."""
+
+
+def _bounded_int(text, lo, hi, what):
+    try:
+        value = int(text)
+    except ValueError:
+        raise ValueError("%s must be a whole number: %r" % (what, text))
+    if not lo <= value <= hi:
+        raise ValueError("%s must be %d..%d: %d" % (what, lo, hi, value))
+    return value
+
+
+def _hold_arg(args, i):
+    """Optional hold-ms argument at position i (bounded, like ElfKey)."""
+    if len(args) <= i:
+        return None
+    return _bounded_int(args[i], 0, MAX_HOLD_MS, "hold")
+
+
+def parse_command(line):
+    """One FIFO line -> a command tuple. Raises ValueError on anything
+    malformed. This is the whole input contract, kept separate from the
+    device code so it can be unit-tested without /dev/uinput.
+
+    Returns one of:
+      ("press", name, hold_ms)        name: button or dpad direction
+      ("down", name, None) / ("up", name, None)
+      ("stick", side, x_pct, y_pct, hold_ms_or_None)
+      ("trigger", side, pct, hold_ms_or_None)
+      ("center",) / ("reset",) / ("quit",)
+    """
+    if not isinstance(line, str) or len(line) > MAX_LINE:
+        raise ValueError("line too long")
+    parts = line.split()
+    if not parts:
+        raise ValueError("empty line")
+    cmd, args = parts[0], parts[1:]
+    if cmd in ("quit", "center", "reset"):
+        if args:
+            raise ValueError("%s takes no arguments" % cmd)
+        return (cmd,)
+    if cmd in ("press", "down", "up"):
+        if not args or (args[0] not in BUTTONS and args[0] not in DPAD):
+            raise ValueError("unknown button: %s" % (args[0] if args else ""))
+        if cmd == "press":
+            if len(args) > 2:
+                raise ValueError("press takes a button and an optional hold in ms")
+            hold = _hold_arg(args, 1)
+            return ("press", args[0], DEFAULT_HOLD_MS if hold is None else hold)
+        if len(args) != 1:
+            raise ValueError("%s takes exactly one button" % cmd)
+        return (cmd, args[0], None)
+    if cmd == "stick":
+        if len(args) not in (3, 4) or args[0] not in STICK_AXES:
+            raise ValueError("usage: stick left|right <x -100..100> <y -100..100> [ms]")
+        x = _bounded_int(args[1], -100, 100, "stick x")
+        y = _bounded_int(args[2], -100, 100, "stick y")
+        return ("stick", args[0], x, y, _hold_arg(args, 3))
+    if cmd == "trigger":
+        if len(args) not in (2, 3) or args[0] not in TRIGGER_AXIS:
+            raise ValueError("usage: trigger left|right <0..100> [ms]")
+        pct = _bounded_int(args[1], 0, 100, "trigger")
+        return ("trigger", args[0], pct, _hold_arg(args, 2))
+    raise ValueError("unknown command: %s" % cmd)
+
+
+class ElfPad:
+    """The uinput device plus everything currently held or deflected."""
+
+    def __init__(self, fd):
+        self.fd = fd
+        self.held = set()        # button names currently down
+        self.dpad = set()        # dpad directions currently held
+        self.axes = {code: 0 for code in AXES}
+
+    def emit(self, ev_type, code, value):
+        os.write(self.fd, struct.pack("qqHHi", 0, 0, ev_type, code, value))
+        os.write(self.fd, struct.pack("qqHHi", 0, 0, EV_SYN, SYN_REPORT, 0))
+
+    def _set_axis(self, code, value):
+        if self.axes.get(code) != value:
+            self.axes[code] = value
+            self.emit(EV_ABS, code, value)
+
+    def _apply_hat(self):
+        x = (1 if "right" in self.dpad else 0) - (1 if "left" in self.dpad else 0)
+        y = (1 if "down" in self.dpad else 0) - (1 if "up" in self.dpad else 0)
+        self._set_axis(0x10, x)
+        self._set_axis(0x11, y)
+
+    # -- buttons ---------------------------------------------------------
+    def set_button(self, name, down):
+        if name in DPAD:
+            (self.dpad.add if down else self.dpad.discard)(name)
+            self._apply_hat()
+            return
+        self.emit(EV_KEY, BUTTONS[name], 1 if down else 0)
+        (self.held.add if down else self.held.discard)(name)
+
+    def press(self, name, hold_ms):
+        self.set_button(name, True)
+        try:
+            if hold_ms:
+                time.sleep(hold_ms / 1000.0)
+        finally:
+            self.set_button(name, False)
+
+    # -- sticks and triggers ---------------------------------------------
+    @staticmethod
+    def _scale(pct, lo, hi):
+        return max(lo, min(hi, int(round(pct / 100.0 * (hi if pct >= 0 else -lo)))))
+
+    def set_stick(self, side, x_pct, y_pct):
+        ax, ay = STICK_AXES[side]
+        self._set_axis(ax, self._scale(x_pct, *AXES[ax]))
+        self._set_axis(ay, self._scale(y_pct, *AXES[ay]))
+
+    def stick_for(self, side, x_pct, y_pct, hold_ms):
+        self.set_stick(side, x_pct, y_pct)
+        try:
+            if hold_ms:
+                time.sleep(hold_ms / 1000.0)
+        finally:
+            self.set_stick(side, 0, 0)
+
+    def set_trigger(self, side, pct):
+        axis = TRIGGER_AXIS[side]
+        self._set_axis(axis, self._scale(pct, *AXES[axis]))
+
+    def trigger_for(self, side, pct, hold_ms):
+        self.set_trigger(side, pct)
+        try:
+            if hold_ms:
+                time.sleep(hold_ms / 1000.0)
+        finally:
+            self.set_trigger(side, 0)
+
+    # -- global state ------------------------------------------------------
+    def center(self):
+        """Sticks, triggers and hat back to neutral; buttons untouched."""
+        self.dpad.clear()
+        for side in STICK_AXES:
+            self.set_stick(side, 0, 0)
+        for side in TRIGGER_AXIS:
+            self.set_trigger(side, 0)
+        self._apply_hat()
+
+    def release_all(self):
+        for name in list(self.held):
+            try:
+                self.emit(EV_KEY, BUTTONS[name], 0)
+            except OSError:
+                pass
+            self.held.discard(name)
+        self.center()
+
+
+def _open_device():
+    fd = os.open("/dev/uinput", os.O_WRONLY | os.O_NONBLOCK)
+    fcntl.ioctl(fd, UI_SET_EVBIT, EV_KEY)
+    fcntl.ioctl(fd, UI_SET_EVBIT, EV_ABS)
+    for code in sorted(set(BUTTONS.values())):
+        fcntl.ioctl(fd, UI_SET_KEYBIT, code)
+    absmax, absmin = [0] * 64, [0] * 64
+    for code, (lo, hi) in AXES.items():
+        fcntl.ioctl(fd, UI_SET_ABSBIT, code)
+        absmax[code], absmin[code] = hi, lo
+    # struct uinput_user_dev: name[80], id{ bustype, vendor, product, version },
+    # ff_effects_max, absmax[64], absmin[64], absfuzz[64], absflat[64]
+    dev = struct.pack("80sHHHHI", b"ElfPad", 0x03, 0x045E, 0x028E, 1, 0)
+    dev += struct.pack("<64i", *absmax) + struct.pack("<64i", *absmin)
+    dev += b"\x00" * (64 * 4 * 2)   # absfuzz, absflat: exact values, no mangling
+    os.write(fd, dev)
+    fcntl.ioctl(fd, UI_DEV_CREATE)
+    return fd
+
+
+def _make_fifo(path=FIFO):
+    """(Re)create the FIFO owner-only: mkfifo's mode is umask-filtered, so
+    chmod after creating to enforce exactly 0600."""
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+    os.mkfifo(path, 0o600)
+    os.chmod(path, 0o600)
+    return path
+
+
+def main():
+    fd = _open_device()
+    pad = ElfPad(fd)
+    print("ElfPad device created", flush=True)
+
+    def _stop(signum, frame):
+        raise _Stopped()
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        try:
+            signal.signal(sig, _stop)
+        except (ValueError, OSError):
+            pass
+
+    _make_fifo(FIFO)
+    try:
+        # O_RDWR on our own FIFO: the read end never sees EOF and open never
+        # blocks, so the daemon survives writers coming and going.
+        with os.fdopen(os.open(FIFO, os.O_RDWR), "r") as fifo:
+            while True:
+                line = fifo.readline()
+                if not line:
+                    time.sleep(0.05)
+                    continue
+                try:
+                    parsed = parse_command(line)
+                except ValueError as e:
+                    print("elfpad: refused: %s (%s)" % (line.strip()[:80], e), file=sys.stderr, flush=True)
+                    continue
+                try:
+                    cmd = parsed[0]
+                    if cmd == "quit":
+                        break
+                    if cmd == "press":
+                        pad.press(parsed[1], parsed[2])
+                    elif cmd in ("down", "up"):
+                        pad.set_button(parsed[1], cmd == "down")
+                    elif cmd == "stick":
+                        _, side, x, y, hold = parsed
+                        pad.stick_for(side, x, y, hold) if hold is not None else pad.set_stick(side, x, y)
+                    elif cmd == "trigger":
+                        _, side, pct, hold = parsed
+                        pad.trigger_for(side, pct, hold) if hold is not None else pad.set_trigger(side, pct)
+                    elif cmd == "center":
+                        pad.center()
+                    elif cmd == "reset":
+                        pad.release_all()
+                except OSError as e:
+                    print("elfpad: emit failed: %s" % e, file=sys.stderr, flush=True)
+    except _Stopped:
+        pass
+    finally:
+        pad.release_all()
+        try:
+            fcntl.ioctl(fd, UI_DEV_DESTROY)
+        except OSError:
+            pass
+        os.close(fd)
+
+
+if __name__ == "__main__":
+    main()
