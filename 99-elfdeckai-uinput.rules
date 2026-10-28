@@ -1,4 +1,0 @@
-# Let the logged-in user create virtual input devices (needed on machines
-# where /dev/uinput is root-only; the Steam Deck already allows it).
-# Install: sudo cp 99-elfdeckai-uinput.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
-KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"
