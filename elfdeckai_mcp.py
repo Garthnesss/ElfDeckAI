@@ -60,7 +60,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")

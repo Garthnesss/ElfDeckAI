@@ -80,29 +80,24 @@ IP="$(ip -4 -o addr show scope global 2>/dev/null | awk '{split($4,a,"/"); print
 [ -n "$IP" ] || IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
 cat <<EOF
 
-Installation complete. To connect an AI client on your PC:
+Installation complete. Your Deck's IP address: ${IP:-unknown (see Settings > Internet)}
 
-1) Turn on SSH on this Deck (lets your PC reach it, LAN only) — run:
-       passwd                  # set a password for the deck user, once
-       systemctl enable --now sshd
+Next:
 
-2) On your PC, set up key-based SSH login (the AI client cannot type a
-   password), then check that this prints "ok" without a prompt:
-       ssh-copy-id deck@${IP:-YOUR-DECK-IP}     # after ssh-keygen, if you have no key yet
-       ssh deck@${IP:-YOUR-DECK-IP} echo ok
+1) Turn on SSH on this Deck (once), so your PC can reach it:
+       passwd                            # choose a password, if you haven't
+       sudo systemctl enable --now sshd
 
-3) On your PC, add this to your AI client's MCP config
-   (Claude Desktop: Settings -> Developer -> Edit Config;
-    the file is claude_desktop_config.json):
+2) On your PC, paste one line. It asks for the IP above and the Deck's
+   password (once), then connects your AI app, including Claude Desktop.
 
-   {"mcpServers": {"elfdeckai": {
-       "command": "ssh",
-       "args": ["deck@${IP:-YOUR-DECK-IP}", "$BIN_DIR/elfdeckai-mcp"]}}}
+   Windows (PowerShell):
+       irm https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.ps1 | iex
 
-4) Restart the AI client, start a game on the Deck (Gaming or Desktop Mode),
-   and ask your AI to take a screenshot — if it can see your Deck,
-   everything works.
+   Mac or Linux (Terminal):
+       curl -fsSL https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.sh | sh
 
-For a step-by-step walkthrough your AI assistant can follow, see
-AI_SETUP_GUIDE.md: https://github.com/Garthnesss/ElfDeckAI/blob/main/AI_SETUP_GUIDE.md
+3) Restart Claude Desktop and ask it: "Take a screenshot of my Steam Deck."
+
+Help: https://github.com/Garthnesss/ElfDeckAI/blob/main/AI_SETUP_GUIDE.md
 EOF

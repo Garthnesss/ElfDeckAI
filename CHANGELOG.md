@@ -4,7 +4,22 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
-## [1.1.1] - Unreleased
+## [1.1.2] - Unreleased
+
+### Added
+- One-line PC setup: `setup-pc.ps1` (Windows) and `setup-pc.sh` (macOS,
+  Linux) create a dedicated SSH key, copy it to the Deck, check the
+  passwordless connection, and add ElfDeckAI to Claude Desktop's config.
+  They work with Decks that only accept keys, including when the PC's
+  ssh-agent holds a key restricted to one command.
+
+### Changed
+- README opens with a four-step "Start here" for Steam Deck owners; the
+  technical description follows it. The Deck installer and
+  AI_SETUP_GUIDE.md point to the PC setup scripts, and SSH is enabled with
+  `sudo`.
+
+## [1.1.1] - 2026-10-28
 
 ### Fixed
 - Gamepad in Steam Deck Gaming Mode: games that ignored ElfPad were only
@@ -81,6 +96,7 @@ project follows [Semantic Versioning](https://semver.org/).
 - One-command Steam Deck installer.
 - Setup guide written for an AI assistant to follow.
 
+[1.1.2]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.6...v1.0.7

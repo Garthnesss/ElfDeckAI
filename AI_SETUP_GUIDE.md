@@ -48,46 +48,48 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 
    ```sh
    passwd                        # one-time: set the deck user's password
-   systemctl enable --now sshd
+   sudo systemctl enable --now sshd
    ```
 
 ## Phase 2 — the PC (about 3 minutes)
 
-1. Ask which AI client they use and give them the matching instruction:
-   - **Claude Desktop:** Settings → Developer → Edit Config opens
-     `claude_desktop_config.json`. Add the `elfdeckai` block the installer
-     printed. If they lost it, the template is:
+1. Have the human paste one line on the PC. It creates an SSH key just for
+   ElfDeckAI, copies it to the Deck (they type the Deck password once),
+   checks that the connection works without a password, and adds
+   ElfDeckAI to Claude Desktop's config, keeping a backup and their other
+   settings.
+   - **Windows**, in PowerShell:
+     `irm https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.ps1 | iex`
+   - **Mac or Linux**, in Terminal:
+     `curl -fsSL https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/setup-pc.sh | sh`
 
-     ```json
-     {"mcpServers": {"elfdeckai": {
-         "command": "ssh",
-         "args": ["deck@DECK-IP-ADDRESS", "/home/deck/.local/bin/elfdeckai-mcp"]}}}
-     ```
+   It asks for the Deck's IP address (the Deck installer printed it). At
+   the end it also prints the config block for other MCP clients and the
+   `claude mcp add` command for Claude Code. `ssh` is built into Windows
+   10/11, macOS and Linux; on Windows, if it is missing, it is under
+   Settings → System → Optional features → OpenSSH Client.
+2. Restart the AI client so it picks up the new server. On Windows, quit
+   Claude Desktop from the system tray, not just the window.
 
-   - **Claude Code:** `claude mcp add elfdeckai -- ssh deck@DECK-IP /home/deck/.local/bin/elfdeckai-mcp`
-   - **Codex / other MCP clients:** same idea — the "server" is a command:
-     `ssh deck@DECK-IP /home/deck/.local/bin/elfdeckai-mcp`.
-2. **Set up key-based SSH login (required).** The AI client starts `ssh`
-   in the background, where nobody can type a password, so a password
-   prompt makes the server hang or fail to start. `ssh` is built into
-   Windows 10/11, macOS and Linux. On the PC:
+**If the script cannot be used,** do the same by hand. Key-based login is
+required, because the AI client starts `ssh` in the background where nobody
+can type a password:
 
-   ```sh
-   ssh-keygen -t ed25519          # skip if ~/.ssh/id_ed25519 already exists; Enter accepts the defaults
-   ssh-copy-id deck@DECK-IP       # macOS / Linux
+1. `ssh-keygen -t ed25519 -N "" -f ~/.ssh/elfdeckai_ed25519`
+2. Copy `~/.ssh/elfdeckai_ed25519.pub` into `~/.ssh/authorized_keys` on the
+   Deck (`ssh-copy-id -i ~/.ssh/elfdeckai_ed25519 deck@DECK-IP` on Mac and
+   Linux).
+3. Check that `ssh -i ~/.ssh/elfdeckai_ed25519 deck@DECK-IP echo ok`
+   prints `ok` with no password prompt.
+4. Add this to the client's MCP config (Claude Desktop: Settings →
+   Developer → Edit Config), using the full path to the key:
+
+   ```json
+   {"mcpServers": {"elfdeckai": {
+       "command": "ssh",
+       "args": ["-i", "/full/path/to/.ssh/elfdeckai_ed25519", "-o", "IdentitiesOnly=yes",
+                "-o", "BatchMode=yes", "deck@DECK-IP", ".local/bin/elfdeckai-mcp"]}}}
    ```
-
-   On Windows (PowerShell), where `ssh-copy-id` is not available:
-
-   ```powershell
-   type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh deck@DECK-IP "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-   ```
-
-   These ask for the Deck password one last time. Then verify:
-   `ssh deck@DECK-IP echo ok` must print `ok` **without** a password
-   prompt (answer `yes` to the host-key question the first time). Do not
-   continue until it does.
-3. Restart the AI client so it picks up the new server.
 
 ## Phase 3 — verify, then play
 
@@ -122,7 +124,7 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 | Tool error: "daemon not running" | A service stopped | On the Deck: `systemctl --user restart elfkey elfpad elfmouse` |
 | Tool error: "permission denied on the FIFO" | MCP server running as a different user than the daemons | Run everything as the `deck` user |
 | `screenshot` errors | No graphical session (the Deck is at the login screen or asleep), or Gaming Mode on an older ElfDeckAI | Wake the Deck; update with the installer; or switch to Desktop Mode |
-| MCP client can't start the server, or it times out | SSH is asking for a password the client can't type | Set up key-based login (Phase 2, step 2) and check `ssh deck@DECK-IP echo ok` prints `ok` with no prompt |
+| MCP client can't start the server, or it times out | SSH is asking for a password the client can't type | Re-run the PC setup script from Phase 2; it re-checks the key and the connection |
 | MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `ip -4 addr show scope global` shows the current one; update the config |
 | `elfdeckai-mcp`: command not found over SSH | PATH over SSH is minimal | Use the absolute path from the installer output (`/home/deck/.local/bin/elfdeckai-mcp`) |
 | A key/button seems stuck | A caller died mid-hold | `key_release`, `mouse_release`, or `pad_reset`. Holds also self-release ≤ 5 s |
