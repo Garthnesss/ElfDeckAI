@@ -50,7 +50,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -296,9 +296,17 @@ def _screenshot_png():
                  "org.kde.KWin.Screenshot.screenshotFullscreen"],
                 capture_output=True, text=True, timeout=12)
             m = re.search(r'string "([^"]+\.png)"', out.stdout or "")
-            if m and os.path.getsize(m.group(1)) > 0:
-                with open(m.group(1), "rb") as f:
-                    return f.read()
+            if m:
+                try:
+                    with open(m.group(1), "rb") as f:
+                        data = f.read()
+                finally:
+                    try:
+                        os.unlink(m.group(1))  # KWin leaves it in /tmp
+                    except OSError:
+                        pass
+                if data:
+                    return data
             errors.append("KWin D-Bus: %s" % (
                 (out.stderr or "").strip() or "no screenshot path returned"))
         except Exception as e:

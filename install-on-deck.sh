@@ -86,7 +86,12 @@ Installation complete. To connect an AI client on your PC:
        passwd                  # set a password for the deck user, once
        systemctl enable --now sshd
 
-2) On your PC, add this to your AI client's MCP config
+2) On your PC, set up key-based SSH login (the AI client cannot type a
+   password), then check that this prints "ok" without a prompt:
+       ssh-copy-id deck@${IP:-YOUR-DECK-IP}     # after ssh-keygen, if you have no key yet
+       ssh deck@${IP:-YOUR-DECK-IP} echo ok
+
+3) On your PC, add this to your AI client's MCP config
    (Claude Desktop: Settings -> Developer -> Edit Config;
     the file is claude_desktop_config.json):
 
@@ -94,7 +99,7 @@ Installation complete. To connect an AI client on your PC:
        "command": "ssh",
        "args": ["deck@${IP:-YOUR-DECK-IP}", "$BIN_DIR/elfdeckai-mcp"]}}}
 
-3) Restart the AI client, start a game on the Deck (Desktop Mode),
+4) Restart the AI client, start a game on the Deck (Desktop Mode),
    and ask your AI to take a screenshot — if it can see your Deck,
    everything works.
 
