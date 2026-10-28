@@ -43,6 +43,38 @@ PROBES = [
     ("Controller-related globals in the UI window", """Object.keys(window)
         .filter(k => /controller|gamepad|input/i.test(k)).sort()"""),
     ("SteamClient.Input.SwapControllerOrder", """typeof SteamClient.Input.SwapControllerOrder"""),
+    ("window.ControllerStore: every field, with lists and maps summarised", """(() => {
+        const store = window.ControllerStore, out = {};
+        if (!store) return "no ControllerStore";
+        const flat = v => {               // an object's plain fields only
+            if (!v || typeof v !== "object") return v;
+            const r = {};
+            for (const k of Object.keys(v)) {
+                const x = v[k];
+                if (x === null || ["string", "number", "boolean"].includes(typeof x)) r[k] = x;
+                else r[k] = Array.isArray(x) ? "[array " + x.length + "]" : "<" + typeof x + ">";
+            }
+            return r;
+        };
+        const names = new Set();
+        for (let o = store; o && o !== Object.prototype; o = Object.getPrototypeOf(o))
+            Object.getOwnPropertyNames(o).forEach(n => names.add(n));
+        for (const name of [...names].sort()) {
+            try {
+                const v = store[name];
+                if (typeof v === "function") { out[name] = "function"; continue; }
+                if (v && typeof v === "object" && typeof v.values === "function" && "size" in v)
+                    out[name] = {map: v.size, entries: Array.from(v.entries()).slice(0, 8)
+                                 .map(([k, x]) => [k, flat(x)])};
+                else if (Array.isArray(v))
+                    out[name] = {array: v.length, items: v.slice(0, 8).map(flat)};
+                else if (v && typeof v === "object")
+                    out[name] = {object: flat(v)};
+                else out[name] = v;
+            } catch (e) { out[name] = "error: " + e.message; }
+        }
+        return out;
+    })()"""),
 ]
 
 
