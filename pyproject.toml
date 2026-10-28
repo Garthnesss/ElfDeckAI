@@ -25,4 +25,10 @@ Repository = "https://github.com/Garthnesss/ElfDeckAI"
 Issues = "https://github.com/Garthnesss/ElfDeckAI/issues"
 
 [tool.setuptools]
-py-modules = ["elfkey", "elfpad", "elfdeckai_mcp"]
+py-modules = ["elfkey", "elfpad", "elfmouse", "elfdeckai_mcp"]
+
+[project.scripts]
+elfkey = "elfkey:main"
+elfpad = "elfpad:main"
+elfmouse = "elfmouse:main"
+elfdeckai-mcp = "elfdeckai_mcp:main"
