@@ -24,8 +24,9 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - MCP Registry metadata (`server.json` package entry and README marker).
-- Continuous integration and a tag-triggered release workflow that
-  publishes to PyPI and the MCP Registry.
+- Continuous integration and a release workflow that publishes to PyPI
+  and the MCP Registry and creates the GitHub Release. It runs on a
+  version tag, or from the Actions tab, in which case it creates the tag.
 - `glama.json` listing the maintainer for Glama.
 
 ## [1.0.6]
