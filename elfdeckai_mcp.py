@@ -51,9 +51,11 @@ def _send(fifo, line, parser):
     """Validate `line` with the daemon's parser, then hand it to the FIFO.
     Returns a human-readable confirmation or raises ValueError/OSError."""
     parser(line)  # raises ValueError on anything the daemon would refuse
+    payload = (line + "\n").encode()
     fd = os.open(fifo, os.O_WRONLY | os.O_NONBLOCK)
     try:
-        os.write(fd, (line + "\n").encode())
+        if os.write(fd, payload) != len(payload):
+            raise OSError(errno.EIO, "short FIFO write")
     finally:
         os.close(fd)
     return "sent: %s" % line
@@ -165,13 +167,46 @@ TOOLS = [
      {}, []),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
+TOOL_SCHEMAS = {name: (props, required) for name, _d, props, required in TOOLS}
+
+
+def _validate_args(name, args):
+    """Enforce the advertised schema at runtime: arguments must be an
+    object with exactly the known fields, correctly typed (a JSON true is
+    not an integer, whatever Python thinks), in range, and in the enum.
+    The daemon parser remains the final authority; this layer exists so a
+    bad call fails HERE, with a precise reason, before any FIFO write."""
+    if not isinstance(args, dict):
+        raise ValueError("arguments must be an object")
+    props, required = TOOL_SCHEMAS[name]
+    unknown = sorted(set(args) - set(props))
+    if unknown:
+        raise ValueError("unknown argument(s): %s" % ", ".join(unknown))
+    missing = [k for k in required if k not in args]
+    if missing:
+        raise ValueError("missing argument(s): %s" % ", ".join(missing))
+    for key, value in args.items():
+        schema = props[key]
+        if schema.get("type") == "integer":
+            if type(value) is not int:  # bool is an int subclass; exclude it
+                raise ValueError("%s must be an integer" % key)
+            if "minimum" in schema and value < schema["minimum"]:
+                raise ValueError("%s must be >= %d" % (key, schema["minimum"]))
+            if "maximum" in schema and value > schema["maximum"]:
+                raise ValueError("%s must be <= %d" % (key, schema["maximum"]))
+        elif schema.get("type") == "string":
+            if not isinstance(value, str):
+                raise ValueError("%s must be a string" % key)
+        if "enum" in schema and value not in schema["enum"]:
+            raise ValueError("%s must be one of: %s"
+                             % (key, ", ".join(map(str, schema["enum"]))))
 
 
 def tools_list():
     return {"tools": [
         {"name": name, "description": desc,
          "inputSchema": {"type": "object", "properties": props,
-                         "required": required}}
+                         "required": required, "additionalProperties": False}}
         for name, desc, props, required in TOOLS]}
 
 
@@ -179,6 +214,10 @@ def call_tool(name, args):
     """Returns (text, is_error)."""
     if name not in TOOL_NAMES:
         return "unknown tool: %s" % name, True
+    try:
+        _validate_args(name, args)
+    except ValueError as e:
+        return "invalid arguments: %s" % e, True
     try:
         if name.startswith("key_"):
             return _send(KEY_FIFO, _key_line(name, args), elfkey.parse_command), False
@@ -214,13 +253,18 @@ def handle(msg):
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.1"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.2"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
         return {"jsonrpc": "2.0", "id": msg_id, "result": tools_list()}
     if method == "tools/call":
         params = msg.get("params") or {}
+        if not isinstance(params, dict) or not isinstance(params.get("name"), str) \
+                or ("arguments" in params and not isinstance(params["arguments"], dict)):
+            return {"jsonrpc": "2.0", "id": msg_id, "error": {
+                "code": -32602, "message": "invalid params: tools/call needs a "
+                "string name and an object arguments"}}
         text, is_error = call_tool(params.get("name"), params.get("arguments") or {})
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "content": [{"type": "text", "text": text}], "isError": is_error}}
@@ -230,13 +274,35 @@ def handle(msg):
             "error": {"code": -32601, "message": "method not found: %s" % method}}
 
 
+def _reject_constant(value):
+    raise ValueError("invalid JSON constant: %s" % value)
+
+
+MAX_REQUEST_BYTES = 1024 * 1024  # one request line; plenty for a tool call
+
+
 def main():
-    for line in sys.stdin:
-        line = line.strip()
+    stream = sys.stdin.buffer
+    while True:
+        raw = stream.readline(MAX_REQUEST_BYTES + 1)
+        if not raw:
+            break
+        if len(raw) > MAX_REQUEST_BYTES:
+            while raw and not raw.endswith(b"\n"):
+                raw = stream.readline(MAX_REQUEST_BYTES + 1)
+            _emit({"jsonrpc": "2.0", "id": None, "error": {
+                "code": -32600, "message": "request too large"}})
+            continue
+        try:
+            line = raw.decode("utf-8").strip()
+        except UnicodeDecodeError:
+            _emit({"jsonrpc": "2.0", "id": None, "error": {
+                "code": -32700, "message": "parse error"}})
+            continue
         if not line:
             continue
         try:
-            msg = json.loads(line)
+            msg = json.loads(line, parse_constant=_reject_constant)
         except ValueError:
             _emit({"jsonrpc": "2.0", "id": None, "error": {
                 "code": -32700, "message": "parse error"}})
