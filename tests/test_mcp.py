@@ -123,7 +123,7 @@ def test_bad_calls_are_tool_errors_not_crashes(tmp_path):
                  "params": {"name": "key_tap",
                             "arguments": {"key": "x", "hold_ms": 999999999}}})
         assert r["result"]["isError"] is True
-        assert "refused" in r["result"]["content"][0]["text"]
+        assert "invalid arguments" in r["result"]["content"][0]["text"]
         r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                  "params": {"name": "nope", "arguments": {}}})
         assert r["result"]["isError"] is True
@@ -171,3 +171,88 @@ def test_missing_daemon_reports_not_running(tmp_path):
         assert "not running" in r["result"]["content"][0]["text"]
     finally:
         proc.kill()
+
+
+def _call(rpc, id_, name, arguments):
+    return rpc({"jsonrpc": "2.0", "id": id_, "method": "tools/call",
+                "params": {"name": name, "arguments": arguments}})
+
+
+def test_strict_argument_validation(tmp_path):
+    proc, rpc, received, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        cases = [
+            ({"key": "x", "bogus": 1}, "unknown argument"),
+            ({"key": "x", "hold_ms": True}, "must be an integer"),   # bool != int
+            ({"key": "x", "hold_ms": 1.5}, "must be an integer"),
+            ({"key": "notakey"}, "must be one of"),
+            ({"hold_ms": 100}, "missing argument"),
+        ]
+        for i, (args, needle) in enumerate(cases, start=2):
+            r = _call(rpc, i, "key_tap", args)
+            assert r["result"]["isError"] is True, args
+            text = r["result"]["content"][0]["text"]
+            assert "invalid arguments" in text and needle in text, text
+        r = _call(rpc, 99, "key_release", {"surprise": 1})
+        assert r["result"]["isError"] is True
+        r = rpc({"jsonrpc": "2.0", "id": 100, "method": "tools/list"})
+        assert "tools" in r["result"]          # server unharmed
+    finally:
+        proc.kill()
+    assert received == []                      # nothing reached a FIFO
+
+
+def test_tools_call_param_shapes_are_protocol_errors(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                 "params": {"name": "key_tap", "arguments": [1, 2]}})
+        assert r["error"]["code"] == -32602
+        r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                 "params": {"name": 42, "arguments": {}}})
+        assert r["error"]["code"] == -32602
+        r = rpc({"jsonrpc": "2.0", "id": 4, "method": "tools/list"})
+        assert "tools" in r["result"]
+    finally:
+        proc.kill()
+
+
+def test_oversized_and_non_json_constant_lines(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        proc.stdin.write("x" * (1024 * 1024 + 10) + "\n")
+        proc.stdin.flush()
+        r = json.loads(proc.stdout.readline())
+        assert r["error"]["code"] == -32600    # request too large
+        proc.stdin.write('{"jsonrpc": "2.0", "id": 2, "method": "tools/call",'
+                         ' "params": {"name": "key_tap", "arguments":'
+                         ' {"key": "x", "hold_ms": NaN}}}\n')
+        proc.stdin.flush()
+        r = json.loads(proc.stdout.readline())
+        assert r["error"]["code"] == -32700    # NaN is not JSON
+        r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/list"})
+        assert "tools" in r["result"]
+    finally:
+        proc.kill()
+
+
+def test_short_fifo_write_is_an_error(tmp_path, monkeypatch):
+    import importlib.util
+    import threading
+    spec = importlib.util.spec_from_file_location(
+        "elfdeckai_mcp_unit", ROOT / "elfdeckai_mcp.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    fifo = str(tmp_path / "k.fifo")
+    os.mkfifo(fifo)
+    reader = os.open(fifo, os.O_RDWR)   # a held reader end, so opens succeed
+    monkeypatch.setattr(m, "KEY_FIFO", fifo)
+    monkeypatch.setattr(m.os, "write", lambda fd, data: 1)   # always short
+    try:
+        text, is_error = m.call_tool("key_tap", {"key": "x"})
+        assert is_error and "I/O error" in text
+    finally:
+        os.close(reader)
