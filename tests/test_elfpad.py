@@ -193,3 +193,21 @@ def test_stick_move_is_a_single_frame(monkeypatch):
     syns = [e for e in frames if e[0] == elfpad.EV_SYN]
     assert len(syns) == 1 and frames[-1][0] == elfpad.EV_SYN
     assert {e[1] for e in frames if e[0] == elfpad.EV_ABS} == {0x00, 0x01}
+
+
+def test_button_codes_match_a_real_xbox_360_pad():
+    # The exact EV_KEY set of a real 360 controller — no BTN_TL2/TR2.
+    # (Verified with evtest against a real pad on a Steam Deck, Oct 2026.)
+    assert set(elfpad.BUTTONS.values()) == {
+        0x130, 0x131, 0x133, 0x134, 0x136, 0x137,
+        0x13A, 0x13B, 0x13C, 0x13D, 0x13E}
+
+
+def test_press_l2_drives_the_analog_trigger(monkeypatch):
+    seen = _events(monkeypatch)
+    pad = elfpad.ElfPad(fd=object())
+    pad.press("l2", 0)
+    assert seen == [(elfpad.EV_ABS, 0x02, 255), (elfpad.EV_ABS, 0x02, 0)]
+    pad.set_button("r2", True)
+    pad.set_button("r2", False)
+    assert seen[-2:] == [(elfpad.EV_ABS, 0x05, 255), (elfpad.EV_ABS, 0x05, 0)]
