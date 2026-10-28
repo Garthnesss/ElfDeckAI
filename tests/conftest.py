@@ -1,1 +1,20 @@
-IiIiTG9hZCB0aGUgcmVwbydzIG1vZHVsZXMgc3RyYWlnaHQgZnJvbSB0aGUgcmVwbyByb290IChubyBwYWNrYWdpbmc6IHRoZQpkYWVtb25zIGFyZSBzaW5nbGUgZmlsZXMgeW91IGNvcHkgYXJvdW5kLCBhbmQgdGhlIHRlc3RzIGltcG9ydCB0aGVtIHRoZQpzYW1lIHdheSkuIiIiCmltcG9ydCBpbXBvcnRsaWIudXRpbAppbXBvcnQgcGF0aGxpYgppbXBvcnQgc3lzCgpST09UID0gcGF0aGxpYi5QYXRoKF9fZmlsZV9fKS5yZXNvbHZlKCkucGFyZW50LnBhcmVudAoKCmRlZiBfbG9hZChuYW1lKToKICAgIHNwZWMgPSBpbXBvcnRsaWIudXRpbC5zcGVjX2Zyb21fZmlsZV9sb2NhdGlvbihuYW1lLCBST09UIC8gKG5hbWUgKyAiLnB5IikpCiAgICBtb2QgPSBpbXBvcnRsaWIudXRpbC5tb2R1bGVfZnJvbV9zcGVjKHNwZWMpCiAgICBzeXMubW9kdWxlc1tuYW1lXSA9IG1vZAogICAgc3BlYy5sb2FkZXIuZXhlY19tb2R1bGUobW9kKQogICAgcmV0dXJuIG1vZAoKCmVsZmtleSA9IF9sb2FkKCJlbGZrZXkiKQplbGZwYWQgPSBfbG9hZCgiZWxmcGFkIikK
+"""Load the repo's modules straight from the repo root (no packaging: the
+daemons are single files you copy around, and the tests import them the
+same way)."""
+import importlib.util
+import pathlib
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def _load(name):
+    spec = importlib.util.spec_from_file_location(name, ROOT / (name + ".py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+elfkey = _load("elfkey")
+elfpad = _load("elfpad")
