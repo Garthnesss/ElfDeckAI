@@ -118,15 +118,15 @@ TOOLS = [
      {}, []),
     ("pad_press", "Tap a gamepad button or D-pad direction.",
      {"button": {"type": "string",
-                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))},
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD) | set(elfpad.TRIGGERS))},
       "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
      ["button"]),
     ("pad_down", "Hold a gamepad button or D-pad direction down.",
      {"button": {"type": "string",
-                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))}}, ["button"]),
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD) | set(elfpad.TRIGGERS))}}, ["button"]),
     ("pad_up", "Release a held gamepad button or D-pad direction.",
      {"button": {"type": "string",
-                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))}}, ["button"]),
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD) | set(elfpad.TRIGGERS))}}, ["button"]),
     ("pad_stick", "Move an analog stick (x/y in percent, -100..100). "
                   "Without hold_ms the stick stays; with it, it recenters after.",
      {"side": {"type": "string", "enum": ["left", "right"]},
@@ -256,7 +256,7 @@ def handle(msg):
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.3"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.4"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
