@@ -117,3 +117,9 @@ def test_daemon_loop_survives_bad_input_and_quit_releases(tmp_path, monkeypatch)
     assert not t.is_alive()
     assert seen == [(elfmouse.EV_KEY, elfmouse.BUTTONS["left"], 1),
                     (elfmouse.EV_KEY, elfmouse.BUTTONS["left"], 0)]
+
+
+def test_parse_release_command():
+    assert elfmouse.parse_command("release") == ("release",)
+    with pytest.raises(ValueError):
+        elfmouse.parse_command("release all")
