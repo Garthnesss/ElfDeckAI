@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
-![Tests](https://img.shields.io/badge/tests-138%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-142%20passing-brightgreen.svg)
 
 **ElfdeckAI gives an LLM agent hands on real hardware.** Three tiny
 daemons turn one-line commands — from a shell, a script, or native
@@ -177,7 +177,7 @@ systemctl --user enable --now elfkey.service elfpad.service elfmouse.service
 ## Tests
 
 ```sh
-python3 -m pytest    # 138 tests: all three input contracts, device behaviour
+python3 -m pytest    # 142 tests: all three input contracts, device behaviour
                      # against a fake uinput, and the MCP server spoken
                      # to over real JSON-RPC
 ```
