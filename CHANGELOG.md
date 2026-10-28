@@ -4,9 +4,13 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## [1.2.0] - Unreleased
 
 ### Added
+- `pad_make_player_one` MCP tool: moves ElfPad to the top of Steam's
+  controller order in Gaming Mode, through Steam's own UI script over CEF
+  remote debugging on 127.0.0.1 (on when Decky Loader is installed). It
+  checks the result and explains the manual route when debugging is off.
 - One-line PC setup: `setup-pc.ps1` (Windows) and `setup-pc.sh` (macOS,
   Linux) create a dedicated SSH key, copy it to the Deck, check the
   passwordless connection, and add ElfDeckAI to Claude Desktop's config.
@@ -93,6 +97,7 @@ project follows [Semantic Versioning](https://semver.org/).
 - One-command Steam Deck installer.
 - Setup guide written for an AI assistant to follow.
 
+[1.2.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.6...v1.0.7
