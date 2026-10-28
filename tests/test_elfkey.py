@@ -186,3 +186,50 @@ def test_fifo_recreated_if_a_plain_file_is_in_the_way(tmp_path):
     elfkey._make_fifo(str(p))
     assert stat.S_ISFIFO(os.stat(p).st_mode)
     assert stat.S_IMODE(os.stat(p).st_mode) == 0o600
+
+
+def test_parse_release_command():
+    assert elfkey.parse_command("release") == ("release", None, None)
+    with pytest.raises(ValueError):
+        elfkey.parse_command("release now")
+
+
+def test_daemon_release_command_unsticks_a_held_key(tmp_path, monkeypatch):
+    import threading, time as _time
+    fifo_path = tmp_path / "elfkey.fifo"
+    devpath = tmp_path / "fake-uinput"
+    devpath.write_bytes(b"")
+    fd = os.open(devpath, os.O_RDWR)
+    monkeypatch.setattr(elfkey, "FIFO", str(fifo_path))
+    monkeypatch.setattr(elfkey, "_open_device", lambda: fd)
+    t = threading.Thread(target=elfkey.main, daemon=True)
+    t.start()
+    try:
+        for _ in range(100):
+            if fifo_path.exists():
+                break
+            _time.sleep(0.05)
+
+        def send(line):
+            w = os.open(fifo_path, os.O_WRONLY)
+            try:
+                os.write(w, (line + "\n").encode())
+            finally:
+                os.close(w)
+
+        send("down space")         # a caller holds fast-forward...
+        send("release")            # ...a NEW caller unsticks it, daemon stays up
+        send("down space")         # and the daemon still works afterwards
+        send("quit")
+        t.join(timeout=5)
+        assert not t.is_alive()
+    finally:
+        if t.is_alive():
+            w = os.open(fifo_path, os.O_WRONLY)
+            os.write(w, b"quit\n")
+            os.close(w)
+            t.join(timeout=5)
+    data = devpath.read_bytes()
+    ev = [struct.unpack("qqHHi", data[i:i + 24])[2:] for i in range(0, len(data) - 23, 24)]
+    space = [e for e in ev if e[0] == elfkey.EV_KEY and e[1] == elfkey.KEYS["space"]]
+    assert [e[2] for e in space] == [1, 0, 1, 0]   # hold, release, hold, quit-cleanup
