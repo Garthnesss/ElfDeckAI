@@ -346,20 +346,39 @@ def test_screenshot_failure_is_a_clean_error(monkeypatch):
     assert "screenshot failed" in content[0]["text"]
 
 
-def test_ensure_graphical_env_imports_from_systemd(monkeypatch):
+def _systemd_env(monkeypatch, text):
     class R:
-        stdout = ("WAYLAND_DISPLAY=wayland-0\nDISPLAY=:0\n"
-                  "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus\n"
-                  "UNRELATED=nope\n")
-    monkeypatch.delenv("WAYLAND_DISPLAY", raising=False)
-    monkeypatch.delenv("DISPLAY", raising=False)
-    monkeypatch.delenv("DBUS_SESSION_BUS_ADDRESS", raising=False)
+        returncode = 0
+        stdout = text
     monkeypatch.setattr(_mcp.subprocess, "run", lambda *a, **k: R())
+
+
+def test_ensure_graphical_env_imports_from_systemd(monkeypatch):
+    for key in _mcp._SESSION_KEYS:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(_mcp, "_INHERITED", frozenset())
+    _systemd_env(monkeypatch, "WAYLAND_DISPLAY=wayland-0\nDISPLAY=:0\n"
+                 "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus\n"
+                 "UNRELATED=nope\n")
     _mcp._ensure_graphical_env()
-    import os as _os
-    assert _os.environ["WAYLAND_DISPLAY"] == "wayland-0"
-    assert _os.environ["DISPLAY"] == ":0"
-    assert "UNRELATED" not in _os.environ
+    assert os.environ["WAYLAND_DISPLAY"] == "wayland-0"
+    assert os.environ["DISPLAY"] == ":0"
+    assert "UNRELATED" not in os.environ
+
+
+def test_graphical_env_follows_a_mode_switch(monkeypatch):
+    for key in _mcp._SESSION_KEYS:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(_mcp, "_INHERITED", frozenset({"DISPLAY"}))
+    monkeypatch.setenv("DISPLAY", ":7")                  # inherited: kept
+    _systemd_env(monkeypatch, "WAYLAND_DISPLAY=wayland-0\nDISPLAY=:0\n")
+    _mcp._ensure_graphical_env()                          # Desktop Mode
+    assert os.environ["WAYLAND_DISPLAY"] == "wayland-0"
+    _systemd_env(monkeypatch, "GAMESCOPE_WAYLAND_DISPLAY=gamescope-0\n")
+    _mcp._ensure_graphical_env()                          # now Gaming Mode
+    assert "WAYLAND_DISPLAY" not in os.environ            # stale value dropped
+    assert os.environ["GAMESCOPE_WAYLAND_DISPLAY"] == "gamescope-0"
+    assert os.environ["DISPLAY"] == ":7"
 
 
 def test_initialize_negotiates_the_protocol_version():
@@ -551,3 +570,80 @@ def test_pointer_without_a_screenshot_takes_one_for_the_size(tmp_path, monkeypat
         assert not is_error and lines() == ["moveto 10 20 800 600"]
     finally:
         os.close(reader)
+
+
+
+# --- Gaming Mode (gamescope) ---------------------------------------------------
+
+import socket as _socket
+
+
+def _gamescope_runtime(tmp_path, monkeypatch, name="gamescope-0"):
+    runtime = tmp_path / "run"
+    runtime.mkdir()
+    sock = _socket.socket(_socket.AF_UNIX)
+    sock.bind(str(runtime / name))
+    (runtime / (name + ".lock")).write_text("")
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
+    monkeypatch.delenv("GAMESCOPE_WAYLAND_DISPLAY", raising=False)
+    return sock
+
+
+def test_gamescope_socket_is_found_without_the_variable(tmp_path, monkeypatch):
+    sock = _gamescope_runtime(tmp_path, monkeypatch)
+    try:
+        assert _mcp._gamescope_display() == "gamescope-0"
+        monkeypatch.setenv("GAMESCOPE_WAYLAND_DISPLAY", "gamescope-9")
+        assert _mcp._gamescope_display() is None           # named, but absent
+    finally:
+        sock.close()
+
+
+def test_no_gamescope_in_desktop_mode(tmp_path, monkeypatch):
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    monkeypatch.delenv("GAMESCOPE_WAYLAND_DISPLAY", raising=False)
+    (tmp_path / "wayland-0").write_text("")
+    assert _mcp._gamescope_display() is None
+
+
+def test_gaming_mode_capture_uses_gamescope_first(tmp_path, monkeypatch):
+    sock = _gamescope_runtime(tmp_path, monkeypatch)
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    png = tmp_path / "fake.png"
+    png.write_bytes(_PNG_1PX)
+    log = tmp_path / "args"
+    # Like gamescope: return at once, write the file a moment later.
+    (fakebin / "gamescopectl").write_text(
+        '#!/bin/sh\necho "$GAMESCOPE_WAYLAND_DISPLAY $*" > "%s"\n'
+        '( sleep 0.3; cp "%s" "$2" ) &\n' % (log, png))
+    (fakebin / "spectacle").write_text("#!/bin/sh\nexit 99\n")
+    for f in fakebin.iterdir():
+        f.chmod(0o755)
+    monkeypatch.setenv("PATH", "%s:/usr/bin:/bin" % fakebin)
+    monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
+    try:
+        assert _mcp._capture_screen() == _PNG_1PX
+        display, cmd, _path, kind = log.read_text().split()
+        assert (display, cmd, kind) == ("gamescope-0", "screenshot", "4")
+    finally:
+        sock.close()
+
+
+def test_gamescope_failure_falls_back_to_desktop_tools(tmp_path, monkeypatch):
+    sock = _gamescope_runtime(tmp_path, monkeypatch)
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    png = tmp_path / "fake.png"
+    png.write_bytes(_PNG_1PX)
+    (fakebin / "gamescopectl").write_text("#!/bin/sh\necho no compositor >&2\nexit 1\n")
+    (fakebin / "spectacle").write_text(
+        '#!/bin/sh\nfor a; do out="$a"; done\ncp "%s" "$out"\n' % png)
+    for f in fakebin.iterdir():
+        f.chmod(0o755)
+    monkeypatch.setenv("PATH", "%s:/usr/bin:/bin" % fakebin)
+    monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
+    try:
+        assert _mcp._capture_screen() == _PNG_1PX
+    finally:
+        sock.close()

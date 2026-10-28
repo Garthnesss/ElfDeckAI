@@ -14,12 +14,19 @@ project follows [Semantic Versioning](https://semver.org/).
 - Screenshots larger than 1280 px on their long side are scaled down
   before sending (`ELFDECKAI_SCREENSHOT_MAX` sets the limit; `0` disables).
   The screenshot result now also states the image size.
-- ROADMAP.md, with a plan for Steam Deck Gaming Mode.
+- Steam Deck Gaming Mode screenshots, through gamescope's `gamescopectl`.
+  Used first whenever gamescope is running; the Desktop Mode tools remain
+  the fallback.
+- ROADMAP.md, and `scripts/probe-gaming-mode.sh` for checking Gaming Mode
+  support on a Deck.
 
 ### Changed
 - Screenshots are captured as uncompressed PPM where the capture tool
   supports it, falling back to PNG.
 - The installer also checks for the ElfMouse Absolute device.
+- The server re-reads the graphical session's variables before every
+  screenshot, so switching between Desktop Mode and Gaming Mode no longer
+  needs a server restart.
 
 ## [1.0.7] - 2026-10-28
 

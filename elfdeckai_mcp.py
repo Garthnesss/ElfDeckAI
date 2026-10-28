@@ -47,7 +47,9 @@ import shutil
 import struct
 import subprocess
 import sys
+import stat
 import tempfile
+import time
 import zlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -248,29 +250,88 @@ def tools_list():
         for name, desc, props, required in TOOLS]}
 
 
+_SESSION_KEYS = ("WAYLAND_DISPLAY", "DISPLAY", "GAMESCOPE_WAYLAND_DISPLAY",
+                 "DBUS_SESSION_BUS_ADDRESS", "XDG_RUNTIME_DIR")
+# Session variables this process was started with; those are left alone.
+_INHERITED = frozenset(k for k in _SESSION_KEYS if os.environ.get(k))
+
+
 def _ensure_graphical_env():
     """Fill in the graphical-session variables an SSH-launched server lacks.
 
     A server started from an MCP client over SSH inherits no WAYLAND_DISPLAY
     or DISPLAY, and capture tools abort without them. The systemd user
-    manager knows the real values (it started the session), so import the
-    missing ones from `systemctl --user show-environment`. No-op when a
-    display variable is already set or systemd is unavailable.
+    manager knows the current values, so they are re-read from
+    `systemctl --user show-environment` before every capture: switching the
+    Deck between Desktop Mode and Gaming Mode changes them while this
+    server keeps running. Variables the server was started with are kept.
     """
-    if os.environ.get("WAYLAND_DISPLAY") or os.environ.get("DISPLAY"):
+    if _INHERITED.issuperset(_SESSION_KEYS):
         return
     try:
         out = subprocess.run(["systemctl", "--user", "show-environment"],
                              capture_output=True, text=True, timeout=5)
     except Exception:
         return
+    if out.returncode != 0:
+        return
+    current = {}
     for line in (out.stdout or "").splitlines():
         key, sep, value = line.partition("=")
-        if sep and value and key in ("WAYLAND_DISPLAY", "DISPLAY",
-                                     "DBUS_SESSION_BUS_ADDRESS",
-                                     "XDG_RUNTIME_DIR") \
-                and key not in os.environ:
-            os.environ[key] = value
+        if sep and value and key in _SESSION_KEYS:
+            current[key] = value
+    for key in _SESSION_KEYS:
+        if key in _INHERITED:
+            continue
+        if key in current:
+            os.environ[key] = current[key]
+        else:
+            os.environ.pop(key, None)   # gone since the last mode switch
+
+
+def _gamescope_display():
+    """Name of gamescope's Wayland socket (Steam Deck Gaming Mode), or None
+    when gamescope is not running."""
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
+    named = os.environ.get("GAMESCOPE_WAYLAND_DISPLAY")
+    if named:
+        candidates = [named]
+    else:
+        try:
+            candidates = sorted(n for n in os.listdir(runtime)
+                                if re.match(r"gamescope-\d+$", n))
+        except OSError:
+            return None
+    for name in candidates:
+        try:
+            if stat.S_ISSOCK(os.stat(os.path.join(runtime, name)).st_mode):
+                return name
+        except OSError:
+            continue
+    return None
+
+
+def _capture_gamescope(path, display, timeout=3.0):
+    """Ask gamescope for a screenshot of exactly what is on screen (capture
+    type 4, "screen buffer") and wait for the file: gamescope writes it
+    asynchronously after the command returns."""
+    env = dict(os.environ, GAMESCOPE_WAYLAND_DISPLAY=display)
+    r = subprocess.run(["gamescopectl", "screenshot", path, "4"],
+                       capture_output=True, text=True, timeout=10, env=env)
+    if r.returncode != 0:
+        raise RuntimeError((r.stderr or r.stdout or "").strip()
+                           or "exit %d" % r.returncode)
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+            if data.endswith(_PNG_END):   # complete, not mid-write
+                return data
+        except OSError:
+            pass
+        time.sleep(0.05)
+    raise RuntimeError("no screenshot written within %.0f s" % timeout)
 
 
 # Screenshots wider or taller than this are scaled down before they are
@@ -309,7 +370,8 @@ def _capture_commands(path):
 def _capture_screen():
     """Raw screenshot bytes (PPM or PNG) of the machine this server runs on.
 
-    Tries, in order: Spectacle (KDE, e.g. a Steam Deck in Desktop Mode),
+    Tries, in order: gamescope (a Steam Deck in Gaming Mode, when its
+    socket exists), Spectacle (KDE, e.g. a Steam Deck in Desktop Mode),
     grim (wlroots), the X11 tools scrot and ImageMagick import, then KWin's
     D-Bus screenshot as a fallback (bounded to ~8 s: on some Plasma versions
     it waits on an interactive authorization prompt). Raises RuntimeError
@@ -319,6 +381,12 @@ def _capture_screen():
     errors = []
     tmpdir = tempfile.mkdtemp(prefix="elfdeckai-")
     try:
+        display = _gamescope_display()
+        if display and shutil.which("gamescopectl"):
+            try:
+                return _capture_gamescope(os.path.join(tmpdir, "gamescope.png"), display)
+            except Exception as e:
+                errors.append("gamescope: %s" % e)
         for label, cmd, out, is_ppm in _capture_commands(os.path.join(tmpdir, "shot")):
             try:
                 r = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
@@ -461,6 +529,9 @@ def _encode_png(w, h, rgb):
             + _png_chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
             + _png_chunk(b"IDAT", zlib.compress(raw, 6))
             + _png_chunk(b"IEND", b""))
+
+
+_PNG_END = b"IEND\xaeB`\x82"
 
 
 def _png_size(data):

@@ -99,7 +99,7 @@ Installation complete. To connect an AI client on your PC:
        "command": "ssh",
        "args": ["deck@${IP:-YOUR-DECK-IP}", "$BIN_DIR/elfdeckai-mcp"]}}}
 
-4) Restart the AI client, start a game on the Deck (Desktop Mode),
+4) Restart the AI client, start a game on the Deck (Gaming or Desktop Mode),
    and ask your AI to take a screenshot — if it can see your Deck,
    everything works.
 

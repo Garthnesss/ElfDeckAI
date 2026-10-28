@@ -97,9 +97,8 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 2. **Verify hands:** open any text field or menu on the Deck and call
    `key_tap` with `key: "x"`, or in a game menu call `pad_press` with
    `button: "a"`. The human confirms the Deck reacted.
-3. **Play:** the human launches a game **in Desktop Mode** (screenshot
-   capture needs the desktop session; Gaming Mode is not supported for
-   vision yet). Then you drive: screenshot → act → screenshot. Keep holds
+3. **Play:** the human launches a game, in Desktop Mode or Gaming Mode.
+   Then you drive: screenshot → act → screenshot. Keep holds
    short (menu taps ~100 ms). If anything ever feels stuck, call
    `key_release`, `pad_reset` and `mouse_release` — they exist exactly for
    that, and every hold auto-releases within 5 seconds regardless.
@@ -111,7 +110,9 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
   settings screens: excellent. Twitch action, platformers, shooters,
   racing: the AI will lose, and that's a physics problem, not a setup
   problem.
-- Vision is Desktop Mode only for now.
+- Gaming Mode works for screenshots and the keyboard (verified in Stardew
+  Valley). The gamepad can be ignored there when Steam gives the
+  controller slot to the Deck's built-in pad; use the keyboard instead.
 - Anyone who can log in to the Deck over SSH can send inputs. That's the
   same trust level as SSH itself; don't expose SSH to the internet.
 
@@ -121,7 +122,7 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 | --- | --- | --- |
 | Tool error: "daemon not running" | A service stopped | On the Deck: `systemctl --user restart elfkey elfpad elfmouse` |
 | Tool error: "permission denied on the FIFO" | MCP server running as a different user than the daemons | Run everything as the `deck` user |
-| `screenshot` errors | Deck is in Gaming Mode, or no graphical session | Switch to Desktop Mode |
+| `screenshot` errors | No graphical session (the Deck is at the login screen or asleep), or Gaming Mode on an older ElfDeckAI | Wake the Deck; update with the installer; or switch to Desktop Mode |
 | MCP client can't start the server, or it times out | SSH is asking for a password the client can't type | Set up key-based login (Phase 2, step 2) and check `ssh deck@DECK-IP echo ok` prints `ok` with no prompt |
 | MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `ip -4 addr show scope global` shows the current one; update the config |
 | `elfdeckai-mcp`: command not found over SSH | PATH over SSH is minimal | Use the absolute path from the installer output (`/home/deck/.local/bin/elfdeckai-mcp`) |
