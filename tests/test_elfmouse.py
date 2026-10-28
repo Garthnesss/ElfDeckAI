@@ -123,3 +123,18 @@ def test_parse_release_command():
     assert elfmouse.parse_command("release") == ("release",)
     with pytest.raises(ValueError):
         elfmouse.parse_command("release all")
+
+
+def test_move_is_a_single_frame(monkeypatch):
+    frames = []
+
+    def fake_write(fd, data):
+        frames.extend(struct.unpack("qqHHi", data[i:i + 24])[2:]
+                      for i in range(0, len(data), 24))
+        return len(data)
+
+    monkeypatch.setattr(elfmouse.os, "write", fake_write)
+    m = elfmouse.ElfMouse(fd=object())
+    m.move(30, -20)
+    assert [e[0] for e in frames].count(elfmouse.EV_SYN) == 1
+    assert frames[-1][0] == elfmouse.EV_SYN
