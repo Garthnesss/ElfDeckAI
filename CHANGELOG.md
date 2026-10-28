@@ -16,7 +16,7 @@ project follows [Semantic Versioning](https://semver.org/).
   technical description follows it. The Deck installer and
   AI_SETUP_GUIDE.md point to the PC setup scripts.
 
-## [1.1.1] - Unreleased
+## [1.1.1] - 2026-10-28
 
 ### Fixed
 - Gamepad in Steam Deck Gaming Mode: games that ignored ElfPad were only
