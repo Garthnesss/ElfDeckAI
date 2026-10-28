@@ -77,19 +77,28 @@ distributions, install the udev rule first (see [Installation](#installation)).
 ## MCP server
 
 `elfdeckai-mcp` is a Model Context Protocol server (stdio transport) that
-exposes 19 tools:
+exposes 21 tools:
 
 | Group | Tools |
 |---|---|
 | Keyboard | `key_tap`, `key_down`, `key_up`, `key_release` |
 | Gamepad | `pad_press`, `pad_down`, `pad_up`, `pad_stick`, `pad_trigger`, `pad_center`, `pad_reset` |
-| Mouse | `mouse_move`, `mouse_click`, `mouse_down`, `mouse_up`, `mouse_scroll`, `mouse_hscroll`, `mouse_release` |
+| Mouse | `mouse_click_at`, `mouse_move_to`, `mouse_move`, `mouse_click`, `mouse_down`, `mouse_up`, `mouse_scroll`, `mouse_hscroll`, `mouse_release` |
 | Vision | `screenshot` |
 
 `screenshot` captures the screen of the machine the server runs on and
 returns a PNG, so an agent can work in a look, act, look again loop
-without a separate video stream. It supports KDE Plasma (including a Steam
-Deck in Desktop Mode), wlroots compositors and X11.
+without a separate video stream. It supports the Steam Deck in both Gaming
+Mode (through gamescope) and Desktop Mode (KDE Plasma), wlroots compositors
+and X11. Screens larger than
+1280 pixels on their long side are scaled down before sending (set
+`ELFDECKAI_SCREENSHOT_MAX` to change the limit, or `0` to turn it off), and
+the result includes the image's size.
+
+`mouse_click_at` and `mouse_move_to` take coordinates in the pixels of the
+most recent screenshot, so an agent can click exactly what it sees, whatever
+the screen's real resolution or the scaling applied. They assume a single
+display.
 
 Running on the same machine as the daemons:
 
@@ -156,16 +165,20 @@ Guide off the standard button indices.
 | Command | Effect |
 |---|---|
 | `move <dx> <dy> [glide_ms]` | Move the pointer relatively; with `glide_ms`, spread the move over that time |
+| `moveto <x> <y> [<width> <height>]` | Place the pointer at an absolute position: pixel (x, y) of a `width`×`height` frame, or device units 0–32767 across the screen when no frame is given |
 | `click <btn> [ms]` | Click `left`, `right` or `middle` (default 100 ms) |
 | `down <btn>` / `up <btn>` | Hold / release a button (for drags: `down`, `move`, `up`) |
 | `scroll <ticks>` / `hscroll <ticks>` | Vertical / horizontal wheel (positive is up / right) |
 | `release` | Release every held button |
 | `quit` | Release everything and exit |
 
-Movement is relative: negative `dy` moves up. Units are relative motion
-counts, not guaranteed screen pixels, because pointer acceleration applies.
-Several small moves checked with screenshots are more reliable than one
-large move. Each command is limited to ±10,000 counts and ±120 wheel ticks.
+`move` is relative: negative `dy` moves up. Its units are motion counts,
+not guaranteed screen pixels, because pointer acceleration applies. Each
+command is limited to ±10,000 counts and ±120 wheel ticks.
+
+`moveto` uses a second virtual device, **ElfMouse Absolute**, which
+compositors treat like a virtual machine's tablet pointer, so the position
+is exact. Buttons are pressed on whichever device moved last.
 
 ## Safety model
 
@@ -239,9 +252,7 @@ a fake uinput device, and the MCP server over real JSON-RPC. No
 
 ## Roadmap
 
-- A single combined daemon for keyboard, gamepad and mouse.
-- Screenshot support in Steam Deck Gaming Mode.
-- A demo recording of the Pokémon run.
+See [ROADMAP.md](ROADMAP.md).
 
 ## Changelog
 

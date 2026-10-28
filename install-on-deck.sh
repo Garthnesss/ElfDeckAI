@@ -65,11 +65,11 @@ sleep 2
 
 echo "==> Checking the virtual devices"
 ok=1
-for name in ElfKey ElfPad ElfMouse; do
+for name in ElfKey ElfPad ElfMouse "ElfMouse Absolute"; do
     if grep -q "Name=\"$name\"" /proc/bus/input/devices; then
         echo "    $name: up"
     else
-        unit="$(echo "$name" | tr '[:upper:]' '[:lower:]')"
+        unit="$(echo "${name%% *}" | tr '[:upper:]' '[:lower:]')"
         echo "    $name: NOT VISIBLE — check: systemctl --user status $unit"
         ok=0
     fi
@@ -99,7 +99,7 @@ Installation complete. To connect an AI client on your PC:
        "command": "ssh",
        "args": ["deck@${IP:-YOUR-DECK-IP}", "$BIN_DIR/elfdeckai-mcp"]}}}
 
-4) Restart the AI client, start a game on the Deck (Desktop Mode),
+4) Restart the AI client, start a game on the Deck (Gaming or Desktop Mode),
    and ask your AI to take a screenshot — if it can see your Deck,
    everything works.
 
