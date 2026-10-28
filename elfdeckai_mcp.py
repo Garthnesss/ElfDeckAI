@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
 """ElfdeckAI as MCP tools: a standard-library-only Model Context Protocol
 server (stdio, JSON-RPC) that exposes ElfKey and ElfPad to any MCP client —
 Claude, Hermes, your own agent — as native tool calls:
