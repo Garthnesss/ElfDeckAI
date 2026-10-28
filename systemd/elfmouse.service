@@ -3,7 +3,7 @@ Description=ElfMouse virtual mouse daemon
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/python3 %h/elfdeckai/elfmouse.py
+ExecStart=%h/.local/bin/elfmouse
 Restart=on-failure
 RestartSec=2
 
