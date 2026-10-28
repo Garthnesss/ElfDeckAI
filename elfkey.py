@@ -32,6 +32,7 @@ Standard library only.
 """
 import fcntl, os, signal, struct, sys, time
 
+NAME = "elfkey"
 FIFO = "/tmp/elfkey.fifo"
 DEFAULT_HOLD_MS = 120
 MAX_HOLD_MS = 5000          # a tap is a tap; use down/up for longer holds
@@ -115,25 +116,27 @@ class ElfKey:
 
     def emit(self, code, value):
         os.write(self.fd, struct.pack("qqHHi", 0, 0, EV_KEY, code, value))
+
+    def syn(self):
         os.write(self.fd, struct.pack("qqHHi", 0, 0, EV_SYN, SYN_REPORT, 0))
 
     def tap(self, name, hold_ms):
         code = KEYS[name]
-        self.emit(code, 1)
-        self.held.add(name)
+        self.held.add(name)          # tracked BEFORE the event goes out:
+        self.emit(code, 1)           # a signal landing mid-tap can't orphan it
+        self.syn()
         try:
             if hold_ms:
                 time.sleep(hold_ms / 1000.0)
         finally:
             self.emit(code, 0)
+            self.syn()
             self.held.discard(name)
 
     def set_key(self, name, down):
+        (self.held.add if down else self.held.discard)(name)
         self.emit(KEYS[name], 1 if down else 0)
-        if down:
-            self.held.add(name)
-        else:
-            self.held.discard(name)
+        self.syn()
 
     def release_all(self):
         for name in list(self.held):
@@ -142,6 +145,32 @@ class ElfKey:
             except OSError:
                 pass
             self.held.discard(name)
+        try:
+            self.syn()
+        except OSError:
+            pass
+
+
+_LOCK_FD = None
+
+
+def _acquire_instance_lock():
+    """Single-instance guard: a second daemon would unlink the first one's
+    FIFO and orphan it, so refuse to start. flock is per open-file, and the
+    fd is held for the process lifetime; a same-process second call (the
+    test suite runs main() in threads) is a no-op."""
+    global _LOCK_FD
+    if _LOCK_FD is not None:
+        return
+    path = "/tmp/%s.lock" % NAME
+    fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        os.close(fd)
+        raise SystemExit("%s: already running (another instance holds %s)"
+                         % (NAME, path))
+    _LOCK_FD = fd
 
 
 def _open_device():
@@ -169,7 +198,12 @@ def _make_fifo(path=FIFO):
 
 
 def main():
-    fd = _open_device()
+    _acquire_instance_lock()
+    try:
+        fd = _open_device()
+    except OSError as e:
+        raise SystemExit("elfkey: cannot open /dev/uinput: %s "
+                         "(module loaded? permission? see the udev rule)" % e)
     keys = ElfKey(fd)
     print("ElfKey device created", flush=True)
 
@@ -197,6 +231,9 @@ def main():
                 except ValueError as e:
                     print("elfkey: refused: %s (%s)" % (line.strip()[:80], e), file=sys.stderr, flush=True)
                     continue
+                # audit log: every accepted command, so "what did the agent
+                # actually press?" is answerable later (journald/stderr).
+                print("elfkey: %s" % line.strip()[:80], file=sys.stderr, flush=True)
                 try:
                     if cmd == "quit":
                         break
