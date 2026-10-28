@@ -1,1 +1,173 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJFbGZkZWNrQUkgYXMgTUNQIHRvb2xzOiBhIHN0YW5kYXJkLWxpYnJhcnktb25seSBNb2RlbCBDb250ZXh0IFByb3RvY29sCnNlcnZlciAoc3RkaW8sIEpTT04tUlBDKSB0aGF0IGV4cG9zZXMgRWxmS2V5IGFuZCBFbGZQYWQgdG8gYW55IE1DUCBjbGllbnQg4oCUCkNsYXVkZSwgSGVybWVzLCB5b3VyIG93biBhZ2VudCDigJQgYXMgbmF0aXZlIHRvb2wgY2FsbHM6CgogICAga2V5X3RhcCAgICB7a2V5LCBob2xkX21zP30gICAgICAgICAgcGFkX3ByZXNzICAge2J1dHRvbiwgaG9sZF9tcz99CiAgICBrZXlfZG93biAgIHtrZXl9ICAgICAgICAgICAgICAgICAgICBwYWRfZG93biAgICB7YnV0dG9ufQogICAga2V5X3VwICAgICB7a2V5fSAgICAgICAgICAgICAgICAgICAgcGFkX3VwICAgICAge2J1dHRvbn0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZF9zdGljayAgIHtzaWRlLCB4LCB5LCBob2xkX21zP30KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZF90cmlnZ2VyIHtzaWRlLCBwZXJjZW50LCBob2xkX21zP30KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZF9jZW50ZXIgIHt9CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwYWRfcmVzZXQgICB7fQoKVGhlIHNlcnZlciBob2xkcyBubyBzdGF0ZSBhbmQgaW5qZWN0cyBub3RoaW5nIGl0c2VsZjogZXZlcnkgY2FsbCBpcwp2YWxpZGF0ZWQgYnkgdGhlIGRhZW1vbnMnIG93biBwYXJzZV9jb21tYW5kKCkgKHRoZSBleGFjdCBjb250cmFjdCB0aGUKRklGT3MgZW5mb3JjZSkgYW5kIHRoZW4gd3JpdHRlbiBhcyBvbmUgbGluZSB0byB0aGUgZGFlbW9uJ3MgRklGTy4gSWYgYQpkYWVtb24gaXNuJ3QgcnVubmluZywgdGhlIGNhbGwgZmFpbHMgY2xlYW5seSB3aXRoICJkYWVtb24gbm90IHJ1bm5pbmciCmluc3RlYWQgb2YgYmxvY2tpbmcg4oCUIG9wZW5pbmcgYSBGSUZPIGZvciB3cml0ZSB3aXRoIG5vIHJlYWRlciB3b3VsZApvdGhlcndpc2UgaGFuZyB0aGUgYWdlbnQuCgpSdW4gdGhlIGRhZW1vbnMgZmlyc3QgKGVsZmtleS5weSAvIGVsZnBhZC5weSksIHRoZW4gcG9pbnQgeW91ciBNQ1AgY2xpZW50CmF0IHRoaXMgZmlsZSwgZS5nLjoKCiAgICB7Im1jcFNlcnZlcnMiOiB7ImVsZmRlY2thaSI6IHsKICAgICAgICAiY29tbWFuZCI6ICJweXRob24zIiwgImFyZ3MiOiBbIi9wYXRoL3RvL2VsZmRlY2thaV9tY3AucHkiXX19fQoKRklGTyBwYXRocyBkZWZhdWx0IHRvIHRoZSBkYWVtb25zJyBvd24gY29uc3RhbnRzIGFuZCBjYW4gYmUgb3ZlcnJpZGRlbgp3aXRoIEVMRktFWV9GSUZPIC8gRUxGUEFEX0ZJRk8gZW52aXJvbm1lbnQgdmFyaWFibGVzICh1c2VkIGJ5IHRoZSB0ZXN0cykuClN0YW5kYXJkIGxpYnJhcnkgb25seSwgbGlrZSBldmVyeXRoaW5nIGVsc2UgaW4gdGhpcyByZXBvLgoiIiIKaW1wb3J0IGpzb24KaW1wb3J0IG9zCmltcG9ydCBzeXMKCnN5cy5wYXRoLmluc2VydCgwLCBvcy5wYXRoLmRpcm5hbWUob3MucGF0aC5hYnNwYXRoKF9fZmlsZV9fKSkpCmltcG9ydCBlbGZrZXkKaW1wb3J0IGVsZnBhZAoKS0VZX0ZJRk8gPSBvcy5lbnZpcm9uLmdldCgiRUxGS0VZX0ZJRk8iLCBlbGZrZXkuRklGTykKUEFEX0ZJRk8gPSBvcy5lbnZpcm9uLmdldCgiRUxGUEFEX0ZJRk8iLCBlbGZwYWQuRklGTykKUFJPVE9DT0xfVkVSU0lPTiA9ICIyMDI0LTExLTA1IgoKCmRlZiBfc2VuZChmaWZvLCBsaW5lLCBwYXJzZXIpOgogICAgIiIiVmFsaWRhdGUgYGxpbmVgIHdpdGggdGhlIGRhZW1vbidzIHBhcnNlciwgdGhlbiBoYW5kIGl0IHRvIHRoZSBGSUZPLgogICAgUmV0dXJucyBhIGh1bWFuLXJlYWRhYmxlIGNvbmZpcm1hdGlvbiBvciByYWlzZXMgVmFsdWVFcnJvci9PU0Vycm9yLiIiIgogICAgcGFyc2VyKGxpbmUpICAjIHJhaXNlcyBWYWx1ZUVycm9yIG9uIGFueXRoaW5nIHRoZSBkYWVtb24gd291bGQgcmVmdXNlCiAgICBmZCA9IG9zLm9wZW4oZmlmbywgb3MuT19XUk9OTFkgfCBvcy5PX05PTkJMT0NLKQogICAgdHJ5OgogICAgICAgIG9zLndyaXRlKGZkLCAobGluZSArICJcbiIpLmVuY29kZSgpKQogICAgZmluYWxseToKICAgICAgICBvcy5jbG9zZShmZCkKICAgIHJldHVybiAic2VudDogJXMiICUgbGluZQoKCmRlZiBfa2V5X2xpbmUoY21kLCBhKToKICAgIGlmIGNtZCA9PSAia2V5X3RhcCI6CiAgICAgICAgbXMgPSBhLmdldCgiaG9sZF9tcyIpCiAgICAgICAgcmV0dXJuICJrZXkgJXMlcyIgJSAoYVsia2V5Il0sICIiIGlmIG1zIGlzIE5vbmUgZWxzZSAiICVzIiAlIG1zKQogICAgcmV0dXJuICIlcyAlcyIgJSAoY21kLnJlcGxhY2UoImtleV8iLCAiIiksIGFbImtleSJdKSAgIyBrZXlfZG93biAvIGtleV91cAoKCmRlZiBfcGFkX2xpbmUoY21kLCBhKToKICAgIGlmIGNtZCA9PSAicGFkX3ByZXNzIjoKICAgICAgICBtcyA9IGEuZ2V0KCJob2xkX21zIikKICAgICAgICByZXR1cm4gInByZXNzICVzJXMiICUgKGFbImJ1dHRvbiJdLCAiIiBpZiBtcyBpcyBOb25lIGVsc2UgIiAlcyIgJSBtcykKICAgIGlmIGNtZCBpbiAoInBhZF9kb3duIiwgInBhZF91cCIpOgogICAgICAgIHJldHVybiAiJXMgJXMiICUgKGNtZC5yZXBsYWNlKCJwYWRfIiwgIiIpLCBhWyJidXR0b24iXSkKICAgIGlmIGNtZCA9PSAicGFkX3N0aWNrIjoKICAgICAgICBtcyA9IGEuZ2V0KCJob2xkX21zIikKICAgICAgICByZXR1cm4gInN0aWNrICVzICVzICVzJXMiICUgKGFbInNpZGUiXSwgYVsieCJdLCBhWyJ5Il0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiIiBpZiBtcyBpcyBOb25lIGVsc2UgIiAlcyIgJSBtcykKICAgIGlmIGNtZCA9PSAicGFkX3RyaWdnZXIiOgogICAgICAgIG1zID0gYS5nZXQoImhvbGRfbXMiKQogICAgICAgIHJldHVybiAidHJpZ2dlciAlcyAlcyVzIiAlIChhWyJzaWRlIl0sIGFbInBlcmNlbnQiXSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIiIgaWYgbXMgaXMgTm9uZSBlbHNlICIgJXMiICUgbXMpCiAgICByZXR1cm4gY21kLnJlcGxhY2UoInBhZF8iLCAiIikgICMgcGFkX2NlbnRlciAvIHBhZF9yZXNldAoKClRPT0xTID0gWwogICAgKCJrZXlfdGFwIiwgIlRhcCBhIGtleSBvbiB0aGUgdmlydHVhbCBrZXlib2FyZC4iLAogICAgIHsia2V5IjogeyJ0eXBlIjogInN0cmluZyJ9LCAiaG9sZF9tcyI6IHsidHlwZSI6ICJpbnRlZ2VyIn19LCBbImtleSJdKSwKICAgICgia2V5X2Rvd24iLCAiSG9sZCBhIGtleSBkb3duIChyZWxlYXNlIHdpdGgga2V5X3VwKS4iLAogICAgIHsia2V5IjogeyJ0eXBlIjogInN0cmluZyJ9fSwgWyJrZXkiXSksCiAgICAoImtleV91cCIsICJSZWxlYXNlIGEgaGVsZCBrZXkuIiwKICAgICB7ImtleSI6IHsidHlwZSI6ICJzdHJpbmcifX0sIFsia2V5Il0pLAogICAgKCJwYWRfcHJlc3MiLCAiVGFwIGEgZ2FtZXBhZCBidXR0b24gb3IgRC1wYWQgZGlyZWN0aW9uLiIsCiAgICAgeyJidXR0b24iOiB7InR5cGUiOiAic3RyaW5nIn0sICJob2xkX21zIjogeyJ0eXBlIjogImludGVnZXIifX0sIFsiYnV0dG9uIl0pLAogICAgKCJwYWRfZG93biIsICJIb2xkIGEgZ2FtZXBhZCBidXR0b24gb3IgRC1wYWQgZGlyZWN0aW9uIGRvd24uIiwKICAgICB7ImJ1dHRvbiI6IHsidHlwZSI6ICJzdHJpbmcifX0sIFsiYnV0dG9uIl0pLAogICAgKCJwYWRfdXAiLCAiUmVsZWFzZSBhIGhlbGQgZ2FtZXBhZCBidXR0b24gb3IgRC1wYWQgZGlyZWN0aW9uLiIsCiAgICAgeyJidXR0b24iOiB7InR5cGUiOiAic3RyaW5nIn19LCBbImJ1dHRvbiJdKSwKICAgICgicGFkX3N0aWNrIiwgIk1vdmUgYW4gYW5hbG9nIHN0aWNrICh4L3kgaW4gcGVyY2VudCwgLTEwMC4uMTAwKS4gIgogICAgICAgICAgICAgICAgICAiV2l0aG91dCBob2xkX21zIHRoZSBzdGljayBzdGF5czsgd2l0aCBpdCwgaXQgcmVjZW50ZXJzIGFmdGVyLiIsCiAgICAgeyJzaWRlIjogeyJ0eXBlIjogInN0cmluZyIsICJlbnVtIjogWyJsZWZ0IiwgInJpZ2h0Il19LAogICAgICAieCI6IHsidHlwZSI6ICJpbnRlZ2VyIn0sICJ5IjogeyJ0eXBlIjogImludGVnZXIifSwKICAgICAgImhvbGRfbXMiOiB7InR5cGUiOiAiaW50ZWdlciJ9fSwgWyJzaWRlIiwgIngiLCAieSJdKSwKICAgICgicGFkX3RyaWdnZXIiLCAiU2V0IGFuIGFuYWxvZyB0cmlnZ2VyIChwZXJjZW50IDAuLjEwMCkuICIKICAgICAgICAgICAgICAgICAgICAiV2l0aG91dCBob2xkX21zIGl0IHN0YXlzOyB3aXRoIGl0LCBpdCByZWxlYXNlcyBhZnRlci4iLAogICAgIHsic2lkZSI6IHsidHlwZSI6ICJzdHJpbmciLCAiZW51bSI6IFsibGVmdCIsICJyaWdodCJdfSwKICAgICAgInBlcmNlbnQiOiB7InR5cGUiOiAiaW50ZWdlciJ9LCAiaG9sZF9tcyI6IHsidHlwZSI6ICJpbnRlZ2VyIn19LAogICAgIFsic2lkZSIsICJwZXJjZW50Il0pLAogICAgKCJwYWRfY2VudGVyIiwgIlJldHVybiBzdGlja3MsIHRyaWdnZXJzIGFuZCBELXBhZCB0byBuZXV0cmFsLiIsIHt9LCBbXSksCiAgICAoInBhZF9yZXNldCIsICJSZWxlYXNlIGV2ZXJ5IGJ1dHRvbiBhbmQgcmVjZW50ZXIgZXZlcnl0aGluZy4iLCB7fSwgW10pLApdClRPT0xfTkFNRVMgPSB7dFswXSBmb3IgdCBpbiBUT09MU30KCgpkZWYgdG9vbHNfbGlzdCgpOgogICAgcmV0dXJuIHsidG9vbHMiOiBbCiAgICAgICAgeyJuYW1lIjogbmFtZSwgImRlc2NyaXB0aW9uIjogZGVzYywKICAgICAgICAgImlucHV0U2NoZW1hIjogeyJ0eXBlIjogIm9iamVjdCIsICJwcm9wZXJ0aWVzIjogcHJvcHMsCiAgICAgICAgICAgICAgICAgICAgICAgICAicmVxdWlyZWQiOiByZXF1aXJlZH19CiAgICAgICAgZm9yIG5hbWUsIGRlc2MsIHByb3BzLCByZXF1aXJlZCBpbiBUT09MU119CgoKZGVmIGNhbGxfdG9vbChuYW1lLCBhcmdzKToKICAgICIiIlJldHVybnMgKHRleHQsIGlzX2Vycm9yKS4iIiIKICAgIGlmIG5hbWUgbm90IGluIFRPT0xfTkFNRVM6CiAgICAgICAgcmV0dXJuICJ1bmtub3duIHRvb2w6ICVzIiAlIG5hbWUsIFRydWUKICAgIHRyeToKICAgICAgICBpZiBuYW1lLnN0YXJ0c3dpdGgoImtleV8iKToKICAgICAgICAgICAgcmV0dXJuIF9zZW5kKEtFWV9GSUZPLCBfa2V5X2xpbmUobmFtZSwgYXJncyksIGVsZmtleS5wYXJzZV9jb21tYW5kKSwgRmFsc2UKICAgICAgICByZXR1cm4gX3NlbmQoUEFEX0ZJRk8sIF9wYWRfbGluZShuYW1lLCBhcmdzKSwgZWxmcGFkLnBhcnNlX2NvbW1hbmQpLCBGYWxzZQogICAgZXhjZXB0IFZhbHVlRXJyb3IgYXMgZToKICAgICAgICByZXR1cm4gInJlZnVzZWQ6ICVzIiAlIGUsIFRydWUKICAgIGV4Y2VwdCBLZXlFcnJvciBhcyBlOgogICAgICAgIHJldHVybiAibWlzc2luZyBhcmd1bWVudDogJXMiICUgZSwgVHJ1ZQogICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgcmV0dXJuICJkYWVtb24gbm90IHJ1bm5pbmcgKG5vIHJlYWRlciBvbiB0aGUgRklGTykiLCBUcnVlCgoKZGVmIGhhbmRsZShtc2cpOgogICAgIiIiT25lIEpTT04tUlBDIG1lc3NhZ2UgLT4gcmVzcG9uc2UgZGljdCwgb3IgTm9uZSBmb3Igbm90aWZpY2F0aW9ucy4iIiIKICAgIG1ldGhvZCA9IG1zZy5nZXQoIm1ldGhvZCIpCiAgICBtc2dfaWQgPSBtc2cuZ2V0KCJpZCIpCiAgICBpZiBtZXRob2QgPT0gImluaXRpYWxpemUiOgogICAgICAgIHJldHVybiB7Impzb25ycGMiOiAiMi4wIiwgImlkIjogbXNnX2lkLCAicmVzdWx0IjogewogICAgICAgICAgICAicHJvdG9jb2xWZXJzaW9uIjogUFJPVE9DT0xfVkVSU0lPTiwKICAgICAgICAgICAgImNhcGFiaWxpdGllcyI6IHsidG9vbHMiOiB7fX0sCiAgICAgICAgICAgICJzZXJ2ZXJJbmZvIjogeyJuYW1lIjogImVsZmRlY2thaSIsICJ2ZXJzaW9uIjogIjEuMC4wIn19fQogICAgaWYgbWV0aG9kID09ICJwaW5nIjoKICAgICAgICByZXR1cm4geyJqc29ucnBjIjogIjIuMCIsICJpZCI6IG1zZ19pZCwgInJlc3VsdCI6IHt9fQogICAgaWYgbWV0aG9kID09ICJ0b29scy9saXN0IjoKICAgICAgICByZXR1cm4geyJqc29ucnBjIjogIjIuMCIsICJpZCI6IG1zZ19pZCwgInJlc3VsdCI6IHRvb2xzX2xpc3QoKX0KICAgIGlmIG1ldGhvZCA9PSAidG9vbHMvY2FsbCI6CiAgICAgICAgcGFyYW1zID0gbXNnLmdldCgicGFyYW1zIikgb3Ige30KICAgICAgICB0ZXh0LCBpc19lcnJvciA9IGNhbGxfdG9vbChwYXJhbXMuZ2V0KCJuYW1lIiksIHBhcmFtcy5nZXQoImFyZ3VtZW50cyIpIG9yIHt9KQogICAgICAgIHJldHVybiB7Impzb25ycGMiOiAiMi4wIiwgImlkIjogbXNnX2lkLCAicmVzdWx0IjogewogICAgICAgICAgICAiY29udGVudCI6IFt7InR5cGUiOiAidGV4dCIsICJ0ZXh0IjogdGV4dH1dLCAiaXNFcnJvciI6IGlzX2Vycm9yfX0KICAgIGlmIG1zZ19pZCBpcyBOb25lOgogICAgICAgIHJldHVybiBOb25lICAjIG5vdGlmaWNhdGlvbiAoZS5nLiBub3RpZmljYXRpb25zL2luaXRpYWxpemVkKQogICAgcmV0dXJuIHsianNvbnJwYyI6ICIyLjAiLCAiaWQiOiBtc2dfaWQsCiAgICAgICAgICAgICJlcnJvciI6IHsiY29kZSI6IC0zMjYwMSwgIm1lc3NhZ2UiOiAibWV0aG9kIG5vdCBmb3VuZDogJXMiICUgbWV0aG9kfX0KCgpkZWYgbWFpbigpOgogICAgZm9yIGxpbmUgaW4gc3lzLnN0ZGluOgogICAgICAgIGxpbmUgPSBsaW5lLnN0cmlwKCkKICAgICAgICBpZiBub3QgbGluZToKICAgICAgICAgICAgY29udGludWUKICAgICAgICB0cnk6CiAgICAgICAgICAgIG1zZyA9IGpzb24ubG9hZHMobGluZSkKICAgICAgICBleGNlcHQgVmFsdWVFcnJvcjoKICAgICAgICAgICAgY29udGludWUKICAgICAgICByZXNwb25zZSA9IGhhbmRsZShtc2cpCiAgICAgICAgaWYgcmVzcG9uc2UgaXMgbm90IE5vbmU6CiAgICAgICAgICAgIHN5cy5zdGRvdXQud3JpdGUoanNvbi5kdW1wcyhyZXNwb25zZSkgKyAiXG4iKQogICAgICAgICAgICBzeXMuc3Rkb3V0LmZsdXNoKCkKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgbWFpbigpCg==
+#!/usr/bin/env python3
+"""ElfdeckAI as MCP tools: a standard-library-only Model Context Protocol
+server (stdio, JSON-RPC) that exposes ElfKey and ElfPad to any MCP client —
+Claude, Hermes, your own agent — as native tool calls:
+
+    key_tap    {key, hold_ms?}          pad_press   {button, hold_ms?}
+    key_down   {key}                    pad_down    {button}
+    key_up     {key}                    pad_up      {button}
+                                        pad_stick   {side, x, y, hold_ms?}
+                                        pad_trigger {side, percent, hold_ms?}
+                                        pad_center  {}
+                                        pad_reset   {}
+
+The server holds no state and injects nothing itself: every call is
+validated by the daemons' own parse_command() (the exact contract the
+FIFOs enforce) and then written as one line to the daemon's FIFO. If a
+daemon isn't running, the call fails cleanly with "daemon not running"
+instead of blocking — opening a FIFO for write with no reader would
+otherwise hang the agent.
+
+Run the daemons first (elfkey.py / elfpad.py), then point your MCP client
+at this file, e.g.:
+
+    {"mcpServers": {"elfdeckai": {
+        "command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]}}}
+
+FIFO paths default to the daemons' own constants and can be overridden
+with ELFKEY_FIFO / ELFPAD_FIFO environment variables (used by the tests).
+Standard library only, like everything else in this repo.
+"""
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import elfkey
+import elfpad
+
+KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
+PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
+PROTOCOL_VERSION = "2024-11-05"
+
+
+def _send(fifo, line, parser):
+    """Validate `line` with the daemon's parser, then hand it to the FIFO.
+    Returns a human-readable confirmation or raises ValueError/OSError."""
+    parser(line)  # raises ValueError on anything the daemon would refuse
+    fd = os.open(fifo, os.O_WRONLY | os.O_NONBLOCK)
+    try:
+        os.write(fd, (line + "\n").encode())
+    finally:
+        os.close(fd)
+    return "sent: %s" % line
+
+
+def _key_line(cmd, a):
+    if cmd == "key_tap":
+        ms = a.get("hold_ms")
+        return "key %s%s" % (a["key"], "" if ms is None else " %s" % ms)
+    return "%s %s" % (cmd.replace("key_", ""), a["key"])  # key_down / key_up
+
+
+def _pad_line(cmd, a):
+    if cmd == "pad_press":
+        ms = a.get("hold_ms")
+        return "press %s%s" % (a["button"], "" if ms is None else " %s" % ms)
+    if cmd in ("pad_down", "pad_up"):
+        return "%s %s" % (cmd.replace("pad_", ""), a["button"])
+    if cmd == "pad_stick":
+        ms = a.get("hold_ms")
+        return "stick %s %s %s%s" % (a["side"], a["x"], a["y"],
+                                     "" if ms is None else " %s" % ms)
+    if cmd == "pad_trigger":
+        ms = a.get("hold_ms")
+        return "trigger %s %s%s" % (a["side"], a["percent"],
+                                    "" if ms is None else " %s" % ms)
+    return cmd.replace("pad_", "")  # pad_center / pad_reset
+
+
+TOOLS = [
+    ("key_tap", "Tap a key on the virtual keyboard.",
+     {"key": {"type": "string"}, "hold_ms": {"type": "integer"}}, ["key"]),
+    ("key_down", "Hold a key down (release with key_up).",
+     {"key": {"type": "string"}}, ["key"]),
+    ("key_up", "Release a held key.",
+     {"key": {"type": "string"}}, ["key"]),
+    ("pad_press", "Tap a gamepad button or D-pad direction.",
+     {"button": {"type": "string"}, "hold_ms": {"type": "integer"}}, ["button"]),
+    ("pad_down", "Hold a gamepad button or D-pad direction down.",
+     {"button": {"type": "string"}}, ["button"]),
+    ("pad_up", "Release a held gamepad button or D-pad direction.",
+     {"button": {"type": "string"}}, ["button"]),
+    ("pad_stick", "Move an analog stick (x/y in percent, -100..100). "
+                  "Without hold_ms the stick stays; with it, it recenters after.",
+     {"side": {"type": "string", "enum": ["left", "right"]},
+      "x": {"type": "integer"}, "y": {"type": "integer"},
+      "hold_ms": {"type": "integer"}}, ["side", "x", "y"]),
+    ("pad_trigger", "Set an analog trigger (percent 0..100). "
+                    "Without hold_ms it stays; with it, it releases after.",
+     {"side": {"type": "string", "enum": ["left", "right"]},
+      "percent": {"type": "integer"}, "hold_ms": {"type": "integer"}},
+     ["side", "percent"]),
+    ("pad_center", "Return sticks, triggers and D-pad to neutral.", {}, []),
+    ("pad_reset", "Release every button and recenter everything.", {}, []),
+]
+TOOL_NAMES = {t[0] for t in TOOLS}
+
+
+def tools_list():
+    return {"tools": [
+        {"name": name, "description": desc,
+         "inputSchema": {"type": "object", "properties": props,
+                         "required": required}}
+        for name, desc, props, required in TOOLS]}
+
+
+def call_tool(name, args):
+    """Returns (text, is_error)."""
+    if name not in TOOL_NAMES:
+        return "unknown tool: %s" % name, True
+    try:
+        if name.startswith("key_"):
+            return _send(KEY_FIFO, _key_line(name, args), elfkey.parse_command), False
+        return _send(PAD_FIFO, _pad_line(name, args), elfpad.parse_command), False
+    except ValueError as e:
+        return "refused: %s" % e, True
+    except KeyError as e:
+        return "missing argument: %s" % e, True
+    except OSError:
+        return "daemon not running (no reader on the FIFO)", True
+
+
+def handle(msg):
+    """One JSON-RPC message -> response dict, or None for notifications."""
+    method = msg.get("method")
+    msg_id = msg.get("id")
+    if method == "initialize":
+        return {"jsonrpc": "2.0", "id": msg_id, "result": {
+            "protocolVersion": PROTOCOL_VERSION,
+            "capabilities": {"tools": {}},
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.0"}}}
+    if method == "ping":
+        return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
+    if method == "tools/list":
+        return {"jsonrpc": "2.0", "id": msg_id, "result": tools_list()}
+    if method == "tools/call":
+        params = msg.get("params") or {}
+        text, is_error = call_tool(params.get("name"), params.get("arguments") or {})
+        return {"jsonrpc": "2.0", "id": msg_id, "result": {
+            "content": [{"type": "text", "text": text}], "isError": is_error}}
+    if msg_id is None:
+        return None  # notification (e.g. notifications/initialized)
+    return {"jsonrpc": "2.0", "id": msg_id,
+            "error": {"code": -32601, "message": "method not found: %s" % method}}
+
+
+def main():
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            msg = json.loads(line)
+        except ValueError:
+            continue
+        response = handle(msg)
+        if response is not None:
+            sys.stdout.write(json.dumps(response) + "\n")
+            sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    main()
