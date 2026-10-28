@@ -60,7 +60,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -123,6 +123,10 @@ def _mouse_line(cmd, a):
     return "hscroll %s" % a["clicks"]  # mouse_hscroll
 
 
+# In Gaming Mode, Steam hands games one virtual pad per controller, and many
+# games only listen to Player 1, which is the Deck's own controls by default.
+_PLAYER_ONE_HINT = ("In Steam Deck Gaming Mode, if the game ignores the pad, ElfPad is not Player 1: open Steam > Controller Settings > Reorder Controllers while the game runs and move the non-Deck controller to the top.")
+
 TOOLS = [
     ("key_tap", "Tap a key on the virtual keyboard.",
      {"key": {"type": "string", "enum": sorted(elfkey.KEYS)},
@@ -135,12 +139,12 @@ TOOLS = [
     ("key_release", "Release every held key at once — the unstick button, for "
                     "when a caller died mid-hold or state is unknown.",
      {}, []),
-    ("pad_press", "Tap a gamepad button or D-pad direction.",
+    ("pad_press", "Tap a gamepad button or D-pad direction. " + _PLAYER_ONE_HINT,
      {"button": {"type": "string",
                  "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD) | set(elfpad.TRIGGERS))},
       "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
      ["button"]),
-    ("pad_down", "Hold a gamepad button or D-pad direction down.",
+    ("pad_down", "Hold a gamepad button or D-pad direction down. " + _PLAYER_ONE_HINT,
      {"button": {"type": "string",
                  "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD) | set(elfpad.TRIGGERS))}}, ["button"]),
     ("pad_up", "Release a held gamepad button or D-pad direction.",
