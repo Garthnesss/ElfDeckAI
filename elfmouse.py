@@ -73,7 +73,7 @@ def parse_command(line):
       ("move", dx, dy, glide_ms_or_None)
       ("click", button, hold_ms) / ("down", button, None) / ("up", button, None)
       ("scroll", ticks, horizontal_bool)
-      ("quit",)
+      ("release",) / ("quit",)
     """
     if not isinstance(line, str) or len(line) > MAX_LINE:
         raise ValueError("line too long")
@@ -85,6 +85,10 @@ def parse_command(line):
         if args:
             raise ValueError("quit takes no arguments")
         return ("quit",)
+    if cmd == "release":
+        if args:
+            raise ValueError("release takes no arguments")
+        return ("release",)
     if cmd == "move":
         if len(args) not in (2, 3):
             raise ValueError("usage: move <dx> <dy> [glide_ms]")
@@ -229,7 +233,9 @@ def main():
                     cmd = parsed[0]
                     if cmd == "quit":
                         break
-                    if cmd == "move":
+                    if cmd == "release":
+                        mouse.release_all()
+                    elif cmd == "move":
                         _, dx, dy, glide = parsed
                         mouse.glide(dx, dy, glide) if glide is not None else mouse.move(dx, dy)
                     elif cmd == "click":
