@@ -86,24 +86,12 @@ esac
 
 configure() {
     # Merge {"mcpServers": {"elfdeckai": ...}} into Claude Desktop's config,
-    # keeping every other setting. Uses python3, or JavaScript for
-    # Automation on macOS, whichever exists.
+    # keeping every other setting. On macOS, JavaScript for Automation is
+    # always there, while python3 may be a stub that pops up an "install
+    # developer tools" dialog; elsewhere python3 does the merge.
     mkdir -p "$(dirname "$CONFIG")"
     [ -f "$CONFIG" ] && cp "$CONFIG" "$CONFIG.bak"
-    if command -v python3 >/dev/null 2>&1 && python3 -c 'import json' 2>/dev/null; then
-        python3 - "$CONFIG" "$ARGS_JSON" <<'EOF'
-import json, os, sys
-path, args = sys.argv[1], json.loads(sys.argv[2])
-config = {}
-if os.path.exists(path) and os.path.getsize(path):
-    with open(path) as f:
-        config = json.load(f)
-config.setdefault("mcpServers", {})["elfdeckai"] = {"command": "ssh", "args": args}
-with open(path, "w") as f:
-    json.dump(config, f, indent=2)
-    f.write("\n")
-EOF
-    elif command -v osascript >/dev/null 2>&1; then
+    if [ "$(uname -s)" = Darwin ] && command -v osascript >/dev/null 2>&1; then
         osascript -l JavaScript - "$CONFIG" "$ARGS_JSON" <<'EOF'
 function run(argv) {
   ObjC.import('Foundation');
@@ -117,6 +105,19 @@ function run(argv) {
   config.mcpServers.elfdeckai = {command: 'ssh', args: JSON.parse(argv[1])};
   $(JSON.stringify(config, null, 2) + '\n').writeToFileAtomicallyEncodingError(path, true, $.NSUTF8StringEncoding, null);
 }
+EOF
+    elif command -v python3 >/dev/null 2>&1 && python3 -c 'import json' 2>/dev/null; then
+        python3 - "$CONFIG" "$ARGS_JSON" <<'EOF'
+import json, os, sys
+path, args = sys.argv[1], json.loads(sys.argv[2])
+config = {}
+if os.path.exists(path) and os.path.getsize(path):
+    with open(path) as f:
+        config = json.load(f)
+config.setdefault("mcpServers", {})["elfdeckai"] = {"command": "ssh", "args": args}
+with open(path, "w") as f:
+    json.dump(config, f, indent=2)
+    f.write("\n")
 EOF
     else
         return 1
