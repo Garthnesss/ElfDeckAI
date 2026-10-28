@@ -2,8 +2,8 @@
 
 ## Next
 
-- **Steam Deck Gaming Mode.** Screenshots and verified input while the Deck
-  is in Gaming Mode. See the plan below.
+- **Finish Gaming Mode.** Screenshots and the keyboard work; the mouse and
+  gamepad need checking. See the plan below.
 - **Demo recording.** A short clip of an agent playing on a physical Deck.
 - **Combined daemon.** Keyboard, gamepad and mouse in one process and one
   systemd service.
@@ -22,99 +22,42 @@
 
 ## Plan: Steam Deck Gaming Mode
 
-### Where things stand
-
 In Gaming Mode the Deck does not run KDE Plasma. The screen is composited
-by **gamescope**, Valve's own compositor, and Steam's interface runs on top
-of it. That changes three things:
+by **gamescope**, Valve's own compositor, with Steam's interface on top.
 
-| Area | Desktop Mode today | Gaming Mode |
-|---|---|---|
-| Screenshots | Spectacle / KWin | Spectacle and KWin are not running. Needs gamescope's own capture. |
-| Keyboard and mouse | Work | The services keep running, and gamescope reads input through libinput, so ElfKey and ElfMouse should reach the focused game. Not yet verified. |
-| Absolute pointer | Works | gamescope's libinput handler processes absolute pointer events, so `mouse_click_at` should work. Not yet verified. |
-| Gamepad | Works, with one known issue | Steam Input owns controllers. A game can ignore ElfPad when Steam gives the first controller slot to the Deck's built-in pad (seen in Dragon Quest VII). |
+### Status (tested on a Deck, 2026-10-28)
 
-### Is it possible?
+| Area | Status |
+|---|---|
+| Screenshots | **Done.** `gamescopectl screenshot <file> 4` returns exactly what is on screen (1280×800, about 300 ms). The server uses it first whenever gamescope's socket exists, and falls back to the Desktop Mode tools. |
+| Keyboard | **Works.** ElfKey arrow presses moved the menu cursor in Stardew Valley. |
+| Absolute mouse (`mouse_click_at`) | **To verify.** It was blocked by the missing screenshot support, which is now fixed. gamescope's libinput handler processes absolute pointer events, so it is expected to work. |
+| Relative mouse | **To verify.** |
+| Gamepad (ElfPad) | **Known issue.** A game can ignore ElfPad when Steam gives the first controller slot to the Deck's built-in pad (seen in Dragon Quest VII). |
+| Switching modes mid-session | **Done.** The server re-reads the session's variables before each screenshot. |
 
-Very likely, yes. gamescope has a built-in screenshot command, reached
-through its `gamescopectl` tool:
+### Remaining work
 
-```sh
-gamescopectl screenshot /tmp/shot.png 4
-```
+1. **Verify the mouse.** In Gaming Mode, with a game open: `screenshot`,
+   then `mouse_click_at` on a menu button, and a relative `mouse_move`.
+2. **ElfPad.** Find a dependable way to make Steam give the virtual pad a
+   controller slot, or document the keyboard route as the default for
+   affected games.
+3. **Docked to a large display.** gamescope writes PNG, which the server
+   cannot scale yet (see "PNG scaling" under "Later"). On the Deck's own
+   screen no scaling is needed.
 
-The last argument is the capture type from gamescope's control protocol:
-`1` is the game only, `2` the game plus overlays, `3` the full composition,
-and `4` exactly what is on screen. Type 4 shows what a player sees,
-including Steam's menus, so it is the right default for an agent. The
-command returns at once and the file appears shortly afterwards, so the
-server has to wait for it.
-
-The unknowns can only be answered on a real Deck:
-
-1. Is `gamescopectl` installed on current SteamOS?
-2. Can a process started over SSH reach gamescope? It needs
-   `GAMESCOPE_WAYLAND_DISPLAY` (normally `gamescope-0`) and
-   `XDG_RUNTIME_DIR`.
-3. How long does the file take to appear, and at what resolution?
-4. Do ElfKey, ElfMouse and ElfMouse Absolute reach games in Gaming Mode?
-
-### Phase 1: probe (about 10 minutes, on a Deck)
-
-`scripts/probe-gaming-mode.sh` answers all four questions without changing
-anything. With the Deck in Gaming Mode, from the PC:
+`scripts/probe-gaming-mode.sh` re-checks the environment on any SteamOS
+update. With the Deck in Gaming Mode, from the PC:
 
 ```sh
 ssh deck@DECK-IP 'sh -s' < scripts/probe-gaming-mode.sh
 ```
 
-It prints the session environment, the available capture tools, the result
-of one test screenshot (size and timing), and which virtual devices exist.
-Then check input by hand: open a game, and use `key_tap` and
-`mouse_click_at` from the AI client.
-
-### Phase 2: Gaming Mode screenshots
-
-Depending on the probe results:
-
-- Detect Gaming Mode: a gamescope Wayland socket in `XDG_RUNTIME_DIR`, or
-  `GAMESCOPE_WAYLAND_DISPLAY` in the systemd user environment, with no
-  KWin running.
-- Add a gamescope capture method ahead of the Desktop Mode tools: run
-  `gamescopectl screenshot <tmp>.png 4`, wait up to about 3 seconds for
-  the file to finish writing, then return it.
-- Import `GAMESCOPE_WAYLAND_DISPLAY` from the systemd user environment,
-  the same way `DISPLAY` and `WAYLAND_DISPLAY` are imported today.
-- Tests with a fake `gamescopectl`, like the existing fake Spectacle.
-
-gamescope writes PNG. On the Deck's own 1280×800 screen no scaling is
-needed. When docked to a large display the image would go out at full
-size until PNG scaling (under "Later") lands.
-
-**Fallback if `gamescopectl` is not usable:** Steam's own screenshot
-feature, which saves to
-`~/.local/share/Steam/userdata/<id>/760/remote/<app>/screenshots/`.
-ElfKey would press Steam's screenshot key (F12 by default, which needs the
-"More keys" item) and the server would read the newest file. This is slower
-and only works inside games, so it is a backup plan.
-
-### Phase 3: input in Gaming Mode
-
-- Verify keyboard, relative mouse and absolute mouse in two or three games
-  and in Steam's own menus.
-- ElfPad: find a dependable way to make Steam give the virtual pad a
-  controller slot, or document the keyboard route as the default for
-  affected games.
-- Update AI_SETUP_GUIDE.md so assistants know Gaming Mode works, and which
-  controls to prefer there.
-
 ### Risks
 
 - `gamescopectl` is a developer tool, and its screenshot command could
-  change between SteamOS releases. The probe script and tests make a break
-  quick to spot.
-- HDR games: gamescope may capture in a different colour format. PNG
-  capture is requested explicitly to avoid that.
-- Steam Input behaviour varies per game, so ElfPad results may differ from
-  title to title.
+  change between SteamOS releases. The probe script and the tests make a
+  break quick to spot, and the Desktop Mode tools remain as fallbacks.
+- Steam Input behaviour varies per game, so ElfPad results may differ
+  from title to title.

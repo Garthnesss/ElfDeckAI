@@ -88,8 +88,9 @@ exposes 21 tools:
 
 `screenshot` captures the screen of the machine the server runs on and
 returns a PNG, so an agent can work in a look, act, look again loop
-without a separate video stream. It supports KDE Plasma (including a Steam
-Deck in Desktop Mode), wlroots compositors and X11. Screens larger than
+without a separate video stream. It supports the Steam Deck in both Gaming
+Mode (through gamescope) and Desktop Mode (KDE Plasma), wlroots compositors
+and X11. Screens larger than
 1280 pixels on their long side are scaled down before sending (set
 `ELFDECKAI_SCREENSHOT_MAX` to change the limit, or `0` to turn it off), and
 the result includes the image's size.
@@ -251,7 +252,7 @@ a fake uinput device, and the MCP server over real JSON-RPC. No
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md), including the plan for Steam Deck Gaming Mode.
+See [ROADMAP.md](ROADMAP.md).
 
 ## Changelog
 
