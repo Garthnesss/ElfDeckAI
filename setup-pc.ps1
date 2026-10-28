@@ -67,6 +67,21 @@
         # command there (a forced command), which stops ssh before it tries any
         # other key, so this PC's own key files are then tried one by one.
         $attempts = @(, @())                                  # usual keys, agent, password
+        # Each key held by the ssh-agent on its own (the agent signs; the
+        # public key file only picks which identity is offered).
+        $agentDir = Join-Path ([System.IO.Path]::GetTempPath()) ("elfdeckai-" + [guid]::NewGuid())
+        $agentKeys = @(& ssh-add -L 2>$null)
+        if ($LASTEXITCODE -eq 0) {
+            New-Item -ItemType Directory -Force -Path $agentDir | Out-Null
+            $n = 0
+            foreach ($line in $agentKeys) {
+                if (-not "$line".Trim()) { continue }
+                $n++
+                $file = Join-Path $agentDir "key$n.pub"
+                [System.IO.File]::WriteAllText($file, "$line`n", (New-Object System.Text.UTF8Encoding $false))
+                $attempts += , @('-i', $file, '-o', 'IdentitiesOnly=yes')
+            }
+        }
         Get-ChildItem (Split-Path $Key) -Filter 'id_*' -File -ErrorAction SilentlyContinue |
             Where-Object { $_.Extension -ne '.pub' } |
             ForEach-Object { $attempts += , @('-i', $_.FullName, '-o', 'IdentitiesOnly=yes', '-o', 'IdentityAgent=none') }
@@ -81,6 +96,7 @@
             $log += $output
             if ($LASTEXITCODE -ne 255 -and "$output".Trim()) { $refused = $true }
         }
+        Remove-Item -Recurse -Force $agentDir -ErrorAction SilentlyContinue
         if (-not $added) {
             Write-Host ''
             if ($refused -or ("$log" -match 'Permission denied')) {
