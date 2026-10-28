@@ -59,8 +59,8 @@ to play.
 - Turn-based games, RPGs, puzzles and menus work best. The AI needs a
   second or more per move, so fast action games are out of reach.
 - In Gaming Mode, if a game ignores the AI's controller, ask the AI to make
-  its controller **Player 1**. It knows how, using Steam's Reorder
-  Controllers menu.
+  its controller **Player 1**. It has a tool for that, and your own Deck
+  controls keep working.
 - Something not working? Give [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md) to
   your AI and ask it to help. It covers setup and troubleshooting step by
   step.
@@ -112,12 +112,12 @@ distributions, install the udev rule first (see [Installation](#installation)).
 ## MCP server
 
 `elfdeckai-mcp` is a Model Context Protocol server (stdio transport) that
-exposes 21 tools:
+exposes 22 tools:
 
 | Group | Tools |
 |---|---|
 | Keyboard | `key_tap`, `key_down`, `key_up`, `key_release` |
-| Gamepad | `pad_press`, `pad_down`, `pad_up`, `pad_stick`, `pad_trigger`, `pad_center`, `pad_reset` |
+| Gamepad | `pad_press`, `pad_down`, `pad_up`, `pad_stick`, `pad_trigger`, `pad_center`, `pad_reset`, `pad_make_player_one` |
 | Mouse | `mouse_click_at`, `mouse_move_to`, `mouse_move`, `mouse_click`, `mouse_down`, `mouse_up`, `mouse_scroll`, `mouse_hscroll`, `mouse_release` |
 | Vision | `screenshot` |
 

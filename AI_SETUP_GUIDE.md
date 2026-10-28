@@ -128,28 +128,31 @@ can type a password:
 | MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `ip -4 addr show scope global` shows the current one; update the config |
 | `elfdeckai-mcp`: command not found over SSH | PATH over SSH is minimal | Use the absolute path from the installer output (`/home/deck/.local/bin/elfdeckai-mcp`) |
 | A key/button seems stuck | A caller died mid-hold | `key_release`, `mouse_release`, or `pad_reset`. Holds also self-release ≤ 5 s |
-| Game ignores `pad_press` but responds to keys (Gaming Mode) | Steam gives each controller its own player slot, the Deck's own controls are Player 1, and the game only listens to Player 1 | Make ElfPad Player 1 (see "Using the gamepad in Gaming Mode"). Or use the keyboard: arrow keys and Enter via `key_tap` |
+| Game ignores `pad_press` but responds to keys (Gaming Mode) | ElfPad is not first in Steam's controller order, and the game only listens to Player 1 | Call `pad_make_player_one` (or see "Using the gamepad in Gaming Mode"). Or use the keyboard: arrow keys and Enter via `key_tap` |
 | Virtual devices missing after install (non-Deck Linux) | No `/dev/uinput` permission | Install the repo's `70-elfdeckai-uinput.rules` into `/etc/udev/rules.d/`, replug/reboot |
 
 ## Using the gamepad in Gaming Mode
 
-In Gaming Mode, Steam gives each controller its own player slot. The Deck's
-own controls are Player 1, ElfPad is Player 2, and many games only listen
-to Player 1. Before driving a game with `pad_press`, make ElfPad Player 1.
-You can do this yourself:
+In Gaming Mode, Steam gives each controller a player slot, and many games
+only listen to Player 1. Before driving a game with `pad_press`, call
+**`pad_make_player_one`**. It moves ElfPad (listed by Steam as an "Xbox 360
+Controller") to the top of Steam's controller order and reports the order
+before and after. With ElfPad on top, the human's own Deck controls keep
+working too.
+
+It needs Steam's CEF remote debugging, which is on when Decky Loader is
+installed. If the tool says it is not reachable, do the same by hand:
 
 1. With the game running, open the Steam menu: `pad_press` with
    `button: "guide"` (or ask the human to press the Steam button).
 2. Open **Controller Settings**, then **Reorder Controllers**. This option
    only appears while a game is running.
-3. Using `screenshot` and `mouse_click_at`, move the controller that is
-   **not** the Steam Deck to the top (Player 1), then close the menu.
+3. Using `screenshot` and `mouse_click_at`, move the **Xbox 360** entry
+   (that is ElfPad) to the top, then close the menu.
 4. Check with one `pad_press` and a `screenshot`.
 
-While ElfPad is Player 1, the game ignores the Deck's own controls. When
-the human wants to play again, move the Steam Deck back to the top the same
-way. Verified in Bastion; the same cause explains games such as Dragon
-Quest VII ignoring the pad.
+Verified in Bastion. The same cause explains games such as Dragon Quest
+VII ignoring the pad.
 
 ## Uninstall
 

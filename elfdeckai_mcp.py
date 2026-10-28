@@ -44,11 +44,14 @@ import operator
 import os
 import re
 import shutil
+import socket
 import struct
 import subprocess
 import sys
 import stat
 import tempfile
+import urllib.parse
+import urllib.request
 import time
 import zlib
 
@@ -60,7 +63,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.1.1"
+__version__ = "1.2.0"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -125,7 +128,8 @@ def _mouse_line(cmd, a):
 
 # In Gaming Mode, Steam hands games one virtual pad per controller, and many
 # games only listen to Player 1, which is the Deck's own controls by default.
-_PLAYER_ONE_HINT = ("In Steam Deck Gaming Mode, if the game ignores the pad, ElfPad is not Player 1: open Steam > Controller Settings > Reorder Controllers while the game runs and move the non-Deck controller to the top.")
+_PLAYER_ONE_HINT = ("In Steam Deck Gaming Mode, if the game ignores the pad, call "
+                    "pad_make_player_one first.")
 
 TOOLS = [
     ("key_tap", "Tap a key on the virtual keyboard.",
@@ -163,6 +167,13 @@ TOOLS = [
       "percent": {"type": "integer", "minimum": 0, "maximum": 100},
       "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
      ["side", "percent"]),
+    ("pad_make_player_one", "Steam Deck Gaming Mode: move ElfPad to the top of "
+                            "Steam's controller order, so games that only read "
+                            "Player 1 hear it. The Deck's own controls keep "
+                            "working. Needs Steam's CEF remote debugging (on when "
+                            "Decky Loader is installed); otherwise use Steam > "
+                            "Controller Settings > Reorder Controllers by hand.",
+     {}, []),
     ("pad_center", "Return sticks, triggers and D-pad to neutral.", {}, []),
     ("pad_reset", "Release every button and recenter everything.", {}, []),
     ("mouse_move", "Move the pointer relatively by (dx, dy). Pointer "
@@ -558,6 +569,178 @@ def _screenshot():
     return data, w, h, w, h
 
 
+# --- Steam controller order (Gaming Mode) ------------------------------------
+#
+# Steam gives each controller a player slot, in the order shown in its
+# Reorder Controllers menu. Steam's own UI script exposes the list and a swap
+# (SteamClient.Input.RegisterForControllerListChanges / SwapControllerOrder),
+# reachable through Chromium's remote debugging protocol on 127.0.0.1:8080
+# when Steam runs with CEF remote debugging (Decky Loader turns it on).
+
+CEF_URL = os.environ.get("ELFDECKAI_CEF_URL", "http://127.0.0.1:8080")
+ELFPAD_IDS = (0x045E, 0x028E)   # ElfPad presents as an Xbox 360 pad
+
+_CONTROLLER_LIST_JS = """new Promise((resolve, reject) => {
+  let handle = null, done = false;
+  const finish = (fn, value) => {
+    if (done) return; done = true; clearTimeout(timer);
+    if (handle) handle.unregister();
+    fn(value);
+  };
+  const timer = setTimeout(() => finish(reject, new Error("Steam sent no controller list")), 3000);
+  handle = SteamClient.Input.RegisterForControllerListChanges(list => finish(resolve,
+    list.map(c => ({name: c.strName, index: c.nControllerIndex,
+                    vendor: c.unVendorID, product: c.unProductID}))));
+  if (done) handle.unregister();
+})"""
+
+
+def _ws_frame(payload, opcode=0x1):
+    """A masked client WebSocket frame (RFC 6455)."""
+    head = bytes([0x80 | opcode])
+    n = len(payload)
+    if n < 126:
+        head += bytes([0x80 | n])
+    elif n < 1 << 16:
+        head += bytes([0x80 | 126]) + struct.pack(">H", n)
+    else:
+        head += bytes([0x80 | 127]) + struct.pack(">Q", n)
+    mask = os.urandom(4)
+    return head + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
+
+
+def _ws_recv_exact(sock, n):
+    data = b""
+    while len(data) < n:
+        chunk = sock.recv(n - len(data))
+        if not chunk:
+            raise RuntimeError("Steam closed the debugging connection")
+        data += chunk
+    return data
+
+
+def _ws_recv_message(sock):
+    """One complete text message, reassembling fragments and answering pings."""
+    parts = []
+    while True:
+        b0, b1 = _ws_recv_exact(sock, 2)
+        opcode, n = b0 & 0x0F, b1 & 0x7F
+        if n == 126:
+            n = struct.unpack(">H", _ws_recv_exact(sock, 2))[0]
+        elif n == 127:
+            n = struct.unpack(">Q", _ws_recv_exact(sock, 8))[0]
+        mask = _ws_recv_exact(sock, 4) if b1 & 0x80 else None
+        payload = _ws_recv_exact(sock, n)
+        if mask:
+            payload = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
+        if opcode == 0x8:
+            raise RuntimeError("Steam closed the debugging connection")
+        if opcode == 0x9:
+            sock.sendall(_ws_frame(payload, 0xA))
+            continue
+        if opcode in (0x0, 0x1, 0x2):
+            parts.append(payload)
+            if b0 & 0x80:
+                return b"".join(parts).decode("utf-8")
+
+
+def _cef_evaluate(expression, timeout=8.0):
+    """Evaluate JavaScript in Steam's shared UI context and return its
+    (awaited, JSON-serialisable) value."""
+    try:
+        with urllib.request.urlopen(CEF_URL + "/json", timeout=3) as r:
+            targets = json.loads(r.read().decode("utf-8"))
+    except (OSError, ValueError) as e:
+        raise RuntimeError(
+            "Steam's CEF remote debugging is not reachable at %s (%s). It is on "
+            "when Decky Loader is installed; otherwise enable it in Steam > "
+            "Settings > Developer and restart Steam, or reorder the controllers "
+            "by hand in Steam > Controller Settings > Reorder Controllers."
+            % (CEF_URL, getattr(e, "reason", e)))
+    shared = [t for t in targets if t.get("title") == "SharedJSContext"]
+    if not shared or "webSocketDebuggerUrl" not in shared[0]:
+        raise RuntimeError("Steam's UI context (SharedJSContext) was not found; "
+                           "is Steam running in Gaming Mode?")
+    url = urllib.parse.urlsplit(shared[0]["webSocketDebuggerUrl"])
+    with socket.create_connection((url.hostname, url.port or 80), timeout=timeout) as sock:
+        key = base64.b64encode(os.urandom(16)).decode()
+        sock.sendall(("GET %s HTTP/1.1\r\nHost: %s\r\nUpgrade: websocket\r\n"
+                      "Connection: Upgrade\r\nSec-WebSocket-Key: %s\r\n"
+                      "Sec-WebSocket-Version: 13\r\n\r\n"
+                      % (url.path or "/", url.netloc, key)).encode())
+        response = b""
+        while b"\r\n\r\n" not in response:
+            chunk = sock.recv(4096)
+            if not chunk:
+                raise RuntimeError("Steam refused the debugging connection")
+            response += chunk
+        if b" 101 " not in response.split(b"\r\n", 1)[0]:
+            raise RuntimeError("Steam refused the debugging connection: %s"
+                               % response.split(b"\r\n", 1)[0].decode("latin-1"))
+        request = {"id": 1, "method": "Runtime.evaluate",
+                   "params": {"expression": expression, "awaitPromise": True,
+                              "returnByValue": True}}
+        sock.sendall(_ws_frame(json.dumps(request).encode()))
+        while True:
+            message = json.loads(_ws_recv_message(sock))
+            if message.get("id") != 1:
+                continue   # an event, not our answer
+            if "error" in message:
+                raise RuntimeError("Steam: %s" % message["error"].get("message"))
+            result = message.get("result", {})
+            if "exceptionDetails" in result:
+                details = result["exceptionDetails"]
+                text = (details.get("exception") or {}).get("description") or details.get("text")
+                raise RuntimeError("Steam: %s" % text)
+            return result.get("result", {}).get("value")
+
+
+def _steam_controllers():
+    return _cef_evaluate(_CONTROLLER_LIST_JS) or []
+
+
+def _describe_order(controllers):
+    return ", ".join("%d. %s" % (i + 1, c.get("name") or "?")
+                     for i, c in enumerate(controllers)) or "(no controllers)"
+
+
+def _elfpad_position(controllers):
+    for i, c in enumerate(controllers):
+        if (c.get("vendor"), c.get("product")) == ELFPAD_IDS:
+            return i
+    return None
+
+
+def make_elfpad_player_one():
+    """Move ElfPad to the top of Steam's controller order. Returns a
+    human-readable result; raises RuntimeError when it cannot."""
+    before = _steam_controllers()
+    pos = _elfpad_position(before)
+    if pos is None:
+        raise RuntimeError("Steam does not list ElfPad (an Xbox 360 controller). "
+                           "Is the elfpad service running? Steam sees: %s"
+                           % _describe_order(before))
+    if pos == 0:
+        return "ElfPad is already Player 1. Order: %s" % _describe_order(before)
+    # The swap's arguments are positions in Steam's list on current clients;
+    # if that did not move ElfPad, try the controllers' own indices.
+    attempts = [(0, pos)]
+    a, b = before[0].get("index"), before[pos].get("index")
+    if isinstance(a, int) and isinstance(b, int) and (a, b) != (0, pos):
+        attempts.append((a, b))
+    after = before
+    for first, second in attempts:
+        _cef_evaluate("SteamClient.Input.SwapControllerOrder(%d, %d)" % (first, second))
+        time.sleep(0.3)
+        after = _steam_controllers()
+        if _elfpad_position(after) == 0:
+            return ("ElfPad is now Player 1. Order: %s (was: %s)"
+                    % (_describe_order(after), _describe_order(before)))
+    raise RuntimeError("Steam did not move ElfPad to the top. Order now: %s. "
+                       "Use Steam > Controller Settings > Reorder Controllers."
+                       % _describe_order(after))
+
+
 def _text(s):
     return [{"type": "text", "text": s}]
 
@@ -606,6 +789,11 @@ def call_tool(name, args):
         return _text("invalid arguments: %s" % e), True
     if name == "screenshot":
         return _screenshot_result()
+    if name == "pad_make_player_one":
+        try:
+            return _text(make_elfpad_player_one()), False
+        except (RuntimeError, OSError, ValueError) as e:
+            return _text(str(e)), True
     try:
         if name.startswith("key_"):
             sends = [(KEY_FIFO, _key_line(name, args), elfkey.parse_command)]
