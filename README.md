@@ -1,1 +1,155 @@
-IyDwn46uIEVsZmRlY2tBSQoKIyMjIFlvdXIgQUkgY2FuICpzZWUqIHRoZSBnYW1lLiBOb3cgaXQgY2FuIGhvbGQgdGhlIGNvbnRyb2xsZXIuCgpbIVtMaWNlbnNlOiBNSVRdKGh0dHBzOi8vaW1nLnNoaWVsZHMuaW8vYmFkZ2UvTGljZW5zZS1NSVQtZ3JlZW4uc3ZnKV0oTElDRU5TRSkKIVtQeXRob25dKGh0dHBzOi8vaW1nLnNoaWVsZHMuaW8vYmFkZ2UvcHl0aG9uLTMuOCstYmx1ZS5zdmcpCiFbRGVwZW5kZW5jaWVzXShodHRwczovL2ltZy5zaGllbGRzLmlvL2JhZGdlL2RlcGVuZGVuY2llcy16ZXJvLWJyaWdodGdyZWVuLnN2ZykKIVtUZXN0c10oaHR0cHM6Ly9pbWcuc2hpZWxkcy5pby9iYWRnZS90ZXN0cy05MSUyMHBhc3NpbmctYnJpZ2h0Z3JlZW4uc3ZnKQoKKipFbGZkZWNrQUkgZ2l2ZXMgYW4gTExNIGFnZW50IGhhbmRzIG9uIHJlYWwgaGFyZHdhcmUuKiogVHdvIHRpbnkgZGFlbW9ucwp0dXJuIG9uZS1saW5lIGNvbW1hbmRzIOKAlCBmcm9tIGEgc2hlbGwsIGEgc2NyaXB0LCBvciBuYXRpdmUgKipNQ1AgdG9vbApjYWxscyoqIOKAlCBpbnRvIHJlYWwga2V5Ym9hcmQgYW5kIGdhbWVwYWQgaW5wdXQgb24gYSBMaW51eCBtYWNoaW5lOgoKLSDijKjvuI8gKipFbGZLZXkqKiDigJQgYSB2aXJ0dWFsIGtleWJvYXJkIG9uIGAvZGV2L3VpbnB1dGAKLSDwn5W577iPICoqRWxmUGFkKiog4oCUIGEgdmlydHVhbCBnYW1lcGFkIChYYm94LWNsYXNzOiBidXR0b25zLCBhbmFsb2cgdHJpZ2dlcnMsCiAgdHdvIHN0aWNrcywgRC1wYWQpCgpFdmVyeSAiTExNIHBsYXlzIFBva8OpbW9uIiBwcm9qZWN0IHlvdSd2ZSBzZWVuIHBsdWdzIGludG8gYW4gKiplbXVsYXRvcidzCkFQSSoqLiBFbGZkZWNrQUkgcHJlc3NlcyBidXR0b25zIG9uIGEgKipyZWFsIGRldmljZSoqIOKAlCBwcm92ZW4gbGl2ZSB3aGVuIGFuCkxMTSBwbGF5ZWQgUG9rw6ltb24gRmlyZVJlZCBvbiBhIHBoeXNpY2FsIFN0ZWFtIERlY2sgZW5kLXRvLWVuZDogZnVsbAppbnRybywgc3RhcnRlciBwaWNrZWQsIGZpcnN0IHJpdmFsIGJhdHRsZSB3b24sIGdhbWUgc2F2ZWQuIE5vIGVtdWxhdG9yLCBubwpSQU0gcmVhZGluZywgbm8gY2FwdHVyZSBjYXJkIOKAlCBqdXN0IGEgc3RyZWFtIGZvciBleWVzIGFuZCB0aGVzZSBkYWVtb25zCmZvciBoYW5kcy4gKFtIb3cgaXQgZHJpdmVzXShub3Rlcy9kcml2aW5nLm1kKSkKCiMjIOKaoSBRdWlja3N0YXJ0ICg2MCBzZWNvbmRzKQoKYGBgc2gKZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9HYXJ0aG5lc3NzL0VsZmRlY2tBSSAmJiBjZCBFbGZkZWNrQUkKCnB5dGhvbjMgZWxma2V5LnB5ICYgICAgICAgICAgIyB2aXJ0dWFsIGtleWJvYXJkCnB5dGhvbjMgZWxmcGFkLnB5ICYgICAgICAgICAgIyB2aXJ0dWFsIGdhbWVwYWQKCmVjaG8gImtleSB4IDE1MCIgICAgICAgID4gL3RtcC9lbGZrZXkuZmlmbyAgICAjIHRhcCBYCmVjaG8gInByZXNzIGEiICAgICAgICAgID4gL3RtcC9lbGZwYWQuZmlmbyAgICAjIHRhcCBBCmVjaG8gInN0aWNrIGxlZnQgNjAgMCIgID4gL3RtcC9lbGZwYWQuZmlmbyAgICAjIHB1c2ggdGhlIGxlZnQgc3RpY2sKCmdyZXAgLUUgIkVsZktleXxFbGZQYWQiIC9wcm9jL2J1cy9pbnB1dC9kZXZpY2VzICAgIyB0aGV5J3JlIHJlYWxseSB0aGVyZQpgYGAKClRoYXQncyB0aGUgd2hvbGUgaW5zdGFsbC4gVHdvIHNpbmdsZS1maWxlIFB5dGhvbiBwcm9ncmFtcywgKipzdGFuZGFyZApsaWJyYXJ5IG9ubHkqKiDigJQgbm90aGluZyB0byBwaXAsIG5vdGhpbmcgdG8gYnVpbGQuIFN0YXRlIGxpdmVzIGluIGAvdG1wYDsKcmVib290IGFuZCBpdCdzIGdvbmUuCgo+ICoqU3RlYW0gRGVjaz8qKiBZb3UncmUgYWxyZWFkeSBkb25lIOKAlCBgL2Rldi91aW5wdXRgIGlzIHVzZXItd3JpdGFibGUKPiB0aGVyZSBvdXQgb2YgdGhlIGJveC4gT24gb3RoZXIgTGludXggbWFjaGluZXMsIGluc3RhbGwgdGhlIGluY2x1ZGVkCj4gdWRldiBydWxlIG9uY2UgKHNlZSBbSW5zdGFsbF0oI2luc3RhbGwpKS4KCiMjIPCfpJYgR2l2ZSBpdCB0byB5b3VyIGFnZW50IChNQ1ApCgpgZWxmZGVja2FpX21jcC5weWAgaXMgYSB6ZXJvLWRlcGVuZGVuY3kgW01vZGVsIENvbnRleHQKUHJvdG9jb2xdKGh0dHBzOi8vbW9kZWxjb250ZXh0cHJvdG9jb2wuaW8pIHNlcnZlciB0aGF0IGV4cG9zZXMgYm90aApkZXZpY2VzIGFzIG5hdGl2ZSB0b29scyDigJQgYGtleV90YXBgLCBga2V5X2Rvd25gLCBgcGFkX3ByZXNzYCwgYHBhZF9zdGlja2AsCmBwYWRfdHJpZ2dlcmAsIGBwYWRfcmVzZXRgLCDigKYg4oCUIGZvciBDbGF1ZGUsIEhlcm1lcywgb3IgYW55IE1DUCBjbGllbnQ6CgpgYGBqc29uCnsibWNwU2VydmVycyI6IHsiZWxmZGVja2FpIjogewogICAgImNvbW1hbmQiOiAicHl0aG9uMyIsICJhcmdzIjogWyIvcGF0aC90by9FbGZkZWNrQUkvZWxmZGVja2FpX21jcC5weSJdfX19CmBgYAoKU3RhcnQgdGhlIGRhZW1vbnMsIGFkZCB0aGF0IHRvIHlvdXIgY2xpZW50J3MgY29uZmlnLCBhbmQgeW91ciBhZ2VudCBjYW4KcHJlc3MgYnV0dG9ucyB0aGUgc2FtZSB3YXkgaXQgY2FsbHMgYW55IG90aGVyIHRvb2wuIEV2ZXJ5IGNhbGwgaXMKdmFsaWRhdGVkIGJ5IHRoZSBkYWVtb25zJyBvd24gaW5wdXQgY29udHJhY3QgYmVmb3JlIGl0IHRvdWNoZXMgYSBGSUZPLAphbmQgYSBzdG9wcGVkIGRhZW1vbiBmYWlscyB0aGUgY2FsbCBjbGVhbmx5IGluc3RlYWQgb2YgaGFuZ2luZyB5b3VyIGFnZW50LgoKIyMg8J+Om++4jyBDb21tYW5kcwoKIyMjIEVsZktleSDigJQgYC90bXAvZWxma2V5LmZpZm9gCgp8IENvbW1hbmQgfCBFZmZlY3QgfAp8LS0tfC0tLXwKfCBga2V5IDxuYW1lPiBbbXNdYCB8IHRhcCBhIGtleSAoZGVmYXVsdCAxMjAgbXMpIHwKfCBgZG93biA8bmFtZT5gIC8gYHVwIDxuYW1lPmAgfCBob2xkIC8gcmVsZWFzZSB8CnwgYHF1aXRgIHwgcmVsZWFzZSBldmVyeXRoaW5nIGFuZCBleGl0IHwKCktleXM6IGBhYOKAk2B6YCwgYDBg4oCTYDlgLCBhcnJvd3MsIGBlbnRlcmAsIGBlc2NgLCBgc3BhY2VgLCBgdGFiYCwgYHNoaWZ0YCwKYHJzaGlmdGAsIGBjdHJsYCwgYGFsdGAsIHB1bmN0dWF0aW9uLCBgZjFg4oCTYGYxMGAsIGBob21lYCwgYGVuZGAsIGBpbnNlcnRgLApgZGVsZXRlYCwg4oCmIChmdWxsIHRhYmxlIGluIHRoZSBzb3VyY2UpLgoKIyMjIEVsZlBhZCDigJQgYC90bXAvZWxmcGFkLmZpZm9gCgp8IENvbW1hbmQgfCBFZmZlY3QgfAp8LS0tfC0tLXwKfCBgcHJlc3MgPGJ0bj4gW21zXWAgfCB0YXAgYSBidXR0b24g4oCUIG9yIGEgRC1wYWQgZGlyZWN0aW9uIHwKfCBgZG93biA8YnRuPmAgLyBgdXAgPGJ0bj5gIHwgaG9sZCAvIHJlbGVhc2UgfAp8IGBzdGljayBsZWZ0XHxyaWdodCA8eD4gPHk+IFttc11gIHwgYW5hbG9nIHN0aWNrLCDiiJIxMDAuLjEwMCAlIHBlciBheGlzOyBgbXNgID0gYXV0by1yZWNlbnRlciBhZnRlciB8CnwgYHRyaWdnZXIgbGVmdFx8cmlnaHQgPDAuLjEwMD4gW21zXWAgfCBhbmFsb2cgdHJpZ2dlcjsgYG1zYCA9IGF1dG8tcmVsZWFzZSBhZnRlciB8CnwgYGNlbnRlcmAgfCBzdGlja3MsIHRyaWdnZXJzLCBELXBhZCB0byBuZXV0cmFsIHwKfCBgcmVzZXRgIHwgcmVsZWFzZSBldmVyeXRoaW5nIHwKfCBgcXVpdGAgfCByZWxlYXNlIGV2ZXJ5dGhpbmcgYW5kIGV4aXQgfAoKQnV0dG9uczogYGEgYiB4IHkgbGIgcmIgbDIgcjIgc2VsZWN0IHN0YXJ0IGd1aWRlIGwzIHIzYC4gRWxmUGFkIHByZXNlbnRzCmFzIGFuIFhib3gtMzYwLWNsYXNzIHBhZCwgc28gU0RMLCBTdGVhbSBJbnB1dCBhbmQgUmV0cm9BcmNoIG1hcCBpdCB0aGUKc3RhbmRhcmQgd2F5IHdpdGggemVybyBjb25maWd1cmF0aW9uLgoKIyMg8J+boe+4jyBCdWlsdCBmb3IgY2FsbGVycyB0aGF0IGhhbGx1Y2luYXRlCgpMZXR0aW5nIGEgbGFuZ3VhZ2UgbW9kZWwgcHJlc3MgYnV0dG9ucyBpcyBzYWZlIG9ubHkgaWYgdGhlIGtleWJvYXJkCml0c2VsZiBjYW4ndCBiZSB0YWxrZWQgaW50byBhIGJhZCBzdGF0ZS4gU286CgotICoqQmFkIGlucHV0IG5ldmVyIGtpbGxzIHRoZSBkYWVtb24uKiogRXZlcnkgbGluZSBwYXNzZXMgYSBzdHJpY3QKICBwYXJzZXI7IG1hbGZvcm1lZCBjb21tYW5kcyBhcmUgbG9nZ2VkIGFuZCByZWZ1c2VkLiAoYGtleSB4IGFiY2AgYW5kCiAgYGtleSB4IDk5OTk5OTk5OWAgd2VyZSByZWFsIGNyYXNoL3dlZGdlIGJ1Z3MgaW4gdGhlIGZpcnN0IHZlcnNpb24g4oCUCiAgdGhlIHRlc3RzIG5vdyBwaW4gdGhlbSBzaHV0LikKLSAqKkhvbGRzIGFyZSBib3VuZGVkLioqIEEgdGFwIGlzIGF0IG1vc3QgNSBzLiBMb25nZXIgaG9sZHMgdXNlCiAgYGRvd25gL2B1cGAsIHdoaWNoIHRoZSBjYWxsZXIgY29udHJvbHMuCi0gKipOb3RoaW5nIGdldHMgc3R1Y2suKiogVGltZWQgbW92ZXMgcmVzdG9yZSBpbiBhIGBmaW5hbGx5YCBibG9jazsgaGVsZAogIGlucHV0cyBhcmUgdHJhY2tlZDsgb24gYHF1aXRgLCBTSUdURVJNIG9yIFNJR0lOVCwgZXZlcnl0aGluZyBpcwogIHJlbGVhc2VkIGFuZCByZWNlbnRlcmVkIGJlZm9yZSB0aGUgZGV2aWNlIGlzIGRlc3Ryb3llZC4KLSAqKlRoZSBGSUZPIGlzIG93bmVyLW9ubHkgKDA2MDApLioqIE9ubHkgeW91ciB1c2VyIGNhbiBpbmplY3QgaW5wdXQuCgojIyDwn6SUIFdoeSBub3TigKY/Cgp8IEFwcHJvYWNoIHwgV2h5IGl0IGZhbGxzIHNob3J0IHwKfC0tLXwtLS18CnwgRW11bGF0b3IgQVBJcyAoUHlCb3ksIG1HQkEgc2NyaXB0aW5nKSB8IE9ubHkgZXhpc3RzIGluc2lkZSBhbiBlbXVsYXRvci4gWW91ciBEZWNrIGlzIG5vdCBhbiBlbXVsYXRvci4gfAp8IFNlbmRpbmcga2V5cyB0aHJvdWdoIE1vb25saWdodC9zdHJlYW1pbmcgfCBDbGlja3MgZ2V0IGZvcndhcmRlZDsgc3ludGhldGljIGtleWJvYXJkIGV2ZW50cyBkb24ndCAodmVyaWZpZWQpLiB8CnwgeGRvdG9vbCAvIGRlc2t0b3AgYXV0b21hdGlvbiB8IENhbid0IHJlYWNoIG5hdGl2ZSBXYXlsYW5kIGNsaWVudHMuIHwKfCBLVk0gZ2FkZ2V0IC8gY29udHJvbGxlci1zcG9vZmluZyBoYXJkd2FyZSB8IFdvcmtzLCBidXQgaXQncyBleHRyYSBoYXJkd2FyZSBvbiB5b3VyIGRlc2sgZG9pbmcgd2hhdCAyMDAgbGluZXMgb2YgUHl0aG9uIGRvIG9uIHRoZSBkZXZpY2UgaXRzZWxmLiB8CgojIyBJbnN0YWxsCgoqKlJlcXVpcmVtZW50czoqKiBMaW51eCB3aXRoIGAvZGV2L3VpbnB1dGAsIFB5dGhvbiAzLjgrLiBOb3RoaW5nIGVsc2UuCgpBbnl3aGVyZSBgL2Rldi91aW5wdXRgIGlzbid0IHVzZXItd3JpdGFibGUsIGluc3RhbGwgdGhlIHVkZXYgcnVsZSBvbmNlOgoKYGBgc2gKc3VkbyBjcCA5OS1lbGZkZWNrYWktdWlucHV0LnJ1bGVzIC9ldGMvdWRldi9ydWxlcy5kLwpzdWRvIHVkZXZhZG0gY29udHJvbCAtLXJlbG9hZC1ydWxlcyAmJiBzdWRvIHVkZXZhZG0gdHJpZ2dlcgpgYGAKClJ1biBwZXJzaXN0ZW50bHkgYXMgdXNlciBzZXJ2aWNlcyAoZXhwZWN0cyB0aGUgcmVwbyBhdCBgfi9lbGZkZWNrYWkvYCk6CgpgYGBzaApjcCBzeXN0ZW1kLyouc2VydmljZSB+Ly5jb25maWcvc3lzdGVtZC91c2VyLwpzeXN0ZW1jdGwgLS11c2VyIGVuYWJsZSAtLW5vdyBlbGZrZXkuc2VydmljZSBlbGZwYWQuc2VydmljZQpgYGAKCiMjIFRlc3RzCgpgYGBzaApweXRob24zIC1tIHB5dGVzdCAgICAjIDkxIHRlc3RzOiBib3RoIGlucHV0IGNvbnRyYWN0cywgZGV2aWNlIGJlaGF2aW91cgogICAgICAgICAgICAgICAgICAgICAjIGFnYWluc3QgYSBmYWtlIHVpbnB1dCwgYW5kIHRoZSBNQ1Agc2VydmVyIHNwb2tlbgogICAgICAgICAgICAgICAgICAgICAjIHRvIG92ZXIgcmVhbCBKU09OLVJQQwpgYGAKCiMjIFJvYWRtYXAKCi0gKipFbGZNb3VzZSoqIOKAlCByZWxhdGl2ZSBwb2ludGVyICsgYnV0dG9ucywgY29tcGxldGluZyB0aGUgc2V0LgotIE9uZSBjb21iaW5lZCBkYWVtb24gKGtleWJvYXJkICsgcGFkICsgbW91c2UgaW4gYSBzaW5nbGUgcHJvY2VzcykuCi0gQSBgcGlwIGluc3RhbGxgYWJsZSBwYWNrYWdlIG9uY2UgdGhlIEZJRk8vTUNQIGludGVyZmFjZXMgc2V0dGxlLgoKIyMgTGljZW5zZQoKTUlUIOKAlCBzZWUgW0xJQ0VOU0VdKExJQ0VOU0UpLiBTdGVhbCBpdCwgc2hpcCBpdCwgdGVhY2ggeW91ciBhZ2VudCB0bwpzcGVlZHJ1biBzb21ldGhpbmcuCg==
+# 🎮 ElfdeckAI
+
+### Your AI can *see* the game. Now it can hold the controller.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-91%20passing-brightgreen.svg)
+
+**ElfdeckAI gives an LLM agent hands on real hardware.** Two tiny daemons
+turn one-line commands — from a shell, a script, or native **MCP tool
+calls** — into real keyboard and gamepad input on a Linux machine:
+
+- ⌨️ **ElfKey** — a virtual keyboard on `/dev/uinput`
+- 🕹️ **ElfPad** — a virtual gamepad (Xbox-class: buttons, analog triggers,
+  two sticks, D-pad)
+
+Every "LLM plays Pokémon" project you've seen plugs into an **emulator's
+API**. ElfdeckAI presses buttons on a **real device** — proven live when an
+LLM played Pokémon FireRed on a physical Steam Deck end-to-end: full
+intro, starter picked, first rival battle won, game saved. No emulator, no
+RAM reading, no capture card — just a stream for eyes and these daemons
+for hands. ([How it drives](notes/driving.md))
+
+## ⚡ Quickstart (60 seconds)
+
+```sh
+git clone https://github.com/Garthnesss/ElfdeckAI && cd ElfdeckAI
+
+python3 elfkey.py &          # virtual keyboard
+python3 elfpad.py &          # virtual gamepad
+
+echo "key x 150"        > /tmp/elfkey.fifo    # tap X
+echo "press a"          > /tmp/elfpad.fifo    # tap A
+echo "stick left 60 0"  > /tmp/elfpad.fifo    # push the left stick
+
+grep -E "ElfKey|ElfPad" /proc/bus/input/devices   # they're really there
+```
+
+That's the whole install. Two single-file Python programs, **standard
+library only** — nothing to pip, nothing to build. State lives in `/tmp`;
+reboot and it's gone.
+
+> **Steam Deck?** You're already done — `/dev/uinput` is user-writable
+> there out of the box. On other Linux machines, install the included
+> udev rule once (see [Install](#install)).
+
+## 🤖 Give it to your agent (MCP)
+
+`elfdeckai_mcp.py` is a zero-dependency [Model Context
+Protocol](https://modelcontextprotocol.io) server that exposes both
+devices as native tools — `key_tap`, `key_down`, `pad_press`, `pad_stick`,
+`pad_trigger`, `pad_reset`, … — for Claude, Hermes, or any MCP client:
+
+```json
+{"mcpServers": {"elfdeckai": {
+    "command": "python3", "args": ["/path/to/ElfdeckAI/elfdeckai_mcp.py"]}}}
+```
+
+Start the daemons, add that to your client's config, and your agent can
+press buttons the same way it calls any other tool. Every call is
+validated by the daemons' own input contract before it touches a FIFO,
+and a stopped daemon fails the call cleanly instead of hanging your agent.
+
+## 🎛️ Commands
+
+### ElfKey — `/tmp/elfkey.fifo`
+
+| Command | Effect |
+|---|---|
+| `key <name> [ms]` | tap a key (default 120 ms) |
+| `down <name>` / `up <name>` | hold / release |
+| `quit` | release everything and exit |
+
+Keys: `a`–`z`, `0`–`9`, arrows, `enter`, `esc`, `space`, `tab`, `shift`,
+`rshift`, `ctrl`, `alt`, punctuation, `f1`–`f10`, `home`, `end`, `insert`,
+`delete`, … (full table in the source).
+
+### ElfPad — `/tmp/elfpad.fifo`
+
+| Command | Effect |
+|---|---|
+| `press <btn> [ms]` | tap a button — or a D-pad direction |
+| `down <btn>` / `up <btn>` | hold / release |
+| `stick left\|right <x> <y> [ms]` | analog stick, −100..100 % per axis; `ms` = auto-recenter after |
+| `trigger left\|right <0..100> [ms]` | analog trigger; `ms` = auto-release after |
+| `center` | sticks, triggers, D-pad to neutral |
+| `reset` | release everything |
+| `quit` | release everything and exit |
+
+Buttons: `a b x y lb rb l2 r2 select start guide l3 r3`. ElfPad presents
+as an Xbox-360-class pad, so SDL, Steam Input and RetroArch map it the
+standard way with zero configuration.
+
+## 🛡️ Built for callers that hallucinate
+
+Letting a language model press buttons is safe only if the keyboard
+itself can't be talked into a bad state. So:
+
+- **Bad input never kills the daemon.** Every line passes a strict
+  parser; malformed commands are logged and refused. (`key x abc` and
+  `key x 999999999` were real crash/wedge bugs in the first version —
+  the tests now pin them shut.)
+- **Holds are bounded.** A tap is at most 5 s. Longer holds use
+  `down`/`up`, which the caller controls.
+- **Nothing gets stuck.** Timed moves restore in a `finally` block; held
+  inputs are tracked; on `quit`, SIGTERM or SIGINT, everything is
+  released and recentered before the device is destroyed.
+- **The FIFO is owner-only (0600).** Only your user can inject input.
+
+## 🤔 Why not…?
+
+| Approach | Why it falls short |
+|---|---|
+| Emulator APIs (PyBoy, mGBA scripting) | Only exists inside an emulator. Your Deck is not an emulator. |
+| Sending keys through Moonlight/streaming | Clicks get forwarded; synthetic keyboard events don't (verified). |
+| xdotool / desktop automation | Can't reach native Wayland clients. |
+| KVM gadget / controller-spoofing hardware | Works, but it's extra hardware on your desk doing what 200 lines of Python do on the device itself. |
+
+## Install
+
+**Requirements:** Linux with `/dev/uinput`, Python 3.8+. Nothing else.
+
+Anywhere `/dev/uinput` isn't user-writable, install the udev rule once:
+
+```sh
+sudo cp 99-elfdeckai-uinput.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+Run persistently as user services (expects the repo at `~/elfdeckai/`):
+
+```sh
+cp systemd/*.service ~/.config/systemd/user/
+systemctl --user enable --now elfkey.service elfpad.service
+```
+
+## Tests
+
+```sh
+python3 -m pytest    # 91 tests: both input contracts, device behaviour
+                     # against a fake uinput, and the MCP server spoken
+                     # to over real JSON-RPC
+```
+
+## Roadmap
+
+- **ElfMouse** — relative pointer + buttons, completing the set.
+- One combined daemon (keyboard + pad + mouse in a single process).
+- A `pip install`able package once the FIFO/MCP interfaces settle.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Steal it, ship it, teach your agent to
+speedrun something.
