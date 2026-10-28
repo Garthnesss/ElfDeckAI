@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - Unreleased
+
+### Fixed
+- Gamepad in Steam Deck Gaming Mode: games that ignored ElfPad were only
+  reading Player 1, which Steam gives to the Deck's own controls. The
+  `pad_press` and `pad_down` tool descriptions and AI_SETUP_GUIDE.md now
+  tell agents how to make ElfPad Player 1 through Steam's Reorder
+  Controllers (verified in Bastion).
+
+### Added
+- `scripts/probe-gamepad.py`, which shows which of Steam's virtual pads
+  carries ElfPad's input.
+
 ## [1.1.0] - 2026-10-28
 
 ### Added
@@ -68,5 +81,6 @@ project follows [Semantic Versioning](https://semver.org/).
 - One-command Steam Deck installer.
 - Setup guide written for an AI assistant to follow.
 
+[1.1.1]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.6...v1.0.7

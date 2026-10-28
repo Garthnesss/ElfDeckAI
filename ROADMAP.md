@@ -2,8 +2,6 @@
 
 ## Next
 
-- **Gaming Mode gamepad.** Everything else works in Gaming Mode; ElfPad
-  can still be ignored by some games. See the plan below.
 - **Demo recording.** A short clip of an agent playing on a physical Deck.
 - **Combined daemon.** Keyboard, gamepad and mouse in one process and one
   systemd service.
@@ -33,14 +31,15 @@ by **gamescope**, Valve's own compositor, with Steam's interface on top.
 | Keyboard | **Works.** ElfKey arrow presses moved the menu cursor in Stardew Valley. |
 | Absolute mouse (`mouse_click_at`) | **Works.** Clicked LOAD on Stardew Valley's title screen. |
 | Relative mouse | **Works.** A 100-unit move moved the cursor about 100 px. |
-| Gamepad (ElfPad) | **Known issue.** A game can ignore ElfPad when Steam gives the first controller slot to the Deck's built-in pad (seen in Dragon Quest VII). |
+| Gamepad (ElfPad) | **Works once ElfPad is Player 1.** Steam gives every controller a virtual pad, with the Deck's own controls as Player 1, and many games only read Player 1. Steam's Reorder Controllers fixes it; verified in Bastion. The steps are in AI_SETUP_GUIDE.md. |
 | Switching modes mid-session | **Works.** Gaming → Desktop with no restarts; screenshots worked on both sides. |
 
 ### Remaining work
 
-1. **ElfPad.** Find a dependable way to make Steam give the virtual pad a
-   controller slot, or document the keyboard route as the default for
-   affected games.
+1. **Automatic Player 1.** Steam has no command for reordering controllers,
+   so today the agent does it through Steam's menu. Worth checking whether
+   Steam remembers the order per game, and whether there is a dependable
+   way to set it without the menu.
 2. **Docked to a large display.** gamescope writes PNG, which the server
    cannot scale yet (see "PNG scaling" under "Later"). On the Deck's own
    screen no scaling is needed.
