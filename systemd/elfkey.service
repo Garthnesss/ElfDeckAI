@@ -1,1 +1,11 @@
-W1VuaXRdCkRlc2NyaXB0aW9uPUVsZktleSB2aXJ0dWFsIGtleWJvYXJkIGRhZW1vbgpBZnRlcj1ncmFwaGljYWwtc2Vzc2lvbi50YXJnZXQKCltTZXJ2aWNlXQpFeGVjU3RhcnQ9L3Vzci9iaW4vcHl0aG9uMyAlaC9lbGZkZWNrYWkvZWxma2V5LnB5ClJlc3RhcnQ9b24tZmFpbHVyZQpSZXN0YXJ0U2VjPTIKCltJbnN0YWxsXQpXYW50ZWRCeT1kZWZhdWx0LnRhcmdldAo=
+[Unit]
+Description=ElfKey virtual keyboard daemon
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/elfdeckai/elfkey.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
