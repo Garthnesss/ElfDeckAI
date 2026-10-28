@@ -11,7 +11,7 @@ moving on. Everything below is written for you.
 
 ---
 
-## What ElfDeckAI is (30 seconds)
+## What ElfDeckAI is
 
 Three small daemons run **on the Steam Deck** and create virtual input
 devices at the Linux kernel level (`/dev/uinput`): a keyboard (ElfKey), an
@@ -103,10 +103,10 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 | Tool error: "daemon not running" | A service stopped | On the Deck: `systemctl --user restart elfkey elfpad elfmouse` |
 | Tool error: "permission denied on the FIFO" | MCP server running as a different user than the daemons | Run everything as the `deck` user |
 | `screenshot` errors | Deck is in Gaming Mode, or no graphical session | Switch to Desktop Mode |
-| MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `hostname -I` shows the current one; update the config |
+| MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `ip -4 addr show scope global` shows the current one; update the config |
 | `elfdeckai-mcp`: command not found over SSH | PATH over SSH is minimal | Use the absolute path from the installer output (`/home/deck/.local/bin/elfdeckai-mcp`) |
 | A key/button seems stuck | A caller died mid-hold | `key_release`, `mouse_release`, or `pad_reset`. Holds also self-release ≤ 5 s |
-| Game ignores `pad_press` but responds to keys | Steam hands the controller slot to the Deck's built-in pad, so the virtual gamepad gets no slot | Drive the keyboard channel instead: arrow keys + Enter via `key_tap` (proven in Dragon Quest VII on 2026-10-27, where ElfPad presses did nothing and ElfKey arrows + Enter walked and talked to the NPC)  — worked example: Dragon Quest VII (arrows move, Enter confirms, its prompts switch to keyboard mode) |
+| Game ignores `pad_press` but responds to keys | Steam gives the controller slot to the Deck's built-in pad, so the virtual gamepad gets no slot | Use the keyboard instead: arrow keys and Enter via `key_tap`. Example: in Dragon Quest VII, ElfPad presses had no effect, while arrows moved the character and Enter confirmed |
 | Virtual devices missing after install (non-Deck Linux) | No `/dev/uinput` permission | Install the repo's `70-elfdeckai-uinput.rules` into `/etc/udev/rules.d/`, replug/reboot |
 
 ## Uninstall

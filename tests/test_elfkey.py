@@ -149,7 +149,10 @@ def test_daemon_survives_bad_input_and_releases_on_quit(tmp_path, monkeypatch):
             finally:
                 os.close(w)
 
-        send("key x abc")          # the old daemon died here
+        w = os.open(fifo_path, os.O_WRONLY)
+        os.write(w, b"key \xff\xfe\n")   # not UTF-8: refused, not fatal
+        os.close(w)
+        send("key x abc")          # not a number: refused, not fatal
         send("down space")         # hold fast-forward...
         send("key x 10")           # ...a good tap still works after the bad line...
         send("quit")               # ...and quit releases the held key
