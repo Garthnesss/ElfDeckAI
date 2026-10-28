@@ -3,7 +3,7 @@ Description=ElfPad virtual gamepad daemon
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/python3 %h/elfdeckai/elfpad.py
+ExecStart=%h/.local/bin/elfpad
 Restart=on-failure
 RestartSec=2
 
