@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
-"""ElfMouse: a virtual mouse on /dev/uinput, driven by one-line shell
-commands over a FIFO — the third hand of ElfdeckAI, next to ElfKey
-(keyboard) and ElfPad (gamepad).
+"""ElfMouse: a virtual mouse on /dev/uinput, driven by one-line commands
+written to a FIFO.
 
     echo "move 120 -40"     > /tmp/elfmouse.fifo   # move right 120, up 40
     echo "move 400 0 600"   > /tmp/elfmouse.fifo   # glide 400 px over 600 ms
@@ -13,27 +12,28 @@ commands over a FIFO — the third hand of ElfdeckAI, next to ElfKey
     echo "scroll -3"        > /tmp/elfmouse.fifo   # wheel down 3 ticks
     echo "quit"             > /tmp/elfmouse.fifo
 
-Movement is relative (that's what a mouse is); an agent pairs it with
-screenshots, the same look → move → verify loop as the rest of the set.
+Movement is relative, like a physical mouse; callers pair it with
+screenshots to verify where the pointer ended up.
 
-Same safety design as its siblings, for the same reason — the caller
-might be a language model:
-
-  * Bad input never kills the daemon: parse_command() raises ValueError
-    on anything malformed; the serve loop logs the refusal and keeps
-    serving.
-  * Moves, glides and scrolls are bounded per command (an agent can
-    chain commands; it cannot ask for a 10-metre teleport or an 11-day
-    hold). Timed actions cap at MAX_HOLD_MS like the other daemons.
-  * Buttons are never left held: clicks release in a finally block,
-    held buttons are tracked, and on quit / SIGTERM / SIGINT / any
-    fatal error every held button is released before the device is
-    destroyed. (Pointer position needs no cleanup — it just stops.)
-  * The FIFO is created 0600: only the owning user can inject input.
+Safety design, shared with ElfKey and ElfPad:
+  * Malformed input never stops the daemon: parse_command() raises
+    ValueError on anything invalid; the serve loop logs the refusal and
+    keeps serving.
+  * Moves, glides and scrolls are bounded per command; longer travel is
+    done by chaining commands. Timed actions cap at MAX_HOLD_MS.
+  * Buttons are never left held: clicks release in a finally block, held
+    buttons are tracked, and on quit, SIGTERM, SIGINT or any fatal error
+    every held button is released before the device is destroyed.
+  * The FIFO is created 0600, so only the owning user can inject input.
 
 Standard library only. Works on any Linux with /dev/uinput.
 """
-import fcntl, os, signal, struct, sys, time
+import fcntl
+import os
+import signal
+import struct
+import sys
+import time
 
 NAME = "elfmouse"
 FIFO = "/tmp/elfmouse.fifo"
@@ -256,8 +256,10 @@ def main():
     _make_fifo(FIFO)
     try:
         # O_RDWR on our own FIFO: the read end never sees EOF and open never
-        # blocks, so the daemon survives writers coming and going.
-        with os.fdopen(os.open(FIFO, os.O_RDWR), "r") as fifo:
+        # blocks, so the daemon survives writers coming and going. Undecodable
+        # bytes become U+FFFD and are refused by the parser, never raised.
+        with os.fdopen(os.open(FIFO, os.O_RDWR), "r", encoding="utf-8",
+                       errors="replace") as fifo:
             while True:
                 line = fifo.readline()
                 if not line:

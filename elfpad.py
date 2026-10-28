@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
-"""ElfPad: a virtual gamepad on /dev/uinput, driven by one-line shell
-commands over a FIFO — the gamepad sibling of ElfKey.
+"""ElfPad: a virtual gamepad on /dev/uinput, driven by one-line commands
+written to a FIFO.
 
     echo "press a 150"        > /tmp/elfpad.fifo   # tap A for 150 ms
     echo "down x"             > /tmp/elfpad.fifo   # hold X
@@ -14,32 +14,33 @@ commands over a FIFO — the gamepad sibling of ElfKey.
     echo "reset"              > /tmp/elfpad.fifo   # release everything
     echo "quit"               > /tmp/elfpad.fifo
 
-Why: a keyboard (ElfKey) covers RetroArch-style games, but plenty of games
-only listen to a gamepad. ElfPad presents as a standard Xbox-360-class pad
-(VID 0x045e / PID 0x028e, device name "ElfPad") so SDL, Steam Input and
-RetroArch map its buttons and axes the standard way with no configuration:
-A/B/X/Y, bumpers, analog triggers, start/back/guide, stick clicks, two
-analog sticks and a hat D-pad.
+Many games only accept gamepad input. ElfPad presents as a standard
+Xbox 360-class pad (VID 0x045e / PID 0x028e, device name "ElfPad"), so SDL,
+Steam Input and RetroArch map it with no configuration: A/B/X/Y, bumpers,
+analog triggers, Start/Back/Guide, stick clicks, two analog sticks and a
+hat D-pad.
 
-Built for the same job as ElfKey — giving a program (an LLM agent, a test
-script, an automation) hands on a Linux machine — with the same safety
-rules, because the caller might be a language model:
-
-  * Bad input never kills the daemon: parse_command() raises ValueError on
-    anything malformed; the serve loop logs the refusal and keeps serving.
-  * Timed holds are bounded (0..MAX_HOLD_MS); longer holds use down/up,
+Safety design, shared with ElfKey and ElfMouse:
+  * Malformed input never stops the daemon: parse_command() raises
+    ValueError on anything invalid; the serve loop logs the refusal and
+    keeps serving.
+  * Timed holds are bounded to 0..MAX_HOLD_MS; longer holds use down/up,
     which the caller controls.
-  * Nothing is ever left stuck: taps and timed stick/trigger moves restore
-    in a finally block, held buttons are tracked, and on quit / SIGTERM /
-    SIGINT / any fatal error every button is released and every axis is
-    recentered before the device is destroyed.
-  * The FIFO is created 0600: only the owning user can inject input.
+  * Nothing is left stuck: taps and timed stick/trigger moves restore in a
+    finally block, held buttons are tracked, and on quit, SIGTERM, SIGINT or
+    any fatal error every button is released and every axis recentered
+    before the device is destroyed.
+  * The FIFO is created 0600, so only the owning user can inject input.
 
-Standard library only. Works on any Linux with /dev/uinput (Steam Deck,
-desktop, Raspberry Pi, VM); no root needed where the uinput device is
-user-accessible (udev uaccess rule included in this repo).
+Standard library only. Runs on any Linux with /dev/uinput; no root is
+needed where uinput is user-accessible (see 70-elfdeckai-uinput.rules).
 """
-import fcntl, os, signal, struct, sys, time
+import fcntl
+import os
+import signal
+import struct
+import sys
+import time
 
 NAME = "elfpad"
 FIFO = "/tmp/elfpad.fifo"
@@ -330,8 +331,10 @@ def main():
     _make_fifo(FIFO)
     try:
         # O_RDWR on our own FIFO: the read end never sees EOF and open never
-        # blocks, so the daemon survives writers coming and going.
-        with os.fdopen(os.open(FIFO, os.O_RDWR), "r") as fifo:
+        # blocks, so the daemon survives writers coming and going. Undecodable
+        # bytes become U+FFFD and are refused by the parser, never raised.
+        with os.fdopen(os.open(FIFO, os.O_RDWR), "r", encoding="utf-8",
+                       errors="replace") as fifo:
             while True:
                 line = fifo.readline()
                 if not line:

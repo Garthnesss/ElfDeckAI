@@ -1,5 +1,5 @@
 #!/bin/sh
-# ElfDeckAI one-paste installer for a Steam Deck (or any Linux box).
+# ElfDeckAI installer for a Steam Deck (or any Linux machine).
 #
 # On the Deck: switch to Desktop Mode, open Konsole, paste:
 #
@@ -69,17 +69,18 @@ for name in ElfKey ElfPad ElfMouse; do
     if grep -q "Name=\"$name\"" /proc/bus/input/devices; then
         echo "    $name: up"
     else
-        echo "    $name: NOT VISIBLE — check: systemctl --user status ${name} | head"
+        unit="$(echo "$name" | tr '[:upper:]' '[:lower:]')"
+        echo "    $name: NOT VISIBLE — check: systemctl --user status $unit"
         ok=0
     fi
 done
-[ "$ok" = 1 ] || echo "    (On non-Deck Linux you may need the udev rule from the repo: 70-elfdeckai-uinput.rules (repo root))"
+[ "$ok" = 1 ] || echo "    (On Linux outside the Deck you may need the repo's udev rule: 70-elfdeckai-uinput.rules)"
 
 IP="$(ip -4 -o addr show scope global 2>/dev/null | awk '{split($4,a,"/"); print a[1]; exit}')"
 [ -n "$IP" ] || IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
 cat <<EOF
 
-Done. Your Deck now has hands. To give your AI on your PC control:
+Installation complete. To connect an AI client on your PC:
 
 1) Turn on SSH on this Deck (lets your PC reach it, LAN only) — run:
        passwd                  # set a password for the deck user, once
@@ -97,6 +98,6 @@ Done. Your Deck now has hands. To give your AI on your PC control:
    and ask your AI to take a screenshot — if it can see your Deck,
    everything works.
 
-Full guide, including a file you can hand to your AI so IT explains
-all of this to you: see AI_SETUP_GUIDE.md in the repo.
+For a step-by-step walkthrough your AI assistant can follow, see
+AI_SETUP_GUIDE.md: https://github.com/Garthnesss/ElfDeckAI/blob/main/AI_SETUP_GUIDE.md
 EOF

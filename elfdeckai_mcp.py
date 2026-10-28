@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
-"""ElfdeckAI as MCP tools: a standard-library-only Model Context Protocol
-server (stdio, JSON-RPC) that exposes ElfKey and ElfPad to any MCP client —
-Claude, Hermes, your own agent — as native tool calls:
+"""ElfDeckAI MCP server: a standard-library-only Model Context Protocol
+server (stdio, JSON-RPC) that exposes the ElfKey, ElfPad and ElfMouse
+daemons, plus a screenshot tool, to any MCP client:
 
     key_tap    {key, hold_ms?}          pad_press   {button, hold_ms?}
     key_down   {key}                    pad_down    {button}
@@ -11,31 +11,26 @@ Claude, Hermes, your own agent — as native tool calls:
     mouse_click {button, hold_ms?}      pad_trigger {side, percent, hold_ms?}
     mouse_down  {button}                pad_center  {}
     mouse_up    {button}                pad_reset   {}
-    mouse_scroll  {clicks}              key_release {}   (unstick everything)
-    mouse_hscroll {clicks}              mouse_release {} (unstick everything)
-    screenshot  {}                      (a PNG of the screen — the eyes)
+    mouse_scroll  {clicks}              key_release {}   (release all keys)
+    mouse_hscroll {clicks}              mouse_release {} (release all buttons)
+    screenshot  {}                      (PNG of the local screen)
 
-The screenshot tool captures the screen of the machine this server runs
-on (KDE/KWin on a Steam Deck in Desktop Mode, Spectacle, grim, or X11
-tools — whichever exists) and returns it as an MCP image, so an agent
-needs no video stream to play: look, press, look again.
+The screenshot tool captures the screen of the machine this server runs on
+(Spectacle/KWin on KDE Plasma, grim on wlroots, or scrot/ImageMagick on
+X11, whichever is available) and returns it as an MCP image.
 
 The server holds no state and injects nothing itself: every call is
-validated by the daemons' own parse_command() (the exact contract the
-FIFOs enforce) and then written as one line to the daemon's FIFO. If a
-daemon isn't running, the call fails cleanly with "daemon not running"
-instead of blocking — opening a FIFO for write with no reader would
-otherwise hang the agent.
+validated with the daemon's own parse_command() and then written as one
+line to the daemon's FIFO. If a daemon is not running the call fails with
+"daemon not running" instead of blocking.
 
-Run the daemons first (elfkey.py, elfpad.py, elfmouse.py), then point your MCP client
-at this file, e.g.:
+Start the daemons first (elfkey, elfpad, elfmouse), then point your MCP
+client at this server:
 
-    {"mcpServers": {"elfdeckai": {
-        "command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]}}}
+    {"mcpServers": {"elfdeckai": {"command": "elfdeckai-mcp"}}}
 
 FIFO paths default to the daemons' own constants and can be overridden
-with ELFKEY_FIFO / ELFPAD_FIFO environment variables (used by the tests).
-Standard library only, like everything else in this repo.
+with the ELFKEY_FIFO, ELFPAD_FIFO and ELFMOUSE_FIFO environment variables.
 """
 import base64
 import errno
@@ -55,7 +50,10 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-PROTOCOL_VERSION = "2024-11-05"
+__version__ = "1.0.6"
+# Newest first. The server answers with the client's requested version when
+# it supports it, otherwise with its newest (MCP lifecycle negotiation).
+PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 
 
 def _send(fifo, line, parser):
@@ -369,10 +367,13 @@ def handle(msg):
     if notification and method != "tools/call":  # not even errors or results
         return None
     if method == "initialize":
+        params = msg.get("params")
+        requested = params.get("protocolVersion") if isinstance(params, dict) else None
+        version = requested if requested in PROTOCOL_VERSIONS else PROTOCOL_VERSIONS[0]
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
-            "protocolVersion": PROTOCOL_VERSION,
+            "protocolVersion": version,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.6"}}}
+            "serverInfo": {"name": "elfdeckai", "version": __version__}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":

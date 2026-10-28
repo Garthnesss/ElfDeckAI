@@ -1,34 +1,50 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "elfdeckai"
-version = "1.0.6"
-description = "Virtual keyboard, gamepad and mouse for AI agents on Linux / Steam Deck — zero-dependency uinput daemons with an MCP server."
+dynamic = ["version"]
+description = "Virtual keyboard, gamepad and mouse for AI agents on Linux and Steam Deck: zero-dependency uinput daemons with an MCP server."
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Garth Elfstrom" },
 ]
 keywords = ["mcp", "model-context-protocol", "llm", "ai-agent", "steam-deck", "uinput", "gamepad", "automation"]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Games/Entertainment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Hardware :: Hardware Drivers",
 ]
+
+[project.optional-dependencies]
+test = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/Garthnesss/ElfDeckAI"
 Repository = "https://github.com/Garthnesss/ElfDeckAI"
 Issues = "https://github.com/Garthnesss/ElfDeckAI/issues"
 
-[tool.setuptools]
-py-modules = ["elfkey", "elfpad", "elfmouse", "elfdeckai_mcp"]
-
 [project.scripts]
 elfkey = "elfkey:main"
 elfpad = "elfpad:main"
 elfmouse = "elfmouse:main"
 elfdeckai-mcp = "elfdeckai_mcp:main"
+
+[tool.setuptools]
+py-modules = ["elfkey", "elfpad", "elfmouse", "elfdeckai_mcp"]
+
+[tool.setuptools.dynamic]
+version = { attr = "elfdeckai_mcp.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
