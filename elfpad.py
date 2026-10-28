@@ -51,12 +51,18 @@ MAX_LINE = 200              # longer FIFO lines are refused, never parsed
 EV_SYN, EV_KEY, EV_ABS, SYN_REPORT = 0, 1, 3, 0
 BUTTONS = {
     "a": 0x130, "b": 0x131, "x": 0x133, "y": 0x134,          # SOUTH/EAST/NORTH/WEST
-    "lb": 0x136, "rb": 0x137, "l2": 0x138, "r2": 0x139,      # TL/TR + digital TL2/TR2
+    "lb": 0x136, "rb": 0x137,
     "select": 0x13A, "back": 0x13A, "start": 0x13B,
     "guide": 0x13C, "home": 0x13C,
     "l3": 0x13D, "r3": 0x13E,
 }
 DPAD = ("up", "down", "left", "right")                       # hat axes, not buttons
+# l2/r2 are NOT buttons: a real Xbox 360 pad has no digital trigger buttons
+# (no BTN_TL2/BTN_TR2 bits), and declaring them shifted every later button
+# two indices off the stock layout for index-based consumers (SDL's 360
+# mapping, joydev) — verified against a real 360 pad with evtest on a Deck.
+# press/down/up on l2/r2 drive the analog trigger axis instead.
+TRIGGERS = {"l2": "left", "r2": "right"}
 # axis code -> (min, max)
 AXES = {
     0x00: (-32768, 32767),   # ABS_X   left stick X
@@ -119,7 +125,8 @@ def parse_command(line):
             raise ValueError("%s takes no arguments" % cmd)
         return (cmd,)
     if cmd in ("press", "down", "up"):
-        if not args or (args[0] not in BUTTONS and args[0] not in DPAD):
+        if not args or (args[0] not in BUTTONS and args[0] not in DPAD
+                        and args[0] not in TRIGGERS):
             raise ValueError("unknown button: %s" % (args[0] if args else ""))
         if cmd == "press":
             if len(args) > 2:
@@ -174,6 +181,9 @@ class ElfPad:
 
     # -- buttons ---------------------------------------------------------
     def set_button(self, name, down):
+        if name in TRIGGERS:
+            self.set_trigger(TRIGGERS[name], 100 if down else 0)
+            return
         if name in DPAD:
             (self.dpad.add if down else self.dpad.discard)(name)
             self._apply_hat()
