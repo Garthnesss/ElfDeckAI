@@ -1,0 +1,90 @@
+# Publishes a release when a version tag is pushed:
+#
+#   git tag v1.0.7 && git push origin v1.0.7
+#
+# PyPI uses Trusted Publishing and the MCP Registry uses GitHub OIDC, so
+# no tokens or secrets are stored in the repository.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Check the tag matches the package and server.json versions
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(python -c 'import elfdeckai_mcp; print(elfdeckai_mcp.__version__)')"
+          srv="$(python -c 'import json; print(json.load(open("server.json"))["version"])')"
+          echo "tag=$tag package=$pkg server.json=$srv"
+          [ "$tag" = "$pkg" ] && [ "$tag" = "$srv" ]
+      - run: python -m pip install build
+      - run: python -m build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/elfdeckai/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+
+  mcp-registry:
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.6
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Download and verify mcp-publisher
+        run: |
+          set -euo pipefail
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          base_url="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
+          curl --fail --location --silent --show-error --output "$archive" "$base_url/$archive"
+          curl --fail --location --silent --show-error --output "$archive.sigstore.json" "$base_url/$archive.sigstore.json"
+          cosign verify-blob \
+            --bundle "$archive.sigstore.json" \
+            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/${MCP_PUBLISHER_VERSION}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "$archive"
+          tar xzf "$archive" mcp-publisher
+      - name: Wait for the new version to appear on PyPI
+        run: |
+          for _ in $(seq 1 30); do
+            curl -fsS "https://pypi.org/pypi/elfdeckai/${GITHUB_REF_NAME#v}/json" >/dev/null && exit 0
+            sleep 10
+          done
+          echo "elfdeckai ${GITHUB_REF_NAME#v} not visible on PyPI after 5 minutes" >&2
+          exit 1
+      - run: ./mcp-publisher login github-oidc
+      - run: ./mcp-publisher publish
