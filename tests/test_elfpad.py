@@ -177,3 +177,19 @@ def test_daemon_releases_held_button_on_quit():
     finally_block = src.rsplit("finally:", 1)[1]
     assert "release_all()" in finally_block
     assert "UI_DEV_DESTROY" in finally_block
+
+
+def test_stick_move_is_a_single_frame(monkeypatch):
+    frames = []
+
+    def fake_write(fd, data):
+        frames.extend(struct.unpack("qqHHi", data[i:i + 24])[2:]
+                      for i in range(0, len(data), 24))
+        return len(data)
+
+    monkeypatch.setattr(elfpad.os, "write", fake_write)
+    pad = elfpad.ElfPad(fd=object())
+    pad.set_stick("left", 50, -50)
+    syns = [e for e in frames if e[0] == elfpad.EV_SYN]
+    assert len(syns) == 1 and frames[-1][0] == elfpad.EV_SYN
+    assert {e[1] for e in frames if e[0] == elfpad.EV_ABS} == {0x00, 0x01}
