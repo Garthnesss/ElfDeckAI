@@ -31,14 +31,20 @@ by **gamescope**, Valve's own compositor, with Steam's interface on top.
 | Keyboard | **Works.** ElfKey arrow presses moved the menu cursor in Stardew Valley. |
 | Absolute mouse (`mouse_click_at`) | **Works.** Clicked LOAD on Stardew Valley's title screen. |
 | Relative mouse | **Works.** A 100-unit move moved the cursor about 100 px. |
-| Gamepad (ElfPad) | **Works once ElfPad is first in Steam's controller order**, which many games need (verified in Bastion). `pad_make_player_one` does it through Steam's own UI script when CEF remote debugging is on (as with Decky Loader); otherwise Steam's Reorder Controllers menu does it by hand. With ElfPad first, the Deck's own controls keep working. |
+| Gamepad (ElfPad) | **Works once ElfPad is Player 1.** Many games only read Player 1. Moving ElfPad to the top in Steam's Reorder Controllers menu, while the game runs, fixes it (verified in Bastion), and the Deck's own controls keep working. The steps are in AI_SETUP_GUIDE.md. |
 | Switching modes mid-session | **Works.** Gaming → Desktop with no restarts; screenshots worked on both sides. |
 
 ### Remaining work
 
-1. **Player 1 without remote debugging.** `pad_make_player_one` needs
-   Steam's CEF remote debugging. Without it, the agent uses Steam's menu.
-   Worth checking whether Steam remembers the order per game.
+1. **Automatic Player 1.** Steam's UI script has `SwapControllerOrder`, the
+   same call its Reorder Controllers menu makes, and the controller list is
+   in its `ControllerStore`. A tool built on them (commit `0de9df2`, reached
+   through Steam's CEF remote debugging) changed the order reliably, but a
+   running game kept listening to the pad it bound at launch: swapping
+   mid-game left neither the agent nor the player in control, and swapping
+   before launch locked the player out of the menus. The overlay menu does
+   something more that makes a running game re-bind; finding that is what
+   is left before this can be automated.
 2. **Docked to a large display.** gamescope writes PNG, which the server
    cannot scale yet (see "PNG scaling" under "Later"). On the Deck's own
    screen no scaling is needed.
