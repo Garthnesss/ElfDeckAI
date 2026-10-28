@@ -74,7 +74,8 @@ def test_handshake_and_tool_list(tmp_path):
                          "pad_center", "pad_reset", "mouse_move",
                          "mouse_click", "mouse_down", "mouse_up",
                          "mouse_scroll", "mouse_hscroll", "key_release",
-                         "mouse_release", "screenshot"}
+                         "mouse_release", "screenshot", "mouse_move_to",
+                         "mouse_click_at"}
         for t in r["result"]["tools"]:
             assert t["inputSchema"]["type"] == "object"
         by_name = {t["name"]: t for t in r["result"]["tools"]}
@@ -327,7 +328,7 @@ def test_screenshot_tool_returns_an_image(tmp_path):
         names = [t["name"] for t in rpc(
             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
         )["result"]["tools"]]
-        assert "screenshot" in names and len(names) == 19
+        assert "screenshot" in names and len(names) == 21
         r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                  "params": {"name": "screenshot", "arguments": {}}})
         item = r["result"]["content"][0]
@@ -401,5 +402,152 @@ def test_kwin_fallback_returns_the_image_and_removes_its_file(tmp_path, monkeypa
                         lambda cmd: "/usr/bin/dbus-send" if cmd == "dbus-send" else None)
     monkeypatch.setattr(_mcp.subprocess, "run", lambda *a, **k: R())
     monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
-    assert _mcp._screenshot_png() == _PNG_1PX
+    assert _mcp._capture_screen() == _PNG_1PX
     assert not shot.exists()
+
+
+
+# --- screenshot scaling ------------------------------------------------------
+
+import random
+import zlib as _zlib
+
+
+def _decode_up_png(data):
+    """Test-side decoder for the PNGs _encode_png writes (RGB, Up filter)."""
+    w, h = _mcp._png_size(data)
+    pos, idat = 8, b""
+    while pos < len(data):
+        n = int.from_bytes(data[pos:pos + 4], "big")
+        if data[pos + 4:pos + 8] == b"IDAT":
+            idat += data[pos + 8:pos + 8 + n]
+        pos += 12 + n
+    raw, stride, prev, out = _zlib.decompress(idat), w * 3, bytes(w * 3), b""
+    for r in range(h):
+        line = raw[r * (stride + 1):(r + 1) * (stride + 1)]
+        assert line[0] == 2
+        prev = bytes((a + b) & 0xFF for a, b in zip(line[1:], prev))
+        out += prev
+    return w, h, out
+
+
+def _ppm(w, h, rgb, comment=b""):
+    return b"P6\n" + comment + b"%d %d\n255\n" % (w, h) + rgb
+
+
+def test_bytewise_average_and_subtract_match_per_byte_arithmetic():
+    rnd = random.Random(1)
+    a = bytes(rnd.randrange(256) for _ in range(5000))
+    b = bytes(rnd.randrange(256) for _ in range(5000))
+    assert _mcp._average(a, b) == bytes((x + y) // 2 for x, y in zip(a, b))
+    assert _mcp._subtract(a, b) == bytes((x - y) & 0xFF for x, y in zip(a, b))
+
+
+def test_png_encoding_round_trips():
+    rnd = random.Random(2)
+    rgb = bytes(rnd.randrange(256) for _ in range(7 * 5 * 3))
+    assert _decode_up_png(_mcp._encode_png(7, 5, rgb)) == (7, 5, rgb)
+
+
+def test_ppm_parsing_with_a_comment():
+    rgb = bytes(range(12))
+    assert _mcp._parse_ppm(_ppm(2, 2, rgb, b"# made by a test\n")) == (2, 2, rgb)
+
+
+def test_16_bit_ppm_is_reduced_to_8_bit():
+    rgb16 = bytes([0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC])
+    assert _mcp._parse_ppm(b"P6\n1 1\n65535\n" + rgb16) == (1, 1, b"\x12\x56\x9a")
+
+
+def test_scaling_keeps_aspect_and_averages_pixels():
+    # a 4x2 image: left half black, right half white -> 2x1 black, white
+    rgb = (b"\x00" * 6 + b"\xff" * 6) * 2
+    assert _mcp._scale_rgb(4, 2, rgb, 2) == (2, 1, b"\x00\x00\x00\xff\xff\xff")
+    w, h, out = _mcp._scale_rgb(2560, 1600, b"\x40\x80\xc0" * (2560 * 1600), 1280)
+    assert (w, h) == (1280, 800) and out == b"\x40\x80\xc0" * (1280 * 800)
+    w, h, _ = _mcp._scale_rgb(1920, 1080, bytes(1920 * 1080 * 3), 1280)
+    assert (w, h) == (1280, 720)
+
+
+def test_screenshot_is_scaled_and_reports_its_size(monkeypatch):
+    big = _ppm(2560, 1600, b"\x10\x20\x30" * (2560 * 1600))
+    monkeypatch.setattr(_mcp, "_capture_screen", lambda: big)
+    monkeypatch.setattr(_mcp, "SCREENSHOT_MAX", 1280)
+    content, is_error = _mcp.call_tool("screenshot", {})
+    assert not is_error
+    w, h, rgb = _decode_up_png(_b64.b64decode(content[0]["data"]))
+    assert (w, h) == (1280, 800) and rgb[:3] == b"\x10\x20\x30"
+    assert "1280x800" in content[1]["text"] and "2560x1600" in content[1]["text"]
+    assert _mcp._frame == (1280, 800)
+
+
+def test_capture_falls_back_to_png_when_a_tool_cannot_write_ppm(tmp_path, monkeypatch):
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    png = tmp_path / "fake.png"
+    png.write_bytes(_PNG_1PX)
+    calls = tmp_path / "calls"
+    script = fakebin / "spectacle"
+    script.write_text(
+        '#!/bin/sh\nfor a; do out="$a"; done\necho "$out" >> "%s"\n'
+        'case "$out" in *.ppm) exit 1;; esac\ncp "%s" "$out"\n' % (calls, png))
+    script.chmod(0o755)
+    monkeypatch.setenv("PATH", "%s:/usr/bin:/bin" % fakebin)
+    monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
+    monkeypatch.setattr(_mcp, "_no_ppm", set())
+    assert _mcp._capture_screen() == _PNG_1PX
+    assert _mcp._capture_screen() == _PNG_1PX
+    tried = [os.path.splitext(l)[1] for l in calls.read_text().split()]
+    assert tried == [".ppm", ".png", ".png"]      # PPM is not retried
+
+
+# --- absolute pointer ----------------------------------------------------------
+
+def _mouse_reader(tmp_path, monkeypatch):
+    fifo = str(tmp_path / "mouse.fifo")
+    os.mkfifo(fifo)
+    reader = os.open(fifo, os.O_RDWR | os.O_NONBLOCK)
+    monkeypatch.setattr(_mcp, "MOUSE_FIFO", fifo)
+
+    def lines():
+        try:
+            return os.read(reader, 4096).decode().splitlines()
+        except BlockingIOError:
+            return []
+    return reader, lines
+
+
+def test_click_at_moves_then_clicks_in_screenshot_pixels(tmp_path, monkeypatch):
+    reader, lines = _mouse_reader(tmp_path, monkeypatch)
+    monkeypatch.setattr(_mcp, "_frame", (1280, 800))
+    try:
+        content, is_error = _mcp.call_tool("mouse_click_at",
+                                           {"x": 640, "y": 400, "button": "right"})
+        assert not is_error, content
+        assert lines() == ["moveto 640 400 1280 800", "click right"]
+        content, is_error = _mcp.call_tool("mouse_move_to", {"x": 0, "y": 799})
+        assert not is_error and lines() == ["moveto 0 799 1280 800"]
+    finally:
+        os.close(reader)
+
+
+def test_pointer_outside_the_last_screenshot_is_refused(tmp_path, monkeypatch):
+    reader, lines = _mouse_reader(tmp_path, monkeypatch)
+    monkeypatch.setattr(_mcp, "_frame", (1280, 800))
+    try:
+        content, is_error = _mcp.call_tool("mouse_click_at", {"x": 1280, "y": 0})
+        assert is_error and "1280x800" in content[0]["text"]
+        assert lines() == []
+    finally:
+        os.close(reader)
+
+
+def test_pointer_without_a_screenshot_takes_one_for_the_size(tmp_path, monkeypatch):
+    reader, lines = _mouse_reader(tmp_path, monkeypatch)
+    monkeypatch.setattr(_mcp, "_frame", None)
+    monkeypatch.setattr(_mcp, "_screenshot", lambda: (b"", 800, 600, 800, 600))
+    try:
+        content, is_error = _mcp.call_tool("mouse_move_to", {"x": 10, "y": 20})
+        assert not is_error and lines() == ["moveto 10 20 800 600"]
+    finally:
+        os.close(reader)

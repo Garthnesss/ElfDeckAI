@@ -65,11 +65,11 @@ sleep 2
 
 echo "==> Checking the virtual devices"
 ok=1
-for name in ElfKey ElfPad ElfMouse; do
+for name in ElfKey ElfPad ElfMouse "ElfMouse Absolute"; do
     if grep -q "Name=\"$name\"" /proc/bus/input/devices; then
         echo "    $name: up"
     else
-        unit="$(echo "$name" | tr '[:upper:]' '[:lower:]')"
+        unit="$(echo "${name%% *}" | tr '[:upper:]' '[:lower:]')"
         echo "    $name: NOT VISIBLE — check: systemctl --user status $unit"
         ok=0
     fi
