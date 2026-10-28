@@ -696,11 +696,12 @@ class FakeSteam:
                 if "SwapControllerOrder" in expr:
                     a, b = map(int, expr[expr.index("(") + 1:expr.index(")")].split(","))
                     steam.swaps.append((a, b))
-                    c = steam.controllers
-                    if steam.swap_by == "index":
-                        ids = [x["index"] for x in c]
-                        a, b = (ids.index(a), ids.index(b)) if a in ids and b in ids else (0, 0)
-                    c[a], c[b] = c[b], c[a]          # unknown indices: no-op
+                    # Like Steam: the list keeps its order, the player slots
+                    # (nXInputIndex) are exchanged; unknown arguments do nothing.
+                    key = "slot" if steam.swap_by == "position" else "index"
+                    hit = [x for x in steam.controllers if x[key] in (a, b)]
+                    if len(hit) == 2:
+                        hit[0]["slot"], hit[1]["slot"] = hit[1]["slot"], hit[0]["slot"]
                     value = None
                 else:
                     value = list(steam.controllers)
@@ -725,8 +726,9 @@ class FakeSteam:
 
 import struct
 
-DECK = {"name": "Steam Deck", "index": 0, "vendor": 0x28DE, "product": 0x1205}
-ELF = {"name": "Xbox 360 Controller", "index": 1, "vendor": 0x045E, "product": 0x028E}
+# As on a real Deck: list order is fixed, nXInputIndex ("slot") is the player.
+DECK = {"name": "Steam Deck Controller", "index": 15, "slot": 0, "vendor": 0x28DE, "product": 0x1205}
+ELF = {"name": "Xbox 360 controller", "index": 0, "slot": 1, "vendor": 0x045E, "product": 0x028E}
 
 
 def test_make_player_one_moves_elfpad_to_the_top(monkeypatch):
@@ -736,7 +738,8 @@ def test_make_player_one_moves_elfpad_to_the_top(monkeypatch):
         content, is_error = _mcp.call_tool("pad_make_player_one", {})
         assert not is_error, content
         assert "now Player 1" in content[0]["text"]
-        assert [c["name"] for c in steam.controllers] == ["Xbox 360 Controller", "Steam Deck"]
+        assert {c["name"]: c["slot"] for c in steam.controllers} == {
+            "Xbox 360 controller": 0, "Steam Deck Controller": 1}
         assert steam.swaps == [(0, 1)]
         content, is_error = _mcp.call_tool("pad_make_player_one", {})
         assert not is_error and "already Player 1" in content[0]["text"]
@@ -746,15 +749,14 @@ def test_make_player_one_moves_elfpad_to_the_top(monkeypatch):
 
 
 def test_make_player_one_falls_back_to_controller_indices(monkeypatch):
-    deck, elf = dict(DECK, index=7), dict(ELF, index=3)
-    steam = FakeSteam([deck, dict(ELF, name="Other pad", vendor=1, product=2, index=5), elf],
-                      swap_by="index")
+    other = dict(ELF, name="Other pad", vendor=1, product=2, index=5, slot=1)
+    steam = FakeSteam([dict(DECK), other, dict(ELF, slot=2)], swap_by="index")
     monkeypatch.setattr(_mcp, "CEF_URL", steam.url)
     try:
         content, is_error = _mcp.call_tool("pad_make_player_one", {})
         assert not is_error, content
-        assert steam.controllers[0]["name"] == "Xbox 360 Controller"
-        assert steam.swaps[-1] == (7, 3)
+        assert steam.controllers[2]["slot"] == 0               # ElfPad is Player 1
+        assert steam.swaps == [(0, 2), (15, 0)]
     finally:
         steam.close()
 
@@ -765,7 +767,7 @@ def test_make_player_one_without_elfpad_explains(monkeypatch):
     try:
         content, is_error = _mcp.call_tool("pad_make_player_one", {})
         assert is_error and "does not list ElfPad" in content[0]["text"]
-        assert "Steam Deck" in content[0]["text"]
+        assert "Steam Deck Controller" in content[0]["text"]
     finally:
         steam.close()
 
