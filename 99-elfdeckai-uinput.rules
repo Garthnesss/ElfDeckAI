@@ -1,1 +1,4 @@
-IyBMZXQgdGhlIGxvZ2dlZC1pbiB1c2VyIGNyZWF0ZSB2aXJ0dWFsIGlucHV0IGRldmljZXMgKG5lZWRlZCBvbiBtYWNoaW5lcwojIHdoZXJlIC9kZXYvdWlucHV0IGlzIHJvb3Qtb25seTsgdGhlIFN0ZWFtIERlY2sgYWxyZWFkeSBhbGxvd3MgaXQpLgojIEluc3RhbGw6IHN1ZG8gY3AgOTktZWxmZGVja2FpLXVpbnB1dC5ydWxlcyAvZXRjL3VkZXYvcnVsZXMuZC8gJiYgc3VkbyB1ZGV2YWRtIGNvbnRyb2wgLS1yZWxvYWQtcnVsZXMgJiYgc3VkbyB1ZGV2YWRtIHRyaWdnZXIKS0VSTkVMPT0idWlucHV0IiwgU1VCU1lTVEVNPT0ibWlzYyIsIE9QVElPTlMrPSJzdGF0aWNfbm9kZT11aW5wdXQiLCBUQUcrPSJ1YWNjZXNzIgo=
+# Let the logged-in user create virtual input devices (needed on machines
+# where /dev/uinput is root-only; the Steam Deck already allows it).
+# Install: sudo cp 99-elfdeckai-uinput.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
+KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"
