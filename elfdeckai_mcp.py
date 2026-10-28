@@ -21,7 +21,7 @@ daemon isn't running, the call fails cleanly with "daemon not running"
 instead of blocking — opening a FIFO for write with no reader would
 otherwise hang the agent.
 
-Run the daemons first (elfkey.py / elfpad.py), then point your MCP client
+Run the daemons first (elfkey.py, elfpad.py, elfmouse.py), then point your MCP client
 at this file, e.g.:
 
     {"mcpServers": {"elfdeckai": {
@@ -249,11 +249,14 @@ def handle(msg):
             "code": -32600, "message": "invalid request: not a JSON object"}}
     method = msg.get("method")
     msg_id = msg.get("id")
+    notification = "id" not in msg  # JSON-RPC: notifications get NO response,
+    if notification and method != "tools/call":  # not even errors or results
+        return None
     if method == "initialize":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.2"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.3"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
@@ -266,6 +269,8 @@ def handle(msg):
                 "code": -32602, "message": "invalid params: tools/call needs a "
                 "string name and an object arguments"}}
         text, is_error = call_tool(params.get("name"), params.get("arguments") or {})
+        if notification:
+            return None  # the call executed; a notification is never answered
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "content": [{"type": "text", "text": text}], "isError": is_error}}
     if msg_id is None:
