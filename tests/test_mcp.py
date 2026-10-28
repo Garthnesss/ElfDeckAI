@@ -373,6 +373,33 @@ def test_initialize_negotiates_the_protocol_version():
 def test_versions_agree():
     """server.json and the package version must not drift apart."""
     with open(ROOT / "server.json") as f:
-        assert json.load(f)["version"] == _mcp.__version__
+        server = json.load(f)
+    assert server["version"] == _mcp.__version__
+    assert [p["version"] for p in server["packages"]] == [_mcp.__version__]
     r = _mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize"})
     assert r["result"]["serverInfo"]["version"] == _mcp.__version__
+
+
+def test_readme_carries_the_registry_ownership_marker():
+    """The MCP Registry verifies PyPI ownership by finding this string in
+    the package README."""
+    with open(ROOT / "server.json") as f:
+        name = json.load(f)["name"]
+    assert "<!-- mcp-name: %s -->" % name in (ROOT / "README.md").read_text()
+
+
+def test_kwin_fallback_returns_the_image_and_removes_its_file(tmp_path, monkeypatch):
+    shot = tmp_path / "kwin-shot.png"
+    shot.write_bytes(_PNG_1PX)
+
+    class R:
+        returncode = 0
+        stdout = 'method return\n   string "%s"\n' % shot
+        stderr = ""
+
+    monkeypatch.setattr(_mcp.shutil, "which",
+                        lambda cmd: "/usr/bin/dbus-send" if cmd == "dbus-send" else None)
+    monkeypatch.setattr(_mcp.subprocess, "run", lambda *a, **k: R())
+    monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
+    assert _mcp._screenshot_png() == _PNG_1PX
+    assert not shot.exists()

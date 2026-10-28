@@ -3,9 +3,11 @@
 [![tests](https://github.com/Garthnesss/ElfDeckAI/actions/workflows/tests.yml/badge.svg)](https://github.com/Garthnesss/ElfDeckAI/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/elfdeckai.svg)](https://pypi.org/project/elfdeckai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 
 **Virtual keyboard, gamepad and mouse for AI agents on Linux and the Steam Deck.**
+
+<!-- mcp-name: io.github.Garthnesss/elfdeckai -->
 
 ElfDeckAI lets an AI agent operate a real Linux machine through its input
 devices. Three small daemons create virtual devices on `/dev/uinput`, and
@@ -103,7 +105,10 @@ Running on a Steam Deck from an AI client on your PC, over SSH:
     "args": ["deck@DECK-IP-ADDRESS", "/home/deck/.local/bin/elfdeckai-mcp"]}}}
 ```
 
-Without pip, use `"command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]`.
+This needs key-based SSH login from the PC to the Deck, because the MCP
+client cannot answer a password prompt; [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md)
+covers the setup. Without pip, use
+`"command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]`.
 
 Every tool call is validated against the tool's schema and the daemon's
 own parser before anything is written to a FIFO. If a daemon is not
@@ -200,7 +205,7 @@ can supervise.
 
 ## Installation
 
-**Requirements:** 64-bit Linux with `/dev/uinput` and Python 3.8 or newer.
+**Requirements:** 64-bit Linux with `/dev/uinput` and Python 3.9 or newer.
 
 Where `/dev/uinput` is not writable by your user, install the udev rule
 once:
@@ -237,6 +242,10 @@ a fake uinput device, and the MCP server over real JSON-RPC. No
 - A single combined daemon for keyboard, gamepad and mouse.
 - Screenshot support in Steam Deck Gaming Mode.
 - A demo recording of the Pokémon run.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
