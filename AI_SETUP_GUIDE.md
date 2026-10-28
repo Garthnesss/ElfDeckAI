@@ -110,9 +110,8 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
   settings screens: excellent. Twitch action, platformers, shooters,
   racing: the AI will lose, and that's a physics problem, not a setup
   problem.
-- Gaming Mode works for screenshots and the keyboard (verified in Stardew
-  Valley). The gamepad can be ignored there when Steam gives the
-  controller slot to the Deck's built-in pad; use the keyboard instead.
+- Gaming Mode works for screenshots, keyboard, mouse and gamepad. For the
+  gamepad, ElfPad usually has to be made Player 1 first; see below.
 - Anyone who can log in to the Deck over SSH can send inputs. That's the
   same trust level as SSH itself; don't expose SSH to the internet.
 
@@ -127,8 +126,28 @@ network. Nothing leaves the LAN except the AI's normal cloud traffic.
 | MCP client can't start the server | Wrong Deck IP (DHCP changed it) | On the Deck, `ip -4 addr show scope global` shows the current one; update the config |
 | `elfdeckai-mcp`: command not found over SSH | PATH over SSH is minimal | Use the absolute path from the installer output (`/home/deck/.local/bin/elfdeckai-mcp`) |
 | A key/button seems stuck | A caller died mid-hold | `key_release`, `mouse_release`, or `pad_reset`. Holds also self-release ≤ 5 s |
-| Game ignores `pad_press` but responds to keys | Steam gives the controller slot to the Deck's built-in pad, so the virtual gamepad gets no slot | Use the keyboard instead: arrow keys and Enter via `key_tap`. Example: in Dragon Quest VII, ElfPad presses had no effect, while arrows moved the character and Enter confirmed |
+| Game ignores `pad_press` but responds to keys (Gaming Mode) | Steam gives each controller its own player slot, the Deck's own controls are Player 1, and the game only listens to Player 1 | Make ElfPad Player 1 (see "Using the gamepad in Gaming Mode"). Or use the keyboard: arrow keys and Enter via `key_tap` |
 | Virtual devices missing after install (non-Deck Linux) | No `/dev/uinput` permission | Install the repo's `70-elfdeckai-uinput.rules` into `/etc/udev/rules.d/`, replug/reboot |
+
+## Using the gamepad in Gaming Mode
+
+In Gaming Mode, Steam gives each controller its own player slot. The Deck's
+own controls are Player 1, ElfPad is Player 2, and many games only listen
+to Player 1. Before driving a game with `pad_press`, make ElfPad Player 1.
+You can do this yourself:
+
+1. With the game running, open the Steam menu: `pad_press` with
+   `button: "guide"` (or ask the human to press the Steam button).
+2. Open **Controller Settings**, then **Reorder Controllers**. This option
+   only appears while a game is running.
+3. Using `screenshot` and `mouse_click_at`, move the controller that is
+   **not** the Steam Deck to the top (Player 1), then close the menu.
+4. Check with one `pad_press` and a `screenshot`.
+
+While ElfPad is Player 1, the game ignores the Deck's own controls. When
+the human wants to play again, move the Steam Deck back to the top the same
+way. Verified in Bastion; the same cause explains games such as Dragon
+Quest VII ignoring the pad.
 
 ## Uninstall
 
