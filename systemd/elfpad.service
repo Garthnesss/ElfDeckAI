@@ -1,1 +1,11 @@
-W1VuaXRdCkRlc2NyaXB0aW9uPUVsZlBhZCB2aXJ0dWFsIGdhbWVwYWQgZGFlbW9uCkFmdGVyPWdyYXBoaWNhbC1zZXNzaW9uLnRhcmdldAoKW1NlcnZpY2VdCkV4ZWNTdGFydD0vdXNyL2Jpbi9weXRob24zICVoL2VsZmRlY2thaS9lbGZwYWQucHkKUmVzdGFydD1vbi1mYWlsdXJlClJlc3RhcnRTZWM9MgoKW0luc3RhbGxdCldhbnRlZEJ5PWRlZmF1bHQudGFyZ2V0Cg==
+[Unit]
+Description=ElfPad virtual gamepad daemon
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/elfdeckai/elfpad.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
