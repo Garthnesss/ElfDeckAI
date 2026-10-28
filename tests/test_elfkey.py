@@ -13,7 +13,7 @@ import os, stat, struct
 
 import pytest
 
-from conftest import elfkey
+from conftest import ROOT, elfkey
 
 
 # --- parse_command: the valid protocol ---------------------------------------
@@ -233,3 +233,29 @@ def test_daemon_release_command_unsticks_a_held_key(tmp_path, monkeypatch):
     ev = [struct.unpack("qqHHi", data[i:i + 24])[2:] for i in range(0, len(data) - 23, 24)]
     space = [e for e in ev if e[0] == elfkey.EV_KEY and e[1] == elfkey.KEYS["space"]]
     assert [e[2] for e in space] == [1, 0, 1, 0]   # hold, release, hold, quit-cleanup
+
+
+def test_instance_lock_refuses_a_second_process(tmp_path):
+    import subprocess, sys as _sys
+    if elfkey._LOCK_FD is not None:      # a daemon-loop test may hold it
+        os.close(elfkey._LOCK_FD)
+        elfkey._LOCK_FD = None
+    code = (
+        "import sys; sys.path.insert(0, %r)\n"
+        "import elfkey\n"
+        "elfkey._acquire_instance_lock()\n"
+        "print('locked', flush=True)\n"
+        "import time; time.sleep(5)\n" % str(ROOT)
+    )
+    child = subprocess.Popen([_sys.executable, "-c", code],
+                             stdout=subprocess.PIPE, text=True)
+    try:
+        assert child.stdout.readline().strip() == "locked"
+        with pytest.raises(SystemExit):
+            elfkey._acquire_instance_lock()
+    finally:
+        child.kill()
+        child.wait()
+    elfkey._acquire_instance_lock()      # free again once the child is gone
+    os.close(elfkey._LOCK_FD)
+    elfkey._LOCK_FD = None
