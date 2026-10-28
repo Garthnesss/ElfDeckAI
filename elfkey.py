@@ -1,36 +1,35 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Garth Elfstrom — MIT License (see LICENSE).
-"""ElfKey: a virtual keyboard on /dev/uinput for driving games and apps
-(RetroArch etc.) from a shell. Creates the device once and serves key
-commands from a FIFO so each press is a one-line shell command:
+"""ElfKey: a virtual keyboard on /dev/uinput, driven by one-line commands
+written to a FIFO.
 
     echo "key x 120"   > /tmp/elfkey.fifo     # tap X for 120 ms
-    echo "down up"     > /tmp/elfkey.fifo     # hold D-pad up (walk)
+    echo "down up"     > /tmp/elfkey.fifo     # hold the Up arrow
     echo "up up"       > /tmp/elfkey.fifo     # release it
+    echo "release"     > /tmp/elfkey.fifo     # release every held key
     echo "quit"        > /tmp/elfkey.fifo
 
-Lives in /tmp on purpose: gone at reboot, nothing installed.
+The FIFO and lock file live in /tmp, so nothing persists across a reboot.
 
-Safety design:
-  * Bad input never kills the daemon. Every line is parsed by parse_command(),
-    which raises ValueError on anything malformed; the serve loop logs the
-    refusal to stderr and keeps serving. (Before: `key x abc` crashed the
-    daemon on an uncaught int() conversion, and an unknown key was silently
-    ignored with no trace.)
-  * Hold times are bounded: 0..MAX_HOLD_MS. `key x 999999999` used to block
-    the single-threaded serve loop — and hold the key down — for days.
-    Longer holds go through down/up, which the caller controls.
-  * Keys are never left stuck: a tap releases in a finally block, `down`
-    keys are tracked, and on quit / SIGTERM / SIGINT / any fatal error every
-    held key is released before the uinput device is destroyed.
+Safety design (the caller may be a language model):
+  * Malformed input never stops the daemon. Every line goes through
+    parse_command(), which raises ValueError on anything invalid; the serve
+    loop logs the refusal to stderr and keeps serving.
+  * Taps are bounded to 0..MAX_HOLD_MS so one command cannot block the
+    serve loop. Longer holds use down/up, which the caller controls.
+  * Keys are never left stuck: a tap releases in a finally block, held keys
+    are tracked, and on quit, SIGTERM, SIGINT or any fatal error every held
+    key is released before the uinput device is destroyed.
   * The FIFO is created 0600, so only the owning user can inject keys.
-  * The key table now includes the punctuation and modifiers the playbook
-    always claimed were there (minus, comma, ctrl, alt, F-keys, ...), so
-    ElfKey is usable outside RetroArch too.
 
 Standard library only.
 """
-import fcntl, os, signal, struct, sys, time
+import fcntl
+import os
+import signal
+import struct
+import sys
+import time
 
 NAME = "elfkey"
 FIFO = "/tmp/elfkey.fifo"
@@ -219,8 +218,10 @@ def main():
     _make_fifo(FIFO)
     try:
         # O_RDWR on our own FIFO: the read end never sees EOF and open never
-        # blocks, so the daemon survives writers coming and going.
-        with os.fdopen(os.open(FIFO, os.O_RDWR), "r") as fifo:
+        # blocks, so the daemon survives writers coming and going. Undecodable
+        # bytes become U+FFFD and are refused by the parser, never raised.
+        with os.fdopen(os.open(FIFO, os.O_RDWR), "r", encoding="utf-8",
+                       errors="replace") as fifo:
             while True:
                 line = fifo.readline()
                 if not line:

@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 
 from conftest import ROOT, elfkey
 
@@ -45,12 +46,24 @@ def _server(tmp_path):
     return proc, rpc, received, key_fifo, pad_fifo, mouse_fifo
 
 
+def _received_lines(received, expected, timeout=2.0):
+    """The (fifo basename, line) pairs drained so far, waiting until every
+    pair in `expected` has arrived: the drain threads read asynchronously,
+    so a reply from the server does not mean its FIFO line was read yet."""
+    deadline = time.monotonic() + timeout
+    while True:
+        got = {(os.path.basename(p), line) for p, line in received}
+        if expected <= got or time.monotonic() > deadline:
+            return got
+        time.sleep(0.01)
+
+
 def test_handshake_and_tool_list(tmp_path):
     proc, rpc, *_ = _server(tmp_path)
     try:
         r = rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
         assert r["result"]["serverInfo"]["name"] == "elfdeckai"
-        assert r["result"]["protocolVersion"]
+        assert r["result"]["protocolVersion"] == "2025-06-18"
         proc.stdin.write(json.dumps(
             {"jsonrpc": "2.0", "method": "notifications/initialized"}) + "\n")
         proc.stdin.flush()
@@ -105,7 +118,11 @@ def test_tool_calls_reach_the_fifos(tmp_path):
         assert r["result"]["isError"] is False
     finally:
         proc.kill()
-    got = {(os.path.basename(p), line) for p, line in received}
+    key, pad, mouse = (os.path.basename(f) for f in (key_fifo, pad_fifo, mouse_fifo))
+    got = _received_lines(received, {
+        (key, "key x 150"), (pad, "stick left 60 -20"), (pad, "center"),
+        (mouse, "move 120 -40 300"), (mouse, "scroll -3"),
+        (key, "release"), (mouse, "release")})
     assert (os.path.basename(key_fifo), "key x 150") in got
     assert (os.path.basename(pad_fifo), "stick left 60 -20") in got
     assert (os.path.basename(pad_fifo), "center") in got
@@ -270,8 +287,8 @@ def test_tools_call_notification_executes_but_is_never_answered(tmp_path):
         assert r["id"] == 2 and r["result"] == {}   # the FIRST reply is ping's
     finally:
         proc.kill()
-    got = {(os.path.basename(p), line) for p, line in received}
-    assert (os.path.basename(key_fifo), "key x") in got   # ...but it executed
+    expected = (os.path.basename(key_fifo), "key x")
+    assert expected in _received_lines(received, {expected})   # ...but it executed
 
 
 import base64 as _b64
@@ -342,3 +359,47 @@ def test_ensure_graphical_env_imports_from_systemd(monkeypatch):
     assert _os.environ["WAYLAND_DISPLAY"] == "wayland-0"
     assert _os.environ["DISPLAY"] == ":0"
     assert "UNRELATED" not in _os.environ
+
+
+def test_initialize_negotiates_the_protocol_version():
+    for requested, answered in (("2024-11-05", "2024-11-05"),
+                                ("2025-03-26", "2025-03-26"),
+                                ("2099-01-01", _mcp.PROTOCOL_VERSIONS[0])):
+        r = _mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                         "params": {"protocolVersion": requested}})
+        assert r["result"]["protocolVersion"] == answered
+
+
+def test_versions_agree():
+    """server.json and the package version must not drift apart."""
+    with open(ROOT / "server.json") as f:
+        server = json.load(f)
+    assert server["version"] == _mcp.__version__
+    assert [p["version"] for p in server["packages"]] == [_mcp.__version__]
+    r = _mcp.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize"})
+    assert r["result"]["serverInfo"]["version"] == _mcp.__version__
+
+
+def test_readme_carries_the_registry_ownership_marker():
+    """The MCP Registry verifies PyPI ownership by finding this string in
+    the package README."""
+    with open(ROOT / "server.json") as f:
+        name = json.load(f)["name"]
+    assert "<!-- mcp-name: %s -->" % name in (ROOT / "README.md").read_text()
+
+
+def test_kwin_fallback_returns_the_image_and_removes_its_file(tmp_path, monkeypatch):
+    shot = tmp_path / "kwin-shot.png"
+    shot.write_bytes(_PNG_1PX)
+
+    class R:
+        returncode = 0
+        stdout = 'method return\n   string "%s"\n' % shot
+        stderr = ""
+
+    monkeypatch.setattr(_mcp.shutil, "which",
+                        lambda cmd: "/usr/bin/dbus-send" if cmd == "dbus-send" else None)
+    monkeypatch.setattr(_mcp.subprocess, "run", lambda *a, **k: R())
+    monkeypatch.setattr(_mcp, "_ensure_graphical_env", lambda: None)
+    assert _mcp._screenshot_png() == _PNG_1PX
+    assert not shot.exists()
