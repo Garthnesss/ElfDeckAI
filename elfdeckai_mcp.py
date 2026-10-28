@@ -13,11 +13,16 @@ daemons, plus a screenshot tool, to any MCP client:
     mouse_up    {button}                pad_reset   {}
     mouse_scroll  {clicks}              key_release {}   (release all keys)
     mouse_hscroll {clicks}              mouse_release {} (release all buttons)
+    mouse_move_to  {x, y}               mouse_click_at {x, y, button?, hold_ms?}
     screenshot  {}                      (PNG of the local screen)
+
+mouse_move_to and mouse_click_at take coordinates in the pixels of the most
+recent screenshot; ElfMouse's absolute device maps them across the screen.
 
 The screenshot tool captures the screen of the machine this server runs on
 (Spectacle/KWin on KDE Plasma, grim on wlroots, or scrot/ImageMagick on
-X11, whichever is available) and returns it as an MCP image.
+X11, whichever is available) and returns it as an MCP image, scaled down
+to SCREENSHOT_MAX pixels on its long side.
 
 The server holds no state and injects nothing itself: every call is
 validated with the daemon's own parse_command() and then written as one
@@ -35,12 +40,15 @@ with the ELFKEY_FIFO, ELFPAD_FIFO and ELFMOUSE_FIFO environment variables.
 import base64
 import errno
 import json
+import operator
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
+import zlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import elfkey
@@ -50,7 +58,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.0.7"
+__version__ = "1.1.0"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -151,13 +159,27 @@ TOOLS = [
      ["side", "percent"]),
     ("pad_center", "Return sticks, triggers and D-pad to neutral.", {}, []),
     ("pad_reset", "Release every button and recenter everything.", {}, []),
-    ("mouse_move", "Move the pointer by (dx, dy) pixels. Optional glide_ms "
-                   "spreads the move over time (smooth drags, human-ish motion).",
+    ("mouse_move", "Move the pointer relatively by (dx, dy). Pointer "
+                   "acceleration applies, so prefer mouse_move_to for "
+                   "targeting. Optional glide_ms spreads the move over time.",
      {"dx": {"type": "integer", "minimum": -elfmouse.MAX_MOVE, "maximum": elfmouse.MAX_MOVE},
       "dy": {"type": "integer", "minimum": -elfmouse.MAX_MOVE, "maximum": elfmouse.MAX_MOVE},
       "glide_ms": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_HOLD_MS}},
      ["dx", "dy"]),
-    ("mouse_click", "Click a mouse button.",
+    ("mouse_move_to", "Move the pointer to (x, y), in the pixel coordinates of "
+                      "the most recent screenshot (0,0 is its top-left corner). "
+                      "Takes a screenshot first if none has been taken yet.",
+     {"x": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_FRAME - 1},
+      "y": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_FRAME - 1}},
+     ["x", "y"]),
+    ("mouse_click_at", "Move the pointer to (x, y) in the pixel coordinates of "
+                       "the most recent screenshot, then click (left by default).",
+     {"x": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_FRAME - 1},
+      "y": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_FRAME - 1},
+      "button": {"type": "string", "enum": ["left", "right", "middle"]},
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_HOLD_MS}},
+     ["x", "y"]),
+    ("mouse_click", "Click a mouse button at the pointer's current position.",
      {"button": {"type": "string", "enum": ["left", "right", "middle"]},
       "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_HOLD_MS}},
      ["button"]),
@@ -176,9 +198,10 @@ TOOLS = [
      {}, []),
     ("screenshot", "Capture the screen of the machine this server runs on "
                    "(e.g. a Steam Deck in Desktop Mode) and return it as a "
-                   "PNG image — the eyes to match the hands. Look, press, "
-                   "look again; no video stream needed. Requires a "
-                   "graphical session on the server's machine.",
+                   "PNG image, scaled down if the screen is large. "
+                   "mouse_move_to and mouse_click_at take coordinates in this "
+                   "image's pixels. Requires a graphical session on the "
+                   "server's machine.",
      {}, []),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
@@ -250,43 +273,67 @@ def _ensure_graphical_env():
             os.environ[key] = value
 
 
-def _screenshot_png():
-    """PNG bytes of the screen of the machine this server runs on.
+# Screenshots wider or taller than this are scaled down before they are
+# sent: smaller images are faster to transfer and cheaper for the model, and
+# clients that shrink large images themselves would otherwise leave the model
+# guessing at coordinates. 0 disables scaling.
+try:
+    SCREENSHOT_MAX = max(0, int(os.environ.get("ELFDECKAI_SCREENSHOT_MAX", "1280")))
+except ValueError:
+    SCREENSHOT_MAX = 1280
 
-    Tries, in order: Spectacle (KDE — a Steam Deck in Desktop Mode), grim
-    (wlroots), the X11 tools scrot and ImageMagick import, then KWin's
-    D-Bus screenshot as a fallback (bounded to ~8 s: on some Plasma
-    versions it waits on an interactive authorization prompt). Raises
-    RuntimeError listing every failure when no method works, so the
-    caller learns WHY instead of getting a black box.
+# Size of the last image the client was sent, which mouse_move_to and
+# mouse_click_at coordinates refer to.
+_frame = None
+# Tools that failed to write PPM; they are asked for PNG from then on.
+_no_ppm = set()
+
+
+def _capture_commands(path):
+    """(label, argv, writes_ppm) for each capture tool, in order of
+    preference. PPM output is uncompressed, so it can be scaled quickly
+    without an image library; PNG is the fallback."""
+    ppm, png = path + ".ppm", path + ".png"
+    for label, argv in (("spectacle", ["spectacle", "-b", "-n", "-o", "%s"]),
+                        ("grim", ["grim", "-t", "%t", "%s"]),
+                        ("scrot", ["scrot", "-o", "%s"]),
+                        ("import", ["import", "-window", "root", "%s"])):
+        if not shutil.which(argv[0]):
+            continue
+        for out, fmt in ((ppm, "ppm"), (png, "png")):
+            if fmt == "ppm" and label in _no_ppm:
+                continue
+            yield label, [{"%s": out, "%t": fmt}.get(a, a) for a in argv], out, fmt == "ppm"
+
+
+def _capture_screen():
+    """Raw screenshot bytes (PPM or PNG) of the machine this server runs on.
+
+    Tries, in order: Spectacle (KDE, e.g. a Steam Deck in Desktop Mode),
+    grim (wlroots), the X11 tools scrot and ImageMagick import, then KWin's
+    D-Bus screenshot as a fallback (bounded to ~8 s: on some Plasma versions
+    it waits on an interactive authorization prompt). Raises RuntimeError
+    listing every failure when no method works.
     """
     _ensure_graphical_env()
     errors = []
-    fd, tmp = tempfile.mkstemp(suffix=".png")
-    os.close(fd)
+    tmpdir = tempfile.mkdtemp(prefix="elfdeckai-")
     try:
-        for label, cmd in (("spectacle", ["spectacle", "-b", "-n", "-o", tmp]),
-                           ("grim", ["grim", tmp]),
-                           ("scrot", ["scrot", "-o", tmp]),
-                           ("import", ["import", "-window", "root", tmp])):
-            if not shutil.which(cmd[0]):
-                continue
+        for label, cmd, out, is_ppm in _capture_commands(os.path.join(tmpdir, "shot")):
             try:
-                r = subprocess.run(cmd, capture_output=True, text=True,
-                                   timeout=20)
-                if r.returncode == 0 and os.path.getsize(tmp) > 0:
-                    with open(tmp, "rb") as f:
+                r = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+                if r.returncode == 0 and os.path.exists(out) and os.path.getsize(out) > 0:
+                    with open(out, "rb") as f:
                         return f.read()
+                if is_ppm:
+                    _no_ppm.add(label)
+                    continue
                 errors.append("%s: %s" % (
-                    label, (r.stderr or "").strip() or
-                    "exit %d" % r.returncode))
+                    label, (r.stderr or "").strip() or "exit %d" % r.returncode))
             except Exception as e:
                 errors.append("%s: %s" % (label, e))
     finally:
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
+        shutil.rmtree(tmpdir, ignore_errors=True)
     if shutil.which("dbus-send"):
         try:
             out = subprocess.run(
@@ -317,8 +364,161 @@ def _screenshot_png():
         % ("; ".join(errors) or "no capture tools installed"))
 
 
+def _parse_ppm(data):
+    """Binary PPM (P6, 8- or 16-bit) -> (width, height, 8-bit rgb bytes)."""
+    fields, pos = [], 2
+    while len(fields) < 3:
+        while data[pos:pos + 1].isspace():
+            pos += 1
+        if data[pos:pos + 1] == b"#":
+            pos = data.index(b"\n", pos) + 1
+            continue
+        start = pos
+        while data[pos:pos + 1].isdigit():
+            pos += 1
+        if start == pos:
+            raise ValueError("malformed PPM header")
+        fields.append(int(data[start:pos]))
+    w, h, maxval = fields
+    if maxval not in (255, 65535):
+        raise ValueError("unsupported PPM depth: %d" % maxval)
+    size = w * h * 3 * (2 if maxval == 65535 else 1)
+    pixels = data[pos + 1:pos + 1 + size]
+    if len(pixels) != size:
+        raise ValueError("truncated PPM")
+    if maxval == 65535:
+        pixels = pixels[0::2]   # 16-bit samples, big-endian: keep the high byte
+    return w, h, pixels
+
+
+def _bytewise(n, byte):
+    return int.from_bytes(bytes([byte]) * n, "big")
+
+
+def _average(a, b):
+    """Per-byte floor((a + b) / 2) of two equal-length byte strings, done on
+    whole buffers at once as big integers (no carries cross byte lanes)."""
+    n = len(a)
+    x, y = int.from_bytes(a, "big"), int.from_bytes(b, "big")
+    return ((x & y) + (((x ^ y) & _bytewise(n, 0xFE)) >> 1)).to_bytes(n, "big")
+
+
+def _subtract(a, b):
+    """Per-byte (a - b) mod 256 of two equal-length byte strings."""
+    n = len(a)
+    hi, lo = _bytewise(n, 0x80), _bytewise(n, 0x7F)
+    x, y = int.from_bytes(a, "big"), int.from_bytes(b, "big")
+    return (((x | hi) - (y & lo)) ^ ((x ^ y ^ hi) & hi)).to_bytes(n, "big")
+
+
+def _halve(plane, w, h):
+    """2x2 box-average one colour plane."""
+    w2, h2 = w // 2, h // 2
+    rows = [plane[r * w:r * w + 2 * w2] for r in range(2 * h2)]
+    v = _average(b"".join(rows[0::2]), b"".join(rows[1::2]))
+    return _average(v[0::2], v[1::2]), w2, h2
+
+
+def _resample(plane, w, h, nw, nh):
+    """Nearest-neighbour resize of one colour plane."""
+    cols = [i * w // nw for i in range(nw)] + [0]   # [0] keeps a tuple result
+    pick = operator.itemgetter(*cols)
+    return b"".join(bytes(pick(plane[(j * h // nh) * w:(j * h // nh + 1) * w])[:-1])
+                    for j in range(nh))
+
+
+def _scale_rgb(w, h, rgb, max_side):
+    """Shrink an RGB image so neither side exceeds max_side: box-filter
+    halvings while it is at least twice too big, then one nearest-neighbour
+    step to the exact size."""
+    planes = [rgb[0::3], rgb[1::3], rgb[2::3]]
+    while max(w, h) >= 2 * max_side:
+        results = [_halve(p, w, h) for p in planes]
+        planes = [r[0] for r in results]
+        w, h = results[0][1], results[0][2]
+    if max(w, h) > max_side:
+        nw = max(1, w * max_side // max(w, h))
+        nh = max(1, h * max_side // max(w, h))
+        planes = [_resample(p, w, h, nw, nh) for p in planes]
+        w, h = nw, nh
+    out = bytearray(w * h * 3)
+    out[0::3], out[1::3], out[2::3] = planes
+    return w, h, bytes(out)
+
+
+def _png_chunk(kind, body):
+    return (struct.pack(">I", len(body)) + kind + body
+            + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF))
+
+
+def _encode_png(w, h, rgb):
+    """RGB bytes -> PNG, every row with the Up filter (row minus the row
+    above), which compresses screenshots well and vectorises cleanly."""
+    stride = w * 3
+    up = _subtract(rgb, bytes(stride) + rgb[:-stride])
+    raw = b"".join(b"\x02" + up[r * stride:(r + 1) * stride] for r in range(h))
+    return (b"\x89PNG\r\n\x1a\n"
+            + _png_chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + _png_chunk(b"IDAT", zlib.compress(raw, 6))
+            + _png_chunk(b"IEND", b""))
+
+
+def _png_size(data):
+    if data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        raise ValueError("not a PNG")
+    return struct.unpack(">II", data[16:24])
+
+
+def _screenshot():
+    """(png, width, height, captured_width, captured_height) of the screen,
+    scaled down to SCREENSHOT_MAX where the capture format allows it."""
+    data = _capture_screen()
+    if data[:2] == b"P6":
+        cw, ch, rgb = _parse_ppm(data)
+        w, h = cw, ch
+        if SCREENSHOT_MAX and max(w, h) > SCREENSHOT_MAX:
+            w, h, rgb = _scale_rgb(w, h, rgb, SCREENSHOT_MAX)
+        return _encode_png(w, h, rgb), w, h, cw, ch
+    w, h = _png_size(data)   # PNG from a tool without PPM output: sent as is
+    return data, w, h, w, h
+
+
 def _text(s):
     return [{"type": "text", "text": s}]
+
+
+def _screenshot_result():
+    global _frame
+    try:
+        png, w, h, cw, ch = _screenshot()
+    except (RuntimeError, ValueError) as e:
+        return _text(str(e)), True
+    _frame = (w, h)
+    note = "Screenshot %dx%d px" % (w, h)
+    if (w, h) != (cw, ch):
+        note += " (screen captured at %dx%d, scaled down)" % (cw, ch)
+    note += (". mouse_move_to and mouse_click_at take x in 0..%d and "
+             "y in 0..%d of this image." % (w - 1, h - 1))
+    return [{"type": "image",
+             "data": base64.b64encode(png).decode(),
+             "mimeType": "image/png"}] + _text(note), False
+
+
+def _pointer_lines(name, args):
+    """FIFO lines for mouse_move_to / mouse_click_at. Coordinates are pixels
+    of the last screenshot sent; ElfMouse maps them across the screen."""
+    global _frame
+    if _frame is None:
+        _frame = _screenshot()[1:3]
+    w, h = _frame
+    if args["x"] >= w or args["y"] >= h:
+        raise ValueError("(%d, %d) is outside the last screenshot, which is "
+                         "%dx%d px" % (args["x"], args["y"], w, h))
+    lines = ["moveto %d %d %d %d" % (args["x"], args["y"], w, h)]
+    if name == "mouse_click_at":
+        lines.append(_mouse_line("mouse_click", {
+            "button": args.get("button", "left"), "hold_ms": args.get("hold_ms")}))
+    return lines
 
 
 def call_tool(name, args):
@@ -330,22 +530,21 @@ def call_tool(name, args):
     except ValueError as e:
         return _text("invalid arguments: %s" % e), True
     if name == "screenshot":
-        try:
-            data = _screenshot_png()
-        except RuntimeError as e:
-            return _text(str(e)), True
-        return [{"type": "image",
-                 "data": base64.b64encode(data).decode(),
-                 "mimeType": "image/png"}], False
+        return _screenshot_result()
     try:
         if name.startswith("key_"):
-            return _text(_send(KEY_FIFO, _key_line(name, args),
-                               elfkey.parse_command)), False
-        if name.startswith("mouse_"):
-            return _text(_send(MOUSE_FIFO, _mouse_line(name, args),
-                               elfmouse.parse_command)), False
-        return _text(_send(PAD_FIFO, _pad_line(name, args),
-                           elfpad.parse_command)), False
+            sends = [(KEY_FIFO, _key_line(name, args), elfkey.parse_command)]
+        elif name in ("mouse_move_to", "mouse_click_at"):
+            try:
+                lines = _pointer_lines(name, args)
+            except RuntimeError as e:
+                return _text("cannot place the pointer: %s" % e), True
+            sends = [(MOUSE_FIFO, line, elfmouse.parse_command) for line in lines]
+        elif name.startswith("mouse_"):
+            sends = [(MOUSE_FIFO, _mouse_line(name, args), elfmouse.parse_command)]
+        else:
+            sends = [(PAD_FIFO, _pad_line(name, args), elfpad.parse_command)]
+        return _text("; ".join(_send(*s) for s in sends)), False
     except ValueError as e:
         return _text("refused: %s" % e), True
     except KeyError as e:

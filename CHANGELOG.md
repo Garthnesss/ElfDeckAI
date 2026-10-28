@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - Unreleased
+
+### Added
+- `mouse_click_at` and `mouse_move_to` MCP tools: click or point at (x, y)
+  in the pixels of the most recent screenshot. Backed by a new absolute
+  pointer device, "ElfMouse Absolute", and the ElfMouse command
+  `moveto <x> <y> [<width> <height>]`.
+- Screenshots larger than 1280 px on their long side are scaled down
+  before sending (`ELFDECKAI_SCREENSHOT_MAX` sets the limit; `0` disables).
+  The screenshot result now also states the image size.
+- ROADMAP.md, with a plan for Steam Deck Gaming Mode.
+
+### Changed
+- Screenshots are captured as uncompressed PPM where the capture tool
+  supports it, falling back to PNG.
+- The installer also checks for the ElfMouse Absolute device.
+
 ## [1.0.7] - 2026-10-28
 
 ### Fixed
@@ -44,4 +61,5 @@ project follows [Semantic Versioning](https://semver.org/).
 - One-command Steam Deck installer.
 - Setup guide written for an AI assistant to follow.
 
+[1.1.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.7...v1.1.0
 [1.0.7]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.6...v1.0.7
