@@ -7,7 +7,7 @@ import subprocess
 import sys
 import threading
 
-from conftest import ROOT
+from conftest import ROOT, elfkey
 
 
 def _server(tmp_path):
@@ -60,9 +60,16 @@ def test_handshake_and_tool_list(tmp_path):
                          "pad_down", "pad_up", "pad_stick", "pad_trigger",
                          "pad_center", "pad_reset", "mouse_move",
                          "mouse_click", "mouse_down", "mouse_up",
-                         "mouse_scroll", "mouse_hscroll"}
+                         "mouse_scroll", "mouse_hscroll", "key_release",
+                         "mouse_release"}
         for t in r["result"]["tools"]:
             assert t["inputSchema"]["type"] == "object"
+        by_name = {t["name"]: t for t in r["result"]["tools"]}
+        tap = by_name["key_tap"]["inputSchema"]["properties"]
+        assert tap["hold_ms"]["maximum"] == elfkey.MAX_HOLD_MS
+        assert tap["key"]["enum"] == sorted(elfkey.KEYS)
+        stick = by_name["pad_stick"]["inputSchema"]["properties"]
+        assert stick["x"]["minimum"] == -100 and stick["x"]["maximum"] == 100
     finally:
         proc.kill()
 
@@ -90,6 +97,12 @@ def test_tool_calls_reach_the_fifos(tmp_path):
                  "params": {"name": "mouse_scroll",
                             "arguments": {"clicks": -3}}})
         assert r["result"]["isError"] is False
+        r = rpc({"jsonrpc": "2.0", "id": 7, "method": "tools/call",
+                 "params": {"name": "key_release", "arguments": {}}})
+        assert r["result"]["isError"] is False
+        r = rpc({"jsonrpc": "2.0", "id": 8, "method": "tools/call",
+                 "params": {"name": "mouse_release", "arguments": {}}})
+        assert r["result"]["isError"] is False
     finally:
         proc.kill()
     got = {(os.path.basename(p), line) for p, line in received}
@@ -98,6 +111,8 @@ def test_tool_calls_reach_the_fifos(tmp_path):
     assert (os.path.basename(pad_fifo), "center") in got
     assert (os.path.basename(mouse_fifo), "move 120 -40 300") in got
     assert (os.path.basename(mouse_fifo), "scroll -3") in got
+    assert (os.path.basename(key_fifo), "release") in got
+    assert (os.path.basename(mouse_fifo), "release") in got
 
 
 def test_bad_calls_are_tool_errors_not_crashes(tmp_path):
@@ -114,5 +129,45 @@ def test_bad_calls_are_tool_errors_not_crashes(tmp_path):
         assert r["result"]["isError"] is True
         r = rpc({"jsonrpc": "2.0", "id": 4, "method": "tools/list"})
         assert "tools" in r["result"]          # server still alive
+    finally:
+        proc.kill()
+
+
+def test_garbage_lines_get_protocol_errors_and_never_kill_the_server(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        for raw in ("null", "[1, 2]", '"just a string"', "{not json"):
+            proc.stdin.write(raw + "\n")
+        proc.stdin.flush()
+        codes = []
+        for _ in range(4):
+            codes.append(json.loads(proc.stdout.readline())["error"]["code"])
+        assert codes == [-32600, -32600, -32600, -32700]
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
+        assert "tools" in r["result"]          # still alive and serving
+    finally:
+        proc.kill()
+
+
+def test_missing_daemon_reports_not_running(tmp_path):
+    env = {**os.environ,
+           "ELFKEY_FIFO": str(tmp_path / "no-such.fifo"),
+           "ELFPAD_FIFO": str(tmp_path / "no-such.fifo"),
+           "ELFMOUSE_FIFO": str(tmp_path / "no-such.fifo")}
+    proc = subprocess.Popen(
+        [sys.executable, str(ROOT / "elfdeckai_mcp.py")],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+    try:
+        def rpc(msg):
+            proc.stdin.write(json.dumps(msg) + "\n")
+            proc.stdin.flush()
+            return json.loads(proc.stdout.readline())
+
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                 "params": {"name": "key_tap", "arguments": {"key": "x"}}})
+        assert r["result"]["isError"] is True
+        assert "not running" in r["result"]["content"][0]["text"]
     finally:
         proc.kill()
