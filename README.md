@@ -5,15 +5,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
-![Tests](https://img.shields.io/badge/tests-91%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen.svg)
 
-**ElfdeckAI gives an LLM agent hands on real hardware.** Two tiny daemons
-turn one-line commands — from a shell, a script, or native **MCP tool
-calls** — into real keyboard and gamepad input on a Linux machine:
+**ElfdeckAI gives an LLM agent hands on real hardware.** Three tiny
+daemons turn one-line commands — from a shell, a script, or native
+**MCP tool calls** — into real keyboard, gamepad and mouse input on a
+Linux machine:
 
 - ⌨️ **ElfKey** — a virtual keyboard on `/dev/uinput`
 - 🕹️ **ElfPad** — a virtual gamepad (Xbox-class: buttons, analog triggers,
   two sticks, D-pad)
+- 🖱️ **ElfMouse** — a virtual mouse (relative pointer, buttons, wheel)
 
 Every "LLM plays Pokémon" project you've seen plugs into an **emulator's
 API**. ElfdeckAI presses buttons on a **real device** — proven live when an
@@ -22,24 +24,30 @@ intro, starter picked, first rival battle won, game saved. No emulator, no
 RAM reading, no capture card — just a stream for eyes and these daemons
 for hands. ([How it drives](notes/driving.md))
 
-## ⚡ Quickstart (60 seconds)
+## ⚡ Run it yourself (60 seconds)
 
 ```sh
-git clone https://github.com/Garthnesss/ElfdeckAI && cd ElfdeckAI
+pip install git+https://github.com/Garthnesss/ElfDeckAI
 
-python3 elfkey.py &          # virtual keyboard
-python3 elfpad.py &          # virtual gamepad
+elfkey &                     # virtual keyboard   (command: elfkey)
+elfpad &                     # virtual gamepad    (command: elfpad)
+elfmouse &                   # virtual mouse      (command: elfmouse)
 
-echo "key x 150"        > /tmp/elfkey.fifo    # tap X
-echo "press a"          > /tmp/elfpad.fifo    # tap A
-echo "stick left 60 0"  > /tmp/elfpad.fifo    # push the left stick
+echo "key x 150"        > /tmp/elfkey.fifo     # tap X
+echo "press a"          > /tmp/elfpad.fifo     # tap A
+echo "move 300 -100"    > /tmp/elfmouse.fifo   # flick the pointer
+echo "click left"       > /tmp/elfmouse.fifo   # click
 
-grep -E "ElfKey|ElfPad" /proc/bus/input/devices   # they're really there
+grep -E "ElfKey|ElfPad|ElfMouse" /proc/bus/input/devices   # they're really there
 ```
 
-That's the whole install. Two single-file Python programs, **standard
-library only** — nothing to pip, nothing to build. State lives in `/tmp`;
-reboot and it's gone.
+That's the whole install. Three single-file Python programs, **standard
+library only** — nothing to build, no dependencies to resolve. State
+lives in `/tmp`; reboot and it's gone. Prefer no pip at all? Clone the
+repo and run `python3 elfkey.py` — same thing.
+
+For your agent, the pip install also provides the MCP server as a
+command: `"command": "elfdeckai-mcp"` (details below).
 
 > **Steam Deck?** You're already done — `/dev/uinput` is user-writable
 > there out of the box. On other Linux machines, install the included
@@ -48,14 +56,17 @@ reboot and it's gone.
 ## 🤖 Give it to your agent (MCP)
 
 `elfdeckai_mcp.py` is a zero-dependency [Model Context
-Protocol](https://modelcontextprotocol.io) server that exposes both
-devices as native tools — `key_tap`, `key_down`, `pad_press`, `pad_stick`,
-`pad_trigger`, `pad_reset`, … — for Claude, Hermes, or any MCP client:
+Protocol](https://modelcontextprotocol.io) server that exposes all
+three devices as 16 native tools — `key_tap`, `pad_press`, `pad_stick`,
+`mouse_move`, `mouse_click`, `pad_reset`, … — for Claude, Hermes, or
+any MCP client:
 
 ```json
-{"mcpServers": {"elfdeckai": {
-    "command": "python3", "args": ["/path/to/ElfdeckAI/elfdeckai_mcp.py"]}}}
+{"mcpServers": {"elfdeckai": {"command": "elfdeckai-mcp"}}}
 ```
+
+(No pip? `"command": "python3", "args": ["/path/to/elfdeckai_mcp.py"]`
+works identically.)
 
 Start the daemons, add that to your client's config, and your agent can
 press buttons the same way it calls any other tool. Every call is
@@ -91,6 +102,21 @@ Keys: `a`–`z`, `0`–`9`, arrows, `enter`, `esc`, `space`, `tab`, `shift`,
 Buttons: `a b x y lb rb l2 r2 select start guide l3 r3`. ElfPad presents
 as an Xbox-360-class pad, so SDL, Steam Input and RetroArch map it the
 standard way with zero configuration.
+
+### ElfMouse — `/tmp/elfmouse.fifo`
+
+| Command | Effect |
+|---|---|
+| `move <dx> <dy> [glide_ms]` | move the pointer (relative); `glide_ms` = glide there over time |
+| `click <btn> [ms]` | click `left` / `right` / `middle` |
+| `down <btn>` / `up <btn>` | hold / release a button — drags are `down`, `move`, `up` |
+| `scroll <ticks>` / `hscroll <ticks>` | wheel / horizontal wheel (positive = up / right) |
+| `quit` | release any held button and exit |
+
+Movement is relative, like a real mouse — pair it with screenshots and
+the same look → move → verify loop the rest of the set uses. Per-command
+bounds (±10 000 px, ±120 ticks) keep a confused call from flinging the
+pointer into orbit; chain commands for long travel.
 
 ## 🛡️ Built for callers that hallucinate
 
@@ -132,22 +158,22 @@ Run persistently as user services (expects the repo at `~/elfdeckai/`):
 
 ```sh
 cp systemd/*.service ~/.config/systemd/user/
-systemctl --user enable --now elfkey.service elfpad.service
+systemctl --user enable --now elfkey.service elfpad.service elfmouse.service
 ```
 
 ## Tests
 
 ```sh
-python3 -m pytest    # 91 tests: both input contracts, device behaviour
+python3 -m pytest    # 133 tests: all three input contracts, device behaviour
                      # against a fake uinput, and the MCP server spoken
                      # to over real JSON-RPC
 ```
 
 ## Roadmap
 
-- **ElfMouse** — relative pointer + buttons, completing the set.
 - One combined daemon (keyboard + pad + mouse in a single process).
-- A `pip install`able package once the FIFO/MCP interfaces settle.
+- PyPI release, so `pip install elfdeckai` works without the git URL.
+- Demo clip: the Pokémon run, on camera.
 
 ## License
 
