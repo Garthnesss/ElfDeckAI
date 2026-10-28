@@ -1,0 +1,6 @@
+# Let the logged-in user create virtual input devices (needed on machines
+# where /dev/uinput is root-only; the Steam Deck already allows it).
+# Named 70- on purpose: the uaccess tag is consumed by 73-seat-late.rules,
+# so a 99- file would set it too late to take effect.
+# Install: sudo cp 70-elfdeckai-uinput.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
+KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"
