@@ -11,8 +11,8 @@ Claude, Hermes, your own agent — as native tool calls:
     mouse_click {button, hold_ms?}      pad_trigger {side, percent, hold_ms?}
     mouse_down  {button}                pad_center  {}
     mouse_up    {button}                pad_reset   {}
-    mouse_scroll  {clicks}
-    mouse_hscroll {clicks}
+    mouse_scroll  {clicks}              key_release {}   (unstick everything)
+    mouse_hscroll {clicks}              mouse_release {} (unstick everything)
 
 The server holds no state and injects nothing itself: every call is
 validated by the daemons' own parse_command() (the exact contract the
@@ -31,6 +31,7 @@ FIFO paths default to the daemons' own constants and can be overridden
 with ELFKEY_FIFO / ELFPAD_FIFO environment variables (used by the tests).
 Standard library only, like everything else in this repo.
 """
+import errno
 import json
 import os
 import sys
@@ -59,6 +60,8 @@ def _send(fifo, line, parser):
 
 
 def _key_line(cmd, a):
+    if cmd == "key_release":
+        return "release"
     if cmd == "key_tap":
         ms = a.get("hold_ms")
         return "key %s%s" % (a["key"], "" if ms is None else " %s" % ms)
@@ -83,6 +86,8 @@ def _pad_line(cmd, a):
 
 
 def _mouse_line(cmd, a):
+    if cmd == "mouse_release":
+        return "release"
     if cmd == "mouse_move":
         ms = a.get("glide_ms")
         return "move %s %s%s" % (a["dx"], a["dy"],
@@ -99,44 +104,65 @@ def _mouse_line(cmd, a):
 
 TOOLS = [
     ("key_tap", "Tap a key on the virtual keyboard.",
-     {"key": {"type": "string"}, "hold_ms": {"type": "integer"}}, ["key"]),
-    ("key_down", "Hold a key down (release with key_up).",
-     {"key": {"type": "string"}}, ["key"]),
+     {"key": {"type": "string", "enum": sorted(elfkey.KEYS)},
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfkey.MAX_HOLD_MS}},
+     ["key"]),
+    ("key_down", "Hold a key down (release with key_up, or key_release for all).",
+     {"key": {"type": "string", "enum": sorted(elfkey.KEYS)}}, ["key"]),
     ("key_up", "Release a held key.",
-     {"key": {"type": "string"}}, ["key"]),
+     {"key": {"type": "string", "enum": sorted(elfkey.KEYS)}}, ["key"]),
+    ("key_release", "Release every held key at once — the unstick button, for "
+                    "when a caller died mid-hold or state is unknown.",
+     {}, []),
     ("pad_press", "Tap a gamepad button or D-pad direction.",
-     {"button": {"type": "string"}, "hold_ms": {"type": "integer"}}, ["button"]),
+     {"button": {"type": "string",
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))},
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
+     ["button"]),
     ("pad_down", "Hold a gamepad button or D-pad direction down.",
-     {"button": {"type": "string"}}, ["button"]),
+     {"button": {"type": "string",
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))}}, ["button"]),
     ("pad_up", "Release a held gamepad button or D-pad direction.",
-     {"button": {"type": "string"}}, ["button"]),
+     {"button": {"type": "string",
+                 "enum": sorted(set(elfpad.BUTTONS) | set(elfpad.DPAD))}}, ["button"]),
     ("pad_stick", "Move an analog stick (x/y in percent, -100..100). "
                   "Without hold_ms the stick stays; with it, it recenters after.",
      {"side": {"type": "string", "enum": ["left", "right"]},
-      "x": {"type": "integer"}, "y": {"type": "integer"},
-      "hold_ms": {"type": "integer"}}, ["side", "x", "y"]),
+      "x": {"type": "integer", "minimum": -100, "maximum": 100},
+      "y": {"type": "integer", "minimum": -100, "maximum": 100},
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
+     ["side", "x", "y"]),
     ("pad_trigger", "Set an analog trigger (percent 0..100). "
                     "Without hold_ms it stays; with it, it releases after.",
      {"side": {"type": "string", "enum": ["left", "right"]},
-      "percent": {"type": "integer"}, "hold_ms": {"type": "integer"}},
+      "percent": {"type": "integer", "minimum": 0, "maximum": 100},
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfpad.MAX_HOLD_MS}},
      ["side", "percent"]),
     ("pad_center", "Return sticks, triggers and D-pad to neutral.", {}, []),
     ("pad_reset", "Release every button and recenter everything.", {}, []),
     ("mouse_move", "Move the pointer by (dx, dy) pixels. Optional glide_ms "
                    "spreads the move over time (smooth drags, human-ish motion).",
-     {"dx": {"type": "integer"}, "dy": {"type": "integer"},
-      "glide_ms": {"type": "integer"}}, ["dx", "dy"]),
+     {"dx": {"type": "integer", "minimum": -elfmouse.MAX_MOVE, "maximum": elfmouse.MAX_MOVE},
+      "dy": {"type": "integer", "minimum": -elfmouse.MAX_MOVE, "maximum": elfmouse.MAX_MOVE},
+      "glide_ms": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_HOLD_MS}},
+     ["dx", "dy"]),
     ("mouse_click", "Click a mouse button.",
      {"button": {"type": "string", "enum": ["left", "right", "middle"]},
-      "hold_ms": {"type": "integer"}}, ["button"]),
+      "hold_ms": {"type": "integer", "minimum": 0, "maximum": elfmouse.MAX_HOLD_MS}},
+     ["button"]),
     ("mouse_down", "Hold a mouse button down (start a drag).",
      {"button": {"type": "string", "enum": ["left", "right", "middle"]}}, ["button"]),
     ("mouse_up", "Release a mouse button (drop the drag).",
      {"button": {"type": "string", "enum": ["left", "right", "middle"]}}, ["button"]),
     ("mouse_scroll", "Scroll the wheel: positive clicks up, negative down.",
-     {"clicks": {"type": "integer"}}, ["clicks"]),
+     {"clicks": {"type": "integer", "minimum": -elfmouse.MAX_SCROLL,
+                 "maximum": elfmouse.MAX_SCROLL}}, ["clicks"]),
     ("mouse_hscroll", "Scroll horizontally: positive clicks right.",
-     {"clicks": {"type": "integer"}}, ["clicks"]),
+     {"clicks": {"type": "integer", "minimum": -elfmouse.MAX_SCROLL,
+                 "maximum": elfmouse.MAX_SCROLL}}, ["clicks"]),
+    ("mouse_release", "Release every held mouse button at once — the unstick "
+                      "button, for when a caller died mid-drag.",
+     {}, []),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
 
@@ -164,19 +190,31 @@ def call_tool(name, args):
         return "refused: %s" % e, True
     except KeyError as e:
         return "missing argument: %s" % e, True
-    except OSError:
-        return "daemon not running (no reader on the FIFO)", True
+    except OSError as e:
+        if e.errno in (errno.ENXIO, errno.ENOENT):
+            return "daemon not running (no reader on the FIFO)", True
+        if e.errno == errno.EAGAIN:
+            return "daemon busy (FIFO full) — retry shortly", True
+        if e.errno in (errno.EACCES, errno.EPERM):
+            return ("permission denied on the FIFO — the daemons create it "
+                    "owner-only (0600); run this server as the same user"), True
+        if e.errno == errno.EPIPE:
+            return "daemon disconnected (broken pipe)", True
+        return "FIFO I/O error: %s" % (e.strerror or e), True
 
 
 def handle(msg):
     """One JSON-RPC message -> response dict, or None for notifications."""
+    if not isinstance(msg, dict):
+        return {"jsonrpc": "2.0", "id": None, "error": {
+            "code": -32600, "message": "invalid request: not a JSON object"}}
     method = msg.get("method")
     msg_id = msg.get("id")
     if method == "initialize":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "elfdeckai", "version": "1.0.0"}}}
+            "serverInfo": {"name": "elfdeckai", "version": "1.0.1"}}}
     if method == "ping":
         return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
     if method == "tools/list":
@@ -200,11 +238,22 @@ def main():
         try:
             msg = json.loads(line)
         except ValueError:
+            _emit({"jsonrpc": "2.0", "id": None, "error": {
+                "code": -32700, "message": "parse error"}})
             continue
-        response = handle(msg)
+        try:
+            response = handle(msg)
+        except Exception:
+            response = {"jsonrpc": "2.0",
+                        "id": msg.get("id") if isinstance(msg, dict) else None,
+                        "error": {"code": -32603, "message": "internal error"}}
         if response is not None:
-            sys.stdout.write(json.dumps(response) + "\n")
-            sys.stdout.flush()
+            _emit(response)
+
+
+def _emit(response):
+    sys.stdout.write(json.dumps(response) + "\n")
+    sys.stdout.flush()
 
 
 if __name__ == "__main__":
