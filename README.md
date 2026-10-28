@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)
-![Tests](https://img.shields.io/badge/tests-142%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-146%20passing-brightgreen.svg)
 
 **ElfdeckAI gives an LLM agent hands on real hardware.** Three tiny
 daemons turn one-line commands — from a shell, a script, or native
@@ -19,10 +19,12 @@ Linux machine:
 
 Every "LLM plays Pokémon" project you've seen plugs into an **emulator's
 API**. ElfdeckAI presses buttons on a **real device** — proven live when an
-LLM played Pokémon FireRed on a physical Steam Deck end-to-end: full
-intro, starter picked, first rival battle won, game saved. No emulator, no
-RAM reading, no capture card — just a stream for eyes and these daemons
-for hands. ([How it drives](notes/driving.md))
+LLM played Pokémon FireRed on a physical Steam Deck end-to-end through
+ElfKey: full intro, starter picked, first rival battle won, game saved.
+No emulator *API*, no RAM reading, no capture card — the game runs on
+the real device (inside RetroArch, in that run); the agent's only
+channel in is real input, and its only view is a stream for eyes.
+([How it drives](notes/driving.md))
 
 ## ⚡ Run it yourself (60 seconds)
 
@@ -116,7 +118,10 @@ standard way with zero configuration.
 | `quit` | release any held button and exit |
 
 Movement is relative, like a real mouse — pair it with screenshots and
-the same look → move → verify loop the rest of the set uses. Per-command
+the same look → move → verify loop the rest of the set uses. Sign
+convention: negative `dy` is up, positive is down. Units are relative
+counts, not guaranteed screen pixels — pointer acceleration stretches
+fast moves — so small moves plus a fresh screenshot beat one big leap. Per-command
 bounds (±10 000 px, ±120 ticks) keep a confused call from flinging the
 pointer into orbit; chain commands for long travel.
 
@@ -138,8 +143,10 @@ itself can't be talked into a bad state. So:
 - **The server survives garbage.** Malformed JSON and non-object
   requests get proper JSON-RPC protocol errors; one bad line — or a
   caller dying mid-hold — can't wedge the session. `key_release`,
-  `mouse_release` and `pad_reset` are the always-available unstick
-  buttons.
+  `mouse_release` and `pad_reset` are the unstick buttons — a release
+  queues behind at most the one hold currently executing (bounded,
+  ≤ 5 s), and every accepted command is logged to stderr, so what the
+  agent pressed is auditable afterwards.
 - **Scope honesty:** these are real OS-level input devices. They type
   and click in whatever window has focus — a game, but equally a
   terminal or a browser. ElfdeckAI makes that input *un-mess-up-able*
@@ -154,20 +161,22 @@ itself can't be talked into a bad state. So:
 | Emulator APIs (PyBoy, mGBA scripting) | Only exists inside an emulator. Your Deck is not an emulator. |
 | Sending keys through Moonlight/streaming | Clicks get forwarded; synthetic keyboard events don't (verified). |
 | xdotool / desktop automation | Can't reach native Wayland clients. |
+| ydotool / dotool | The real incumbents — same uinput trick, keyboard + mouse. But: raw keycodes, a root daemon, no gamepad, and nothing agent-facing (no MCP, no safety bounds, no unstick). |
 | KVM gadget / controller-spoofing hardware | Works, but it's extra hardware on your desk doing what 200 lines of Python do on the device itself. |
 
 ## Install
 
-**Requirements:** Linux with `/dev/uinput`, Python 3.8+. Nothing else.
+**Requirements:** Linux (64-bit) with `/dev/uinput`, Python 3.8+. Nothing else.
 
 Anywhere `/dev/uinput` isn't user-writable, install the udev rule once:
 
 ```sh
-sudo cp 99-elfdeckai-uinput.rules /etc/udev/rules.d/
+sudo cp 70-elfdeckai-uinput.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && sudo udevadm trigger
+getfacl /dev/uinput   # verify: your user should appear in the ACL
 ```
 
-Run persistently as user services (expects the repo at `~/elfdeckai/`):
+Run persistently as user services (expects the repo at `~/elfdeckai/` — clone with `git clone https://github.com/Garthnesss/ElfDeckAI ~/elfdeckai`):
 
 ```sh
 cp systemd/*.service ~/.config/systemd/user/
@@ -177,7 +186,7 @@ systemctl --user enable --now elfkey.service elfpad.service elfmouse.service
 ## Tests
 
 ```sh
-python3 -m pytest    # 142 tests: all three input contracts, device behaviour
+python3 -m pytest    # 146 tests: all three input contracts, device behaviour
                      # against a fake uinput, and the MCP server spoken
                      # to over real JSON-RPC
 ```
