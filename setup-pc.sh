@@ -58,8 +58,9 @@ COPY_CMD='mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys &&
     { grep -qxF "$key" ~/.ssh/authorized_keys || echo "$key" >> ~/.ssh/authorized_keys; } &&
     echo ELFDECKAI-KEY-ADDED'
 ERRORS="$(mktemp)"
+AGENT_DIR="$(mktemp -d)"
 REFUSED=""
-trap 'rm -f "$ERRORS"' EXIT
+trap 'rm -rf "$ERRORS" "$AGENT_DIR"' EXIT
 
 try_copy() {
     out="$(ssh "$@" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 \
@@ -75,15 +76,25 @@ try_copy() {
 copy_key() {
     # 1. This PC's usual keys and ssh-agent, then the Deck's password.
     try_copy && return 0
-    # 2. Each of this PC's own key files on its own. An agent key can log in
-    #    yet be limited to one command on the Deck (a forced command), which
-    #    stops step 1 before any other key is tried.
+    # A key can log in yet be limited to one command on the Deck (a forced
+    # command), which stops step 1 before any other key is tried. So:
+    # 2. Each key held by the ssh-agent on its own (the agent signs; the
+    #    public key file only picks which identity is offered).
+    if ssh-add -L > "$AGENT_DIR/keys" 2>/dev/null; then
+        n=0
+        while read -r line; do
+            n=$((n + 1))
+            printf '%s\n' "$line" > "$AGENT_DIR/key$n.pub"
+            try_copy -i "$AGENT_DIR/key$n.pub" -o IdentitiesOnly=yes && return 0
+        done < "$AGENT_DIR/keys"
+    fi
+    # 3. Each of this PC's own key files in ~/.ssh on its own.
     for f in "$HOME"/.ssh/id_*; do
         case "$f" in *.pub|"$KEY") continue ;; esac
         [ -f "$f" ] || continue
         try_copy -i "$f" -o IdentitiesOnly=yes -o IdentityAgent=none && return 0
     done
-    # 3. The Deck's password only.
+    # 4. The Deck's password only.
     try_copy -o PubkeyAuthentication=no
 }
 
