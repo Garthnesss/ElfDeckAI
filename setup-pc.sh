@@ -50,37 +50,64 @@ deck_ssh() {
     ssh -i "$KEY" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "$@"
 }
 
+# Appends the new public key (read from stdin) on the Deck and prints a
+# marker, so an attempt only counts when the command really ran there.
+# shellcheck disable=SC2016  # expanded on the Deck, not here
+COPY_CMD='mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys &&
+    chmod 600 ~/.ssh/authorized_keys && read -r key &&
+    { grep -qxF "$key" ~/.ssh/authorized_keys || echo "$key" >> ~/.ssh/authorized_keys; } &&
+    echo ELFDECKAI-KEY-ADDED'
+ERRORS="$(mktemp)"
+REFUSED=""
+trap 'rm -f "$ERRORS"' EXIT
+
+try_copy() {
+    out="$(ssh "$@" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 \
+        "$TARGET" "$COPY_CMD" < "$KEY.pub" 2>>"$ERRORS")" || true
+    case "$out" in *ELFDECKAI-KEY-ADDED*) return 0 ;; esac
+    if [ -n "$out" ]; then   # logged in, but the account ran something else
+        REFUSED=1
+        printf '%s\n' "$out" >> "$ERRORS"
+    fi
+    return 1
+}
+
+copy_key() {
+    # 1. This PC's usual keys and ssh-agent, then the Deck's password.
+    try_copy && return 0
+    # 2. Each of this PC's own key files on its own. An agent key can log in
+    #    yet be limited to one command on the Deck (a forced command), which
+    #    stops step 1 before any other key is tried.
+    for f in "$HOME"/.ssh/id_*; do
+        case "$f" in *.pub|"$KEY") continue ;; esac
+        [ -f "$f" ] || continue
+        try_copy -i "$f" -o IdentitiesOnly=yes -o IdentityAgent=none && return 0
+    done
+    # 3. The Deck's password only.
+    try_copy -o PubkeyAuthentication=no
+}
+
 if deck_ssh -o BatchMode=yes -o ConnectTimeout=8 "$TARGET" true 2>/dev/null; then
     say "    the Deck already accepts this key"
 else
     say "==> Copying the key to the Deck (enter the Deck's password if asked)"
-    # Not IdentitiesOnly here: on a Deck that only accepts keys, a key this PC
-    # already uses (or its ssh-agent) gets the new key in; otherwise ssh
-    # falls back to the Deck's password.
-    err="$(mktemp)"
-    # shellcheck disable=SC2016  # expanded on the Deck, not here
-    if ! ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 "$TARGET" \
-        'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys &&
-         chmod 600 ~/.ssh/authorized_keys && read -r key &&
-         { grep -qxF "$key" ~/.ssh/authorized_keys || echo "$key" >> ~/.ssh/authorized_keys; }' \
-        < "$KEY.pub" 2>"$err"; then
+    if ! copy_key; then
         say ""
-        if grep -q "Permission denied (publickey" "$err"; then
-            say "The Deck only accepts SSH keys, and none on this PC is accepted yet."
-            say "Add this line to ~/.ssh/authorized_keys on the Deck (in Konsole on the"
-            say "Deck, or from a computer that can already log in), then run this again:"
+        if grep -q "Permission denied" "$ERRORS" || [ -n "$REFUSED" ]; then
+            say "No key on this PC can add the new one to the Deck, and the Deck does not"
+            say "accept a password. Add this line to ~/.ssh/authorized_keys on the Deck (in"
+            say "Konsole on the Deck, or from a computer that can already log in), then run"
+            say "this again:"
             say ""
             say "  $(cat "$KEY.pub")"
         else
-            sed 's/^/    /' "$err"
+            sed 's/^/    /' "$ERRORS"
             say "Could not reach $TARGET. Check that:"
             say "  - the Deck is on and on the same network, and the IP is right"
             say "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"
         fi
-        rm -f "$err"
         exit 1
     fi
-    rm -f "$err"
 fi
 
 say "==> Checking the connection"
