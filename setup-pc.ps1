@@ -54,19 +54,32 @@
     if ($LASTEXITCODE -eq 0) {
         Write-Host '    the Deck already accepts this key'
     } else {
-        Write-Host "==> Copying the key to the Deck (enter the Deck's password when asked)"
+        Write-Host "==> Copying the key to the Deck (enter the Deck's password if asked)"
         $pub = (Get-Content -Raw "$Key.pub").Trim()
         # Single quotes only: Windows PowerShell mangles double quotes in
         # arguments to native programs.
         $remote = "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && " +
                   "chmod 600 ~/.ssh/authorized_keys && " +
                   "(grep -qxF '$pub' ~/.ssh/authorized_keys || echo '$pub' >> ~/.ssh/authorized_keys)"
-        & ssh @common $Target $remote
+        # Not IdentitiesOnly here: on a Deck that only accepts keys, a key this
+        # PC already uses (or its ssh-agent) gets the new key in; otherwise
+        # ssh falls back to the Deck's password.
+        $copy = @('-i', $Key, '-o', 'StrictHostKeyChecking=accept-new', '-o', 'ConnectTimeout=8')
+        $output = & ssh @copy $Target $remote 2>&1 | ForEach-Object { "$_" }
         if ($LASTEXITCODE -ne 0) {
             Write-Host ''
-            Write-Host "Could not reach $Target. Check that:"
-            Write-Host '  - the Deck is on and on the same network, and the IP is right'
-            Write-Host "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"
+            if ("$output" -match 'Permission denied \(publickey') {
+                Write-Host 'The Deck only accepts SSH keys, and none on this PC is accepted yet.'
+                Write-Host 'Add this line to ~/.ssh/authorized_keys on the Deck (in Konsole on the'
+                Write-Host 'Deck, or from a computer that can already log in), then run this again:'
+                Write-Host ''
+                Write-Host "  $pub"
+            } else {
+                $output | ForEach-Object { Write-Host "    $_" }
+                Write-Host "Could not reach $Target. Check that:"
+                Write-Host '  - the Deck is on and on the same network, and the IP is right'
+                Write-Host "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"
+            }
             return
         }
     }

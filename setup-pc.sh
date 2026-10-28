@@ -53,19 +53,34 @@ deck_ssh() {
 if deck_ssh -o BatchMode=yes -o ConnectTimeout=8 "$TARGET" true 2>/dev/null; then
     say "    the Deck already accepts this key"
 else
-    say "==> Copying the key to the Deck (enter the Deck's password when asked)"
+    say "==> Copying the key to the Deck (enter the Deck's password if asked)"
+    # Not IdentitiesOnly here: on a Deck that only accepts keys, a key this PC
+    # already uses (or its ssh-agent) gets the new key in; otherwise ssh
+    # falls back to the Deck's password.
+    err="$(mktemp)"
     # shellcheck disable=SC2016  # expanded on the Deck, not here
-    deck_ssh -o ConnectTimeout=8 "$TARGET" \
+    if ! ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=8 "$TARGET" \
         'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys &&
          chmod 600 ~/.ssh/authorized_keys && read -r key &&
          { grep -qxF "$key" ~/.ssh/authorized_keys || echo "$key" >> ~/.ssh/authorized_keys; }' \
-        < "$KEY.pub" || {
+        < "$KEY.pub" 2>"$err"; then
         say ""
-        say "Could not reach $TARGET. Check that:"
-        say "  - the Deck is on and on the same network, and the IP is right"
-        say "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"
+        if grep -q "Permission denied (publickey" "$err"; then
+            say "The Deck only accepts SSH keys, and none on this PC is accepted yet."
+            say "Add this line to ~/.ssh/authorized_keys on the Deck (in Konsole on the"
+            say "Deck, or from a computer that can already log in), then run this again:"
+            say ""
+            say "  $(cat "$KEY.pub")"
+        else
+            sed 's/^/    /' "$err"
+            say "Could not reach $TARGET. Check that:"
+            say "  - the Deck is on and on the same network, and the IP is right"
+            say "  - SSH is on: on the Deck run 'passwd' once, then 'sudo systemctl enable --now sshd'"
+        fi
+        rm -f "$err"
         exit 1
-    }
+    fi
+    rm -f "$err"
 fi
 
 say "==> Checking the connection"

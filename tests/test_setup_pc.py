@@ -21,7 +21,14 @@ shift                                   # user@host
 cmd="${*:-true}"
 key="$(cat "$PC_HOME/.ssh/elfdeckai_ed25519.pub" 2>/dev/null)"
 if ! grep -qxF "$key" "$DECK_HOME/.ssh/authorized_keys" 2>/dev/null; then
-    case "$cmd" in *authorized_keys*) ;; *) exit 255;; esac   # password step
+    case "$cmd" in
+        *authorized_keys*)                  # the copy step: password, or another key
+            if [ -n "$KEY_ONLY" ] && [ -z "$AGENT_KEY_OK" ]; then
+                echo "deck@deck: Permission denied (publickey)." >&2
+                exit 255
+            fi ;;
+        *) exit 255 ;;
+    esac
 fi
 cd "$DECK_HOME" && HOME="$DECK_HOME" sh -c "$cmd"
 '''
@@ -41,10 +48,10 @@ def world(tmp_path):
     config.parent.mkdir(parents=True)
     config.write_text('{"mcpServers": {"other": {"command": "x"}}, "theme": "dark"}')
 
-    def run():
+    def run(**extra):
         env = {"HOME": str(pc), "PC_HOME": str(pc), "DECK_HOME": str(deck),
                "PATH": "%s:%s" % (bin_dir, os.environ["PATH"]),
-               "DECK_IP": "192.168.1.50"}
+               "DECK_IP": "192.168.1.50", **extra}
         env.pop("XDG_CONFIG_HOME", None)
         return subprocess.run(["sh", str(ROOT / "setup-pc.sh")], env=env,
                               stdin=subprocess.DEVNULL, capture_output=True,
@@ -80,4 +87,21 @@ def test_setup_stops_when_elfdeckai_is_missing_on_the_deck(world):
     (deck / ".local/bin/elfdeckai-mcp").unlink()
     r = run()
     assert r.returncode != 0 and "not installed on the Deck" in r.stdout
+    assert "elfdeckai" not in json.loads(config.read_text())["mcpServers"]
+
+
+def test_key_only_deck_accepts_the_new_key_through_an_existing_one(world):
+    run, _pc, deck, config = world
+    r = run(KEY_ONLY="1", AGENT_KEY_OK="1")
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert (deck / ".ssh/authorized_keys").exists()
+    assert "elfdeckai" in json.loads(config.read_text())["mcpServers"]
+
+
+def test_key_only_deck_without_an_accepted_key_explains(world):
+    run, pc, _deck, config = world
+    r = run(KEY_ONLY="1")
+    assert r.returncode != 0
+    assert "only accepts SSH keys" in r.stdout
+    assert (pc / ".ssh/elfdeckai_ed25519.pub").read_text().strip() in r.stdout
     assert "elfdeckai" not in json.loads(config.read_text())["mcpServers"]
