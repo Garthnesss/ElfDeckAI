@@ -61,7 +61,7 @@ def test_handshake_and_tool_list(tmp_path):
                          "pad_center", "pad_reset", "mouse_move",
                          "mouse_click", "mouse_down", "mouse_up",
                          "mouse_scroll", "mouse_hscroll", "key_release",
-                         "mouse_release"}
+                         "mouse_release", "screenshot"}
         for t in r["result"]["tools"]:
             assert t["inputSchema"]["type"] == "object"
         by_name = {t["name"]: t for t in r["result"]["tools"]}
@@ -252,8 +252,8 @@ def test_short_fifo_write_is_an_error(tmp_path, monkeypatch):
     monkeypatch.setattr(m, "KEY_FIFO", fifo)
     monkeypatch.setattr(m.os, "write", lambda fd, data: 1)   # always short
     try:
-        text, is_error = m.call_tool("key_tap", {"key": "x"})
-        assert is_error and "I/O error" in text
+        content, is_error = m.call_tool("key_tap", {"key": "x"})
+        assert is_error and "I/O error" in content[0]["text"]
     finally:
         os.close(reader)
 
@@ -272,3 +272,57 @@ def test_tools_call_notification_executes_but_is_never_answered(tmp_path):
         proc.kill()
     got = {(os.path.basename(p), line) for p, line in received}
     assert (os.path.basename(key_fifo), "key x") in got   # ...but it executed
+
+
+import base64 as _b64
+
+import elfdeckai_mcp as _mcp
+
+_PNG_1PX = _b64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+    "+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==")
+
+
+def test_screenshot_tool_returns_an_image(tmp_path):
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    png = tmp_path / "fake.png"
+    png.write_bytes(_PNG_1PX)
+    script = fakebin / "spectacle"
+    script.write_text(
+        '#!/bin/sh\nwhile [ $# -gt 0 ]; do\n'
+        '  if [ "$1" = "-o" ]; then cp "%s" "$2"; fi\n'
+        "  shift\ndone\n" % png)
+    script.chmod(0o755)
+    env = {**os.environ, "PATH": "%s:%s" % (fakebin, os.environ["PATH"]),
+           "DBUS_SESSION_BUS_ADDRESS": "/nonexistent"}
+    proc = subprocess.Popen(
+        [sys.executable, str(ROOT / "elfdeckai_mcp.py")],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+    try:
+        def rpc(msg):
+            proc.stdin.write(json.dumps(msg) + "\n")
+            proc.stdin.flush()
+            return json.loads(proc.stdout.readline())
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+            "protocolVersion": "2024-11-05", "capabilities": {},
+            "clientInfo": {"name": "t", "version": "0"}}})
+        names = [t["name"] for t in rpc(
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
+        )["result"]["tools"]]
+        assert "screenshot" in names and len(names) == 19
+        r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                 "params": {"name": "screenshot", "arguments": {}}})
+        item = r["result"]["content"][0]
+        assert r["result"]["isError"] is False
+        assert item["type"] == "image" and item["mimeType"] == "image/png"
+        assert _b64.b64decode(item["data"]) == _PNG_1PX
+    finally:
+        proc.kill()
+
+
+def test_screenshot_failure_is_a_clean_error(monkeypatch):
+    monkeypatch.setattr(_mcp.shutil, "which", lambda _: None)
+    content, is_error = _mcp.call_tool("screenshot", {})
+    assert is_error is True
+    assert "screenshot failed" in content[0]["text"]
