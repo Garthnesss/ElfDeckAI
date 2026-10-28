@@ -104,7 +104,10 @@ Keys: `a`–`z`, `0`–`9`, arrows, `enter`, `esc`, `space`, `tab`, `shift`,
 
 Buttons: `a b x y lb rb l2 r2 select start guide l3 r3`. ElfPad presents
 as an Xbox-360-class pad, so SDL, Steam Input and RetroArch map it the
-standard way with zero configuration.
+standard way with zero configuration. `l2`/`r2` are analog-only, exactly
+like the real pad — there are deliberately no digital trigger buttons,
+because declaring them shifts Select/Start/Guide two button indices off
+the stock layout (verified against a real 360 pad on a Deck).
 
 ### ElfMouse — `/tmp/elfmouse.fifo`
 
