@@ -256,3 +256,19 @@ def test_short_fifo_write_is_an_error(tmp_path, monkeypatch):
         assert is_error and "I/O error" in text
     finally:
         os.close(reader)
+
+
+def test_tools_call_notification_executes_but_is_never_answered(tmp_path):
+    proc, rpc, received, key_fifo, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        proc.stdin.write(json.dumps(
+            {"jsonrpc": "2.0", "method": "tools/call",
+             "params": {"name": "key_tap", "arguments": {"key": "x"}}}) + "\n")
+        proc.stdin.flush()
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "ping"})
+        assert r["id"] == 2 and r["result"] == {}   # the FIRST reply is ping's
+    finally:
+        proc.kill()
+    got = {(os.path.basename(p), line) for p, line in received}
+    assert (os.path.basename(key_fifo), "key x") in got   # ...but it executed
