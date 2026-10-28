@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elfdeckai"
-version = "1.0.1"
+version = "1.0.2"
 description = "Virtual keyboard, gamepad and mouse for AI agents on Linux / Steam Deck — zero-dependency uinput daemons with an MCP server."
 readme = "README.md"
 requires-python = ">=3.8"
