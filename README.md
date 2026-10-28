@@ -26,10 +26,29 @@ the real device (inside RetroArch, in that run); the agent's only
 channel in is real input, and its only view is a stream for eyes.
 ([How it drives](notes/driving.md))
 
+## 🍃 Steam Deck: the one-paste setup
+
+On the Deck, switch to Desktop Mode, open Konsole, and paste:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Garthnesss/ElfDeckAI/main/install-on-deck.sh | sh
+```
+
+That's the whole install: it puts the daemons in place as user services
+(no sudo, nothing system-wide), checks that all three virtual devices
+came up, and prints the exact MCP config block for your PC — plus the
+two commands that turn on SSH so your PC can reach it. Then your AI
+client on the PC can see (with the `screenshot` tool) and play.
+
+**Rather let your AI do the explaining?** Hand it
+[AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md) — a setup guide written for an
+AI to read, so your Claude or Codex can walk you through every step,
+Deck side and PC side, and troubleshoot as you go.
+
 ## ⚡ Run it yourself (60 seconds)
 
 ```sh
-pip install git+https://github.com/Garthnesss/ElfDeckAI
+pip install elfdeckai
 
 elfkey &                     # virtual keyboard   (command: elfkey)
 elfpad &                     # virtual gamepad    (command: elfpad)
@@ -59,9 +78,13 @@ command: `"command": "elfdeckai-mcp"` (details below).
 
 `elfdeckai_mcp.py` is a zero-dependency [Model Context
 Protocol](https://modelcontextprotocol.io) server that exposes all
-three devices as 18 native tools — `key_tap`, `pad_press`, `pad_stick`,
+three devices as 19 native tools — `key_tap`, `pad_press`, `pad_stick`,
 `mouse_move`, `mouse_click`, `pad_reset`, `key_release`, … — for Claude,
-Hermes, or any MCP client:
+Hermes, or any MCP client. The 19th tool is `screenshot`: it captures
+the screen of the machine the server runs on and returns it as an image,
+so the agent gets eyes as well as hands — look, press, look again, no
+video stream (Sunshine/Moonlight) needed. Works with KDE Plasma (a
+Steam Deck in Desktop Mode), wlroots compositors, and X11.
 
 ```json
 {"mcpServers": {"elfdeckai": {"command": "elfdeckai-mcp"}}}
