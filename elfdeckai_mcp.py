@@ -7,10 +7,12 @@ Claude, Hermes, your own agent — as native tool calls:
     key_tap    {key, hold_ms?}          pad_press   {button, hold_ms?}
     key_down   {key}                    pad_down    {button}
     key_up     {key}                    pad_up      {button}
-                                        pad_stick   {side, x, y, hold_ms?}
-                                        pad_trigger {side, percent, hold_ms?}
-                                        pad_center  {}
-                                        pad_reset   {}
+    mouse_move  {dx, dy, glide_ms?}     pad_stick   {side, x, y, hold_ms?}
+    mouse_click {button, hold_ms?}      pad_trigger {side, percent, hold_ms?}
+    mouse_down  {button}                pad_center  {}
+    mouse_up    {button}                pad_reset   {}
+    mouse_scroll  {clicks}
+    mouse_hscroll {clicks}
 
 The server holds no state and injects nothing itself: every call is
 validated by the daemons' own parse_command() (the exact contract the
@@ -35,10 +37,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import elfkey
+import elfmouse
 import elfpad
 
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
+MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
 PROTOCOL_VERSION = "2024-11-05"
 
 
@@ -78,6 +82,21 @@ def _pad_line(cmd, a):
     return cmd.replace("pad_", "")  # pad_center / pad_reset
 
 
+def _mouse_line(cmd, a):
+    if cmd == "mouse_move":
+        ms = a.get("glide_ms")
+        return "move %s %s%s" % (a["dx"], a["dy"],
+                                 "" if ms is None else " %s" % ms)
+    if cmd == "mouse_click":
+        ms = a.get("hold_ms")
+        return "click %s%s" % (a["button"], "" if ms is None else " %s" % ms)
+    if cmd in ("mouse_down", "mouse_up"):
+        return "%s %s" % (cmd.replace("mouse_", ""), a["button"])
+    if cmd == "mouse_scroll":
+        return "scroll %s" % a["clicks"]
+    return "hscroll %s" % a["clicks"]  # mouse_hscroll
+
+
 TOOLS = [
     ("key_tap", "Tap a key on the virtual keyboard.",
      {"key": {"type": "string"}, "hold_ms": {"type": "integer"}}, ["key"]),
@@ -103,6 +122,21 @@ TOOLS = [
      ["side", "percent"]),
     ("pad_center", "Return sticks, triggers and D-pad to neutral.", {}, []),
     ("pad_reset", "Release every button and recenter everything.", {}, []),
+    ("mouse_move", "Move the pointer by (dx, dy) pixels. Optional glide_ms "
+                   "spreads the move over time (smooth drags, human-ish motion).",
+     {"dx": {"type": "integer"}, "dy": {"type": "integer"},
+      "glide_ms": {"type": "integer"}}, ["dx", "dy"]),
+    ("mouse_click", "Click a mouse button.",
+     {"button": {"type": "string", "enum": ["left", "right", "middle"]},
+      "hold_ms": {"type": "integer"}}, ["button"]),
+    ("mouse_down", "Hold a mouse button down (start a drag).",
+     {"button": {"type": "string", "enum": ["left", "right", "middle"]}}, ["button"]),
+    ("mouse_up", "Release a mouse button (drop the drag).",
+     {"button": {"type": "string", "enum": ["left", "right", "middle"]}}, ["button"]),
+    ("mouse_scroll", "Scroll the wheel: positive clicks up, negative down.",
+     {"clicks": {"type": "integer"}}, ["clicks"]),
+    ("mouse_hscroll", "Scroll horizontally: positive clicks right.",
+     {"clicks": {"type": "integer"}}, ["clicks"]),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
 
@@ -122,6 +156,9 @@ def call_tool(name, args):
     try:
         if name.startswith("key_"):
             return _send(KEY_FIFO, _key_line(name, args), elfkey.parse_command), False
+        if name.startswith("mouse_"):
+            return _send(MOUSE_FIFO, _mouse_line(name, args),
+                         elfmouse.parse_command), False
         return _send(PAD_FIFO, _pad_line(name, args), elfpad.parse_command), False
     except ValueError as e:
         return "refused: %s" % e, True
