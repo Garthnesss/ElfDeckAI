@@ -2,8 +2,8 @@
 
 ## Next
 
-- **Finish Gaming Mode.** Screenshots and the keyboard work; the mouse and
-  gamepad need checking. See the plan below.
+- **Gaming Mode gamepad.** Everything else works in Gaming Mode; ElfPad
+  can still be ignored by some games. See the plan below.
 - **Demo recording.** A short clip of an agent playing on a physical Deck.
 - **Combined daemon.** Keyboard, gamepad and mouse in one process and one
   systemd service.
@@ -29,21 +29,19 @@ by **gamescope**, Valve's own compositor, with Steam's interface on top.
 
 | Area | Status |
 |---|---|
-| Screenshots | **Done.** `gamescopectl screenshot <file> 4` returns exactly what is on screen (1280×800, about 300 ms). The server uses it first whenever gamescope's socket exists, and falls back to the Desktop Mode tools. |
+| Screenshots | **Works.** `gamescopectl screenshot <file> 4` returns exactly what is on screen (1280×800, about 300 ms). The server uses it first whenever gamescope's socket exists, and falls back to the Desktop Mode tools. |
 | Keyboard | **Works.** ElfKey arrow presses moved the menu cursor in Stardew Valley. |
-| Absolute mouse (`mouse_click_at`) | **To verify.** It was blocked by the missing screenshot support, which is now fixed. gamescope's libinput handler processes absolute pointer events, so it is expected to work. |
-| Relative mouse | **To verify.** |
+| Absolute mouse (`mouse_click_at`) | **Works.** Clicked LOAD on Stardew Valley's title screen. |
+| Relative mouse | **Works.** A 100-unit move moved the cursor about 100 px. |
 | Gamepad (ElfPad) | **Known issue.** A game can ignore ElfPad when Steam gives the first controller slot to the Deck's built-in pad (seen in Dragon Quest VII). |
-| Switching modes mid-session | **Done.** The server re-reads the session's variables before each screenshot. |
+| Switching modes mid-session | **Works.** Gaming → Desktop with no restarts; screenshots worked on both sides. |
 
 ### Remaining work
 
-1. **Verify the mouse.** In Gaming Mode, with a game open: `screenshot`,
-   then `mouse_click_at` on a menu button, and a relative `mouse_move`.
-2. **ElfPad.** Find a dependable way to make Steam give the virtual pad a
+1. **ElfPad.** Find a dependable way to make Steam give the virtual pad a
    controller slot, or document the keyboard route as the default for
    affected games.
-3. **Docked to a large display.** gamescope writes PNG, which the server
+2. **Docked to a large display.** gamescope writes PNG, which the server
    cannot scale yet (see "PNG scaling" under "Later"). On the Deck's own
    screen no scaling is needed.
 

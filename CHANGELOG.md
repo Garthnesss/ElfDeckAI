@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-10-28
 
 ### Added
 - `mouse_click_at` and `mouse_move_to` MCP tools: click or point at (x, y)
