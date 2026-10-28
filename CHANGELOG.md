@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
-## [1.0.7] - Unreleased
+## [1.0.7] - 2026-10-28
 
 ### Fixed
 - Daemons no longer exit when a FIFO line contains bytes that are not
