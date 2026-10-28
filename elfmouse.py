@@ -35,6 +35,7 @@ Standard library only. Works on any Linux with /dev/uinput.
 """
 import fcntl, os, signal, struct, sys, time
 
+NAME = "elfmouse"
 FIFO = "/tmp/elfmouse.fifo"
 DEFAULT_CLICK_MS = 100
 MAX_HOLD_MS = 5000          # glides and clicks cap here, like every tap
@@ -123,7 +124,10 @@ class ElfMouse:
         self.held = set()
 
     def emit(self, ev_type, code, value):
+        # One event, NO frame boundary: callers batch and close with syn().
         os.write(self.fd, struct.pack("qqHHi", 0, 0, ev_type, code, value))
+
+    def syn(self):
         os.write(self.fd, struct.pack("qqHHi", 0, 0, EV_SYN, SYN_REPORT, 0))
 
     def move(self, dx, dy):
@@ -131,6 +135,8 @@ class ElfMouse:
             self.emit(EV_REL, REL_X, dx)
         if dy:
             self.emit(EV_REL, REL_Y, dy)
+        if dx or dy:
+            self.syn()
 
     def glide(self, dx, dy, duration_ms):
         """Move (dx, dy) spread over duration_ms in ~20 ms steps, with the
@@ -151,10 +157,12 @@ class ElfMouse:
     def scroll(self, ticks, horizontal=False):
         if ticks:
             self.emit(EV_REL, REL_HWHEEL if horizontal else REL_WHEEL, ticks)
+            self.syn()
 
     def set_button(self, name, down):
+        (self.held.add if down else self.held.discard)(name)  # state first
         self.emit(EV_KEY, BUTTONS[name], 1 if down else 0)
-        (self.held.add if down else self.held.discard)(name)
+        self.syn()
 
     def click(self, name, hold_ms):
         self.set_button(name, True)
@@ -171,6 +179,32 @@ class ElfMouse:
             except OSError:
                 pass
             self.held.discard(name)
+        try:
+            self.syn()
+        except OSError:
+            pass
+
+
+_LOCK_FD = None
+
+
+def _acquire_instance_lock():
+    """Single-instance guard: a second daemon would unlink the first one's
+    FIFO and orphan it, so refuse to start. flock is per open-file, and the
+    fd is held for the process lifetime; a same-process second call (the
+    test suite runs main() in threads) is a no-op."""
+    global _LOCK_FD
+    if _LOCK_FD is not None:
+        return
+    path = "/tmp/%s.lock" % NAME
+    fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        os.close(fd)
+        raise SystemExit("%s: already running (another instance holds %s)"
+                         % (NAME, path))
+    _LOCK_FD = fd
 
 
 def _open_device():
@@ -182,7 +216,7 @@ def _open_device():
     for code in (REL_X, REL_Y, REL_HWHEEL, REL_WHEEL):
         fcntl.ioctl(fd, UI_SET_RELBIT, code)
     # struct uinput_user_dev: name[80], id{ bustype, vendor, product, version }, ff_effects_max, absmax[64], absmin[64], absfuzz[64], absflat[64]
-    dev = struct.pack("80sHHHHI", b"ElfMouse", 0x03, 0x1209, 0xBEEF, 1, 0) + b"\x00" * (64 * 4 * 4)
+    dev = struct.pack("80sHHHHI", b"ElfMouse", 0x03, 0x1209, 0xBEE1, 1, 0) + b"\x00" * (64 * 4 * 4)
     os.write(fd, dev)
     fcntl.ioctl(fd, UI_DEV_CREATE)
     return fd
@@ -201,7 +235,12 @@ def _make_fifo(path=FIFO):
 
 
 def main():
-    fd = _open_device()
+    _acquire_instance_lock()
+    try:
+        fd = _open_device()
+    except OSError as e:
+        raise SystemExit("elfmouse: cannot open /dev/uinput: %s "
+                         "(module loaded? permission? see the udev rule)" % e)
     mouse = ElfMouse(fd)
     print("ElfMouse device created", flush=True)
 
@@ -229,6 +268,8 @@ def main():
                 except ValueError as e:
                     print("elfmouse: refused: %s (%s)" % (line.strip()[:80], e), file=sys.stderr, flush=True)
                     continue
+                # audit log: every accepted command (see elfkey.py).
+                print("elfmouse: %s" % line.strip()[:80], file=sys.stderr, flush=True)
                 try:
                     cmd = parsed[0]
                     if cmd == "quit":
