@@ -326,3 +326,19 @@ def test_screenshot_failure_is_a_clean_error(monkeypatch):
     content, is_error = _mcp.call_tool("screenshot", {})
     assert is_error is True
     assert "screenshot failed" in content[0]["text"]
+
+
+def test_ensure_graphical_env_imports_from_systemd(monkeypatch):
+    class R:
+        stdout = ("WAYLAND_DISPLAY=wayland-0\nDISPLAY=:0\n"
+                  "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus\n"
+                  "UNRELATED=nope\n")
+    monkeypatch.delenv("WAYLAND_DISPLAY", raising=False)
+    monkeypatch.delenv("DISPLAY", raising=False)
+    monkeypatch.delenv("DBUS_SESSION_BUS_ADDRESS", raising=False)
+    monkeypatch.setattr(_mcp.subprocess, "run", lambda *a, **k: R())
+    _mcp._ensure_graphical_env()
+    import os as _os
+    assert _os.environ["WAYLAND_DISPLAY"] == "wayland-0"
+    assert _os.environ["DISPLAY"] == ":0"
+    assert "UNRELATED" not in _os.environ
