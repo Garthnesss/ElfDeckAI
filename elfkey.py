@@ -81,6 +81,10 @@ def parse_command(line):
         if args:
             raise ValueError("quit takes no arguments")
         return ("quit", None, None)
+    if cmd == "release":
+        if args:
+            raise ValueError("release takes no arguments")
+        return ("release", None, None)
     if cmd not in ("key", "down", "up"):
         raise ValueError("unknown command: %s" % cmd)
     if not args or args[0] not in KEYS:
@@ -196,7 +200,9 @@ def main():
                 try:
                     if cmd == "quit":
                         break
-                    if cmd == "key":
+                    if cmd == "release":
+                        keys.release_all()
+                    elif cmd == "key":
                         keys.tap(name, hold)
                     else:
                         keys.set_key(name, cmd == "down")
