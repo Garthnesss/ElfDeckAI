@@ -75,7 +75,8 @@ for name in ElfKey ElfPad ElfMouse; do
 done
 [ "$ok" = 1 ] || echo "    (On non-Deck Linux you may need the udev rule from the repo: 70-elfdeckai-uinput.rules (repo root))"
 
-IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+IP="$(ip -4 -o addr show scope global 2>/dev/null | awk '{split($4,a,"/"); print a[1]; exit}')"
+[ -n "$IP" ] || IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
 cat <<EOF
 
 Done. Your Deck now has hands. To give your AI on your PC control:
