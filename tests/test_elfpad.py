@@ -26,6 +26,7 @@ from conftest import ROOT, elfpad
     ("center", ("center",)),
     ("reset", ("reset",)),
     ("quit", ("quit",)),
+    ("wait 250", ("wait", 250)),
 ])
 def test_parse_ok(line, want):
     assert elfpad.parse_command(line) == want
@@ -37,7 +38,7 @@ def test_parse_ok(line, want):
     "stick", "stick middle 0 0", "stick left 101 0", "stick left 0 -101",
     "stick left x 0", "stick left 0 0 999999999", "trigger", "trigger up 5",
     "trigger left -1", "trigger left 101", "trigger left abc",
-    "center now", "reset all", "quit now", "x" * 201,
+    "center now", "reset all", "quit now", "wait", "wait -1", "wait 5001", "wait x", "wait 1 2", "x" * 201,
 ])
 def test_parse_refused(line):
     with pytest.raises(ValueError):

@@ -30,6 +30,8 @@ from conftest import ROOT, elfkey
     ("up space", ("up", "space", None)),
     ("down ctrl", ("down", "ctrl", None)),
     ("quit", ("quit", None, None)),
+    ("wait 250", ("wait", None, 250)),
+    ("wait 0", ("wait", None, 0)),
     ("  key   z   265  ", ("key", "z", 265)),
 ])
 def test_parse_ok(line, want):
@@ -41,7 +43,7 @@ def test_parse_ok(line, want):
 @pytest.mark.parametrize("line", [
     "", "   ", "key", "key nosuchkey", "key x abc", "key x 1.5", "key x -1",
     "key x 5001", "key x 999999999", "key x 100 extra", "down", "down x y",
-    "up nosuchkey", "quit now", "press x", "KEY x", "ke y x",
+    "up nosuchkey", "quit now", "wait", "wait -1", "wait 5001", "wait x", "wait 1 2", "press x", "KEY x", "ke y x",
     "key x " + "9" * 300,                       # absurd hold, also over the line cap below
     "key " + "x" * 300,                         # over MAX_LINE
 ])

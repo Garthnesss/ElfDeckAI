@@ -26,6 +26,7 @@ from conftest import elfmouse
     ("scroll 5", ("scroll", 5, False)),
     ("hscroll 2", ("scroll", 2, True)),
     ("quit", ("quit",)),
+    ("wait 250", ("wait", 250)),
 ])
 def test_parse_ok(line, want):
     assert elfmouse.parse_command(line) == want
@@ -40,7 +41,7 @@ def test_parse_ok(line, want):
     "click", "click side", "click left abc", "click left 999999999",
     "down", "down left extra", "up nope",
     "scroll", "scroll 121", "scroll -121", "scroll x", "scroll 1 2",
-    "hscroll", "quit now", "x" * 201,
+    "hscroll", "quit now", "wait", "wait -1", "wait 5001", "wait x", "wait 1 2", "x" * 201,
 ])
 def test_parse_refused(line):
     with pytest.raises(ValueError):
@@ -215,4 +216,23 @@ def test_release_all_releases_on_each_buttons_own_device(monkeypatch):
     m.release_all()
     assert sorted(seen) == [("abs", elfmouse.EV_KEY, elfmouse.BUTTONS["left"], 0),
                             ("rel", elfmouse.EV_KEY, elfmouse.BUTTONS["right"], 0)]
+    assert m.held == {}
+
+
+def test_duplicate_down_after_moveto_releases_the_first_device(monkeypatch):
+    # Regression (adversarial review, Oct 28 2026): down on the relative
+    # device, moveto, duplicate down — the second down used to overwrite
+    # held[name], orphaning the press on the relative device forever.
+    seen = _events_by_fd(monkeypatch)
+    m = elfmouse.ElfMouse(fd="rel", abs_fd="abs")
+    m.set_button("left", True)         # pressed on the relative device
+    m.move_to(5, 5)                    # buttons now follow the absolute device
+    m.set_button("left", True)         # duplicate down (a hallucinating caller)
+    m.set_button("left", False)
+    m.release_all()                    # must have nothing left to do
+    keys = [(fd, code, v) for fd, typ, code, v in seen if typ == elfmouse.EV_KEY]
+    assert keys == [("rel", elfmouse.BUTTONS["left"], 1),
+                    ("rel", elfmouse.BUTTONS["left"], 0),   # released on switch
+                    ("abs", elfmouse.BUTTONS["left"], 1),
+                    ("abs", elfmouse.BUTTONS["left"], 0)]
     assert m.held == {}

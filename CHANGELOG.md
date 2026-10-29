@@ -4,6 +4,37 @@ All notable changes to this project are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the
 project follows [Semantic Versioning](https://semver.org/).
 
+## [1.1.3] - Unreleased
+
+Fixes from an adversarial review of the 1.0.x/1.1.x line, checked against
+1.1.2 (several review findings were already fixed by 1.1.2 and are not
+listed here).
+
+### Fixed
+- ElfMouse: a duplicate `down` after a `moveto` switched devices orphaned
+  the button on the first device — `held` forgot its fd, so neither `up`
+  nor `release` could ever release it. The first device is now released
+  when a held button is re-pressed on the other device.
+- Stuck input when the MCP client disconnects: the server exits on stdin
+  EOF without releasing anything, leaving a `down` held forever. It now
+  sends release/reset to all three daemons on the way out.
+- Daemons now trap SIGHUP as well as SIGTERM/SIGINT, so a daemon started
+  with `elfkey &` over SSH cleans up (and releases) when the session
+  closes instead of dying mid-hold.
+
+### Added
+- `wait <ms>` command in all three daemons and a `wait` MCP tool
+  (0–5000 ms): timing between inputs is now expressible. Queued taps
+  otherwise land back-to-back, and a frame-polled game can merge them
+  into one continuous hold.
+
+### Changed
+- README Safety model: the audit log now warns that typed secrets
+  (passwords, one line per keystroke) land in the journal, and a new
+  "Manipulated callers" paragraph states plainly that the validation
+  layer covers hallucinating callers, not an agent manipulated by
+  on-screen content.
+
 ## [1.1.2] - Unreleased
 
 ### Added
@@ -96,6 +127,7 @@ project follows [Semantic Versioning](https://semver.org/).
 - One-command Steam Deck installer.
 - Setup guide written for an AI assistant to follow.
 
+[1.1.3]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Garthnesss/ElfDeckAI/compare/v1.0.7...v1.1.0
