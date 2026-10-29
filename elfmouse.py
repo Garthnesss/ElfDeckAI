@@ -28,7 +28,7 @@ Safety design, shared with ElfKey and ElfPad:
   * Moves, glides and scrolls are bounded per command; longer travel is
     done by chaining commands. Timed actions cap at MAX_HOLD_MS.
   * Buttons are never left held: clicks release in a finally block, held
-    buttons are tracked, and on quit, SIGTERM, SIGINT or any fatal error
+    buttons are tracked, and on quit, SIGTERM, SIGINT, SIGHUP or any fatal error
     every held button is released before the device is destroyed.
   * The FIFO is created 0600, so only the owning user can inject input.
 
@@ -108,6 +108,10 @@ def parse_command(line):
         if args:
             raise ValueError("release takes no arguments")
         return ("release",)
+    if cmd == "wait":
+        if len(args) != 1:
+            raise ValueError("wait takes exactly one duration in ms")
+        return ("wait", _bounded_int(args[0], 0, MAX_HOLD_MS, "wait"))
     if cmd == "move":
         if len(args) not in (2, 3):
             raise ValueError("usage: move <dx> <dy> [glide_ms]")
@@ -213,6 +217,14 @@ class ElfMouse:
 
     def set_button(self, name, down):
         if down:
+            if name in self.held and self.held[name] != self.button_fd:
+                # Already held on the OTHER device (a duplicate down after
+                # a moveto/move switched devices): release it there first,
+                # or that press is orphaned — held forgets its fd, so a
+                # later up/release_all can never release it.
+                old_fd = self.held.pop(name)
+                self.emit(EV_KEY, BUTTONS[name], 0, old_fd)
+                self.syn(old_fd)
             fd = self.held[name] = self.button_fd   # state first
         else:
             fd = self.held.pop(name, self.button_fd)  # release where pressed
@@ -326,7 +338,7 @@ def main():
     def _stop(signum, frame):
         raise _Stopped()
 
-    for sig in (signal.SIGTERM, signal.SIGINT):
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
         try:
             signal.signal(sig, _stop)
         except (ValueError, OSError):
@@ -357,6 +369,8 @@ def main():
                         break
                     if cmd == "release":
                         mouse.release_all()
+                    elif cmd == "wait":
+                        time.sleep(parsed[1] / 1000.0)
                     elif cmd == "move":
                         _, dx, dy, glide = parsed
                         mouse.glide(dx, dy, glide) if glide is not None else mouse.move(dx, dy)

@@ -18,7 +18,7 @@ devices at the Linux kernel level (`/dev/uinput`): a keyboard (ElfKey), an
 Xbox-360-class gamepad (ElfPad), and a mouse (ElfMouse). Games cannot tell
 them apart from real hardware. A fourth program, an MCP server, exposes
 them — plus a `screenshot` tool that returns a picture of the Deck's
-screen — as 21 tools an AI can call. The AI's loop is: `screenshot` →
+screen — as 22 tools an AI can call. The AI's loop is: `screenshot` →
 decide → `pad_press` / `key_tap` / `mouse_click_at` → `screenshot` again.
 For the mouse, prefer `mouse_click_at` / `mouse_move_to`: they take x, y
 in the pixels of the last screenshot, so clicks land where you aimed.

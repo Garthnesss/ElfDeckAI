@@ -112,7 +112,7 @@ distributions, install the udev rule first (see [Installation](#installation)).
 ## MCP server
 
 `elfdeckai-mcp` is a Model Context Protocol server (stdio transport) that
-exposes 21 tools:
+exposes 22 tools:
 
 | Group | Tools |
 |---|---|
@@ -120,6 +120,7 @@ exposes 21 tools:
 | Gamepad | `pad_press`, `pad_down`, `pad_up`, `pad_stick`, `pad_trigger`, `pad_center`, `pad_reset` |
 | Mouse | `mouse_click_at`, `mouse_move_to`, `mouse_move`, `mouse_click`, `mouse_down`, `mouse_up`, `mouse_scroll`, `mouse_hscroll`, `mouse_release` |
 | Vision | `screenshot` |
+| Timing | `wait` |
 
 `screenshot` captures the screen of the machine the server runs on and
 returns a PNG, so an agent can work in a look, act, look again loop
@@ -227,12 +228,16 @@ bad input cannot leave the machine in a bad state:
 - **Taps are bounded.** A timed hold lasts at most 5 seconds. Longer holds
   use `down`/`up`.
 - **Nothing stays stuck.** Timed actions restore in a `finally` block,
-  held inputs are tracked, and on `quit`, SIGTERM or SIGINT every input is
-  released before the device is removed. `key_release`, `mouse_release`
-  and `pad_reset` release everything on demand.
+  held inputs are tracked, and on `quit`, SIGTERM, SIGINT or SIGHUP every
+  input is released before the device is removed. If the MCP client
+  disconnects mid-hold, the server releases every held input as it exits.
+  `key_release`, `mouse_release` and `pad_reset` release everything on
+  demand.
 - **Owner-only access.** Each FIFO is created with mode 0600.
 - **Audit log.** Every accepted command is written to stderr (the
-  journal, when run as a service).
+  journal, when run as a service). That includes every key of anything
+  typed — passwords included, one line per keystroke. Do not have an
+  agent type secrets you are not willing to see in the journal.
 - **Robust protocol handling.** The MCP server returns proper JSON-RPC
   errors for malformed or oversized requests and never blocks on a stopped
   daemon.
@@ -242,6 +247,19 @@ window has focus, including terminals and browsers. ElfDeckAI keeps input
 bounded, validated and releasable; deciding where an agent is allowed to
 act is up to the operator. Only run agents you trust, in sessions you
 can supervise.
+
+**Manipulated callers:** the hardening above covers a caller that
+hallucinates or sends malformed input. It does not cover a caller that is
+manipulated — and the agent's eyes are a screenshot, so anything on
+screen (a web page, a game dialog, a chat message) is untrusted input
+that could try to talk it into typing into a terminal. There is no key or
+window allowlist and no physical kill switch; the mitigations are the
+operator's: supervise the session, keep terminals and browsers you care
+about out of focus, and stop the daemons (`systemctl --user stop
+elfkey elfpad elfmouse`) when the agent is not driving. If the MCP client
+disconnects, the server now releases every held input on its way out —
+but a live, manipulated agent is an operator problem, not one this
+validation layer can solve.
 
 ## Comparison with other approaches
 

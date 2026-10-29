@@ -27,7 +27,7 @@ Safety design, shared with ElfKey and ElfMouse:
   * Timed holds are bounded to 0..MAX_HOLD_MS; longer holds use down/up,
     which the caller controls.
   * Nothing is left stuck: taps and timed stick/trigger moves restore in a
-    finally block, held buttons are tracked, and on quit, SIGTERM, SIGINT or
+    finally block, held buttons are tracked, and on quit, SIGTERM, SIGINT, SIGHUP or
     any fatal error every button is released and every axis recentered
     before the device is destroyed.
   * The FIFO is created 0600, so only the owning user can inject input.
@@ -125,6 +125,10 @@ def parse_command(line):
         if args:
             raise ValueError("%s takes no arguments" % cmd)
         return (cmd,)
+    if cmd == "wait":
+        if len(args) != 1:
+            raise ValueError("wait takes exactly one duration in ms")
+        return ("wait", _bounded_int(args[0], 0, MAX_HOLD_MS, "wait"))
     if cmd in ("press", "down", "up"):
         if not args or (args[0] not in BUTTONS and args[0] not in DPAD
                         and args[0] not in TRIGGERS):
@@ -322,7 +326,7 @@ def main():
     def _stop(signum, frame):
         raise _Stopped()
 
-    for sig in (signal.SIGTERM, signal.SIGINT):
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
         try:
             signal.signal(sig, _stop)
         except (ValueError, OSError):
@@ -361,6 +365,8 @@ def main():
                     elif cmd == "trigger":
                         _, side, pct, hold = parsed
                         pad.trigger_for(side, pct, hold) if hold is not None else pad.set_trigger(side, pct)
+                    elif cmd == "wait":
+                        time.sleep(parsed[1] / 1000.0)
                     elif cmd == "center":
                         pad.center()
                     elif cmd == "reset":

@@ -18,7 +18,7 @@ Safety design (the caller may be a language model):
   * Taps are bounded to 0..MAX_HOLD_MS so one command cannot block the
     serve loop. Longer holds use down/up, which the caller controls.
   * Keys are never left stuck: a tap releases in a finally block, held keys
-    are tracked, and on quit, SIGTERM, SIGINT or any fatal error every held
+    are tracked, and on quit, SIGTERM, SIGINT, SIGHUP or any fatal error every held
     key is released before the uinput device is destroyed.
   * The FIFO is created 0600, so only the owning user can inject keys.
 
@@ -85,6 +85,16 @@ def parse_command(line):
         if args:
             raise ValueError("release takes no arguments")
         return ("release", None, None)
+    if cmd == "wait":
+        if len(args) != 1:
+            raise ValueError("wait takes exactly one duration in ms")
+        try:
+            ms = int(args[0])
+        except ValueError:
+            raise ValueError("wait must be a whole number of ms: %r" % args[0])
+        if not 0 <= ms <= MAX_HOLD_MS:
+            raise ValueError("wait must be 0-%d ms" % MAX_HOLD_MS)
+        return ("wait", None, ms)
     if cmd not in ("key", "down", "up"):
         raise ValueError("unknown command: %s" % cmd)
     if not args or args[0] not in KEYS:
@@ -209,7 +219,7 @@ def main():
     def _stop(signum, frame):
         raise _Stopped()
 
-    for sig in (signal.SIGTERM, signal.SIGINT):
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
         try:
             signal.signal(sig, _stop)
         except (ValueError, OSError):
@@ -240,6 +250,8 @@ def main():
                         break
                     if cmd == "release":
                         keys.release_all()
+                    elif cmd == "wait":
+                        time.sleep(hold / 1000.0)
                     elif cmd == "key":
                         keys.tap(name, hold)
                     else:

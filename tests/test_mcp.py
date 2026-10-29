@@ -75,7 +75,7 @@ def test_handshake_and_tool_list(tmp_path):
                          "mouse_click", "mouse_down", "mouse_up",
                          "mouse_scroll", "mouse_hscroll", "key_release",
                          "mouse_release", "screenshot", "mouse_move_to",
-                         "mouse_click_at"}
+                         "mouse_click_at", "wait"}
         for t in r["result"]["tools"]:
             assert t["inputSchema"]["type"] == "object"
         by_name = {t["name"]: t for t in r["result"]["tools"]}
@@ -130,6 +130,36 @@ def test_tool_calls_reach_the_fifos(tmp_path):
     assert (os.path.basename(mouse_fifo), "move 120 -40 300") in got
     assert (os.path.basename(mouse_fifo), "scroll -3") in got
     assert (os.path.basename(key_fifo), "release") in got
+    assert (os.path.basename(mouse_fifo), "release") in got
+
+
+def test_wait_tool_actually_waits(tmp_path):
+    proc, rpc, *_ = _server(tmp_path)
+    try:
+        rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        start = time.monotonic()
+        r = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                 "params": {"name": "wait", "arguments": {"ms": 200}}})
+        assert time.monotonic() - start >= 0.2
+        assert r["result"]["isError"] is False
+        assert "waited: 200 ms" in r["result"]["content"][0]["text"]
+    finally:
+        proc.kill()
+
+
+def test_client_disconnect_releases_every_daemon(tmp_path):
+    # Closing stdin (the client died) must send release/reset to all three
+    # FIFOs, or a key held via key_down stays down forever.
+    proc, rpc, received, key_fifo, pad_fifo, mouse_fifo = _server(tmp_path)
+    rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+    proc.stdin.close()
+    proc.wait(timeout=10)
+    got = _received_lines(received, {
+        (os.path.basename(key_fifo), "release"),
+        (os.path.basename(pad_fifo), "reset"),
+        (os.path.basename(mouse_fifo), "release")})
+    assert (os.path.basename(key_fifo), "release") in got
+    assert (os.path.basename(pad_fifo), "reset") in got
     assert (os.path.basename(mouse_fifo), "release") in got
 
 
@@ -328,7 +358,7 @@ def test_screenshot_tool_returns_an_image(tmp_path):
         names = [t["name"] for t in rpc(
             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
         )["result"]["tools"]]
-        assert "screenshot" in names and len(names) == 21
+        assert "screenshot" in names and len(names) == 22
         r = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                  "params": {"name": "screenshot", "arguments": {}}})
         item = r["result"]["content"][0]

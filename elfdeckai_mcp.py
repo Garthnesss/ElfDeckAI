@@ -15,6 +15,7 @@ daemons, plus a screenshot tool, to any MCP client:
     mouse_hscroll {clicks}              mouse_release {} (release all buttons)
     mouse_move_to  {x, y}               mouse_click_at {x, y, button?, hold_ms?}
     screenshot  {}                      (PNG of the local screen)
+    wait        {ms}                    (pause before the next tool call)
 
 mouse_move_to and mouse_click_at take coordinates in the pixels of the most
 recent screenshot; ElfMouse's absolute device maps them across the screen.
@@ -60,7 +61,7 @@ import elfpad
 KEY_FIFO = os.environ.get("ELFKEY_FIFO", elfkey.FIFO)
 PAD_FIFO = os.environ.get("ELFPAD_FIFO", elfpad.FIFO)
 MOUSE_FIFO = os.environ.get("ELFMOUSE_FIFO", elfmouse.FIFO)
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 # Newest first. The server answers with the client's requested version when
 # it supports it, otherwise with its newest (MCP lifecycle negotiation).
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -209,6 +210,12 @@ TOOLS = [
                    "image's pixels. Requires a graphical session on the "
                    "server's machine.",
      {}, []),
+    ("wait", "Wait before the next tool call, in milliseconds. Use it for "
+             "timing between inputs: queued taps land back-to-back with "
+             "essentially no gap, and a frame-polled game can merge them "
+             "into one hold. Bounded like every tap.",
+     {"ms": {"type": "integer", "minimum": 0, "maximum": elfkey.MAX_HOLD_MS}},
+     ["ms"]),
 ]
 TOOL_NAMES = {t[0] for t in TOOLS}
 TOOL_SCHEMAS = {name: (props, required) for name, _d, props, required in TOOLS}
@@ -606,6 +613,9 @@ def call_tool(name, args):
         return _text("invalid arguments: %s" % e), True
     if name == "screenshot":
         return _screenshot_result()
+    if name == "wait":
+        time.sleep(args["ms"] / 1000.0)
+        return _text("waited: %d ms" % args["ms"]), False
     try:
         if name.startswith("key_"):
             sends = [(KEY_FIFO, _key_line(name, args), elfkey.parse_command)]
@@ -720,6 +730,22 @@ def main():
                         "error": {"code": -32603, "message": "internal error"}}
         if response is not None:
             _emit(response)
+    _release_all_on_exit()
+
+
+def _release_all_on_exit():
+    """Best-effort unstick when the client goes away: if stdin hits EOF
+    (the MCP client died or disconnected) while a key, button or pad input
+    is held via down, nothing else would ever release it — the daemons
+    only release on their own quit/signals. Swallow every error: a daemon
+    that is not running has nothing held through us."""
+    for fifo, line, parser in ((KEY_FIFO, "release", elfkey.parse_command),
+                               (PAD_FIFO, "reset", elfpad.parse_command),
+                               (MOUSE_FIFO, "release", elfmouse.parse_command)):
+        try:
+            _send(fifo, line, parser)
+        except Exception:
+            pass
 
 
 def _emit(response):
